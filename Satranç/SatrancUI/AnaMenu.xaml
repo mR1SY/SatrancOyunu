@@ -1,0 +1,62 @@
+﻿<Window x:Class="SatrancUI.AnaMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SatrancUI"
+        mc:Ignorable="d"
+        Icon="Assets/icon.ico"
+        Title="Satranç Ana Menü" 
+        Width="800"
+        Height="800"
+        WindowStartupLocation="CenterScreen">
+        <Border Style="{StaticResource BorderStyle}" >
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="150"/>
+                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="75"/>
+                        <RowDefinition Height="75"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Satranç" 
+                               FontSize="52" 
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Grid.Row="0"
+                               Margin="50"
+                               Style="{StaticResource TextStyle}"/>
+
+                    <Button x:Name="OyunaBaslaButon" 
+                            Content="Oyuna Başla" 
+                            HorizontalAlignment="Center"
+                            Width="200"
+                            Height="50"
+                            Margin="10"
+                            Grid.Row="1"
+                            Style="{StaticResource ButtonStyle}"
+                            Click="OyunaBaslaButon_Click"/>
+
+                    <Button x:Name="TahtaDuzenleButon" 
+                            Content="Tahtayı Düzenle" 
+                            HorizontalAlignment="Center"
+                            Width="200"
+                            Height="50"
+                            Margin="10"
+                            Grid.Row="2"
+                            Style="{StaticResource ButtonStyle}"
+                            Click="TahtaDuzenleButon_Click"/>
+
+                    <Button x:Name="CikisButon" 
+                            Content="Çıkış" 
+                            HorizontalAlignment="Center"
+                            Width="200"
+                            Height="50"
+                            Margin="10"
+                            Grid.Row="3"
+                            Style="{StaticResource ButtonStyle}"
+                            Click="CikisButon_Click"/>
+                </Grid>
+        </Border>
+</Window>
+    

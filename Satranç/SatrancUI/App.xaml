@@ -1,0 +1,106 @@
+﻿<Application x:Class="SatrancUI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SatrancUI"
+             StartupUri="AnaMenu.xaml"
+             >
+    <Application.Resources>
+        
+        <!--Oyun bittiğinde çıkacak menü için birkaç renk tanımlıyoruz:-->
+
+        <SolidColorBrush x:Key="StrokeColor">#000000</SolidColorBrush>
+
+        <!--DolguRengi-->
+        <SolidColorBrush x:Key="FillColor">#f4a460</SolidColorBrush>
+
+        <!--MetinRengi-->
+        <SolidColorBrush x:Key="TextColor">#000000</SolidColorBrush>
+
+        <!--DüğmeRengi-->
+        <SolidColorBrush x:Key="ButtonColor">#8b4513</SolidColorBrush>
+
+
+        <!--Style Elemanı: Bu satır, WPF uygulamamızdaki diğer öğelere uygulanabilen yeni bir stil tanımlar.
+        TargetType="Border": Bu özellik, stilin Border türündeki öğelere uygulanacağını belirtir. WPF'deki Border denetimi, diğer denetimlerin veya öğelerin etrafına bir kenarlık eklemenize olanak tanır.
+        x:Key="BorderStyle": Bu özellik, stile (BorderStyle) benzersiz bir ad atar. Bu ad, daha sonra diğer denetimlerden stile atıfta bulunmak için kullanılır.
+        Setter Elemanları: Style öğesi içindeki her Setter, Border denetiminin belirli bir özelliğini tanımlar ve değerini ayarlar.-->
+
+        <Style TargetType="Border" x:Key="BorderStyle">
+
+            <!--Bu, kenarlığın kalınlığını 4 piksele ayarlar.-->
+            <Setter Property="BorderThickness" Value="4"/>
+
+            <!--Bu, kenarlığın rengini StrokeColor adlı bir kaynağa atar. Zaten yukarıda bunu tanımlamıştık. -->
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeColor}"/>
+
+            <!--Bu, kenarlığın içindeki alanın arka plan rengini FillColor adlı bir kaynağa ayarlar. Bunu da yukarıda tanımladık-->
+            <Setter Property="Background" Value="{StaticResource FillColor}"/>
+
+            <!--Bu, kenarlığın köşelerini 10 piksel yarıçapla yuvarlar ve daha yumuşak bir görünüm oluşturur.-->
+            <Setter Property="CornerRadius" Value="0"/>
+
+        </Style>
+        
+        
+        
+        
+        
+        <!--Style Elemanı: Bu satır, WPF uygulamamızdaki TextBlock öğelerine uygulanabilen yeni bir stil tanımlar. TextBlock öğesi, metin görüntülemek için kullanılır.
+        TargetType="TextBlock": Bu özellik, stilin TextBlock türündeki öğelere uygulanacağını belirtir.
+        x:Key="TextStyle": Bu özellik, stile (TextStyle) benzersiz bir ad atar.
+        Setter Elemanları: Style öğesi içindeki her Setter, TextBlock öğesinin belirli bir özelliğini tanımlar ve değerini ayarlar.-->
+        <Style TargetType="TextBlock" x:Key="TextStyle">
+
+            <!--Bu, metin bloğunun yazı tipini "Segoe UI Light" olarak ayarlar.-->
+            <Setter Property="FontFamily" Value="Segoe UI Light"/>
+
+            <!--Bu, metin bloğunun yatay hizalamasını merkeze ayarlar. Yani metin, yatay olarak TextBlock öğesinin ortasında konumlandırılır.-->
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+
+            <!--Bu, metin bloğunun dikey hizalamasını merkeze ayarlar. Yani metin, dikey olarak TextBlock öğesinin ortasında konumlandırılır.-->
+            <Setter Property="VerticalAlignment" Value="Center"/>
+
+            <!--Bu, metin bloğunun yazı tipini "Segoe UI Light" olarak ayarlar. Zaten yukarıda bunu tanımladık-->
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            
+        </Style>
+
+
+        <!--Style Elemanı: Bu satır, WPF uygulamamızdaki Button öğelerine uygulanabilen yeni bir stil tanımlar. Button öğesi, kullanıcı etkileşimi için tıklanabilen bir öğedir.
+        TargetType="Button": Bu özellik, stilin Button türündeki öğelere uygulanacağını belirtir.
+        x:Key="ButtonStyle": Bu özellik, stile (ButtonStyle) benzersiz bir ad atar. Bu adı, daha sonra XAML kodunuzda Button öğelerine bu stili uygulamak için kullanırsınız.
+        Setter Elemanları: Style öğesi içindeki her Setter, Button öğesinin belirli bir özelliğini tanımlar ve değerini ayarlar.-->
+
+        <Style TargetType="Button" x:Key="ButtonStyle">
+
+            <!-- Bu, düğmenin yazı tipini "Segoe UI Light" olarak ayarlar.-->
+            <Setter Property="FontFamily" Value="Segoe UI Light"/>
+
+            <!-- Bu, düğmenin yazı tipi boyutunu 14 punto olarak ayarlar.-->
+            <Setter Property="FontSize" Value="14"/>
+
+            <!--  Bu, düğmenin kenarlık kalınlığını 2 piksel olarak ayarlar.-->
+            <Setter Property="BorderThickness" Value="2"/>
+
+            <!-- Bu, düğmenin kenarlık rengini StrokeColor adlı bir kaynağa atar. Zaten bunu yukarıda tanımladık-->
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeColor}"/>
+
+            <!-- Bu, düğmenin arka plan rengini ButtonColor adlı bir kaynağa atar. Zaten bunu yukarıda tanımladık-->
+            <Setter Property="Background" Value="{StaticResource ButtonColor}"/>
+
+            <!-- Bu, düğmenin üzerindeki metnin ön plan rengini TextColor adlı bir kaynağa atar. Zaten bunu zaten yukarıda tanımladık-->
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+
+            <!--Bu blok, ButtonStyle stilinin kendi içinde başka bir stil tanımlamanıza olanak tanır. Bu durumda, bir Border stili tanımlanmıştır.-->
+            <Style.Resources>
+
+                <!-- Bu satır, ButtonStyle içindeki dahili stilin Border öğelerine uygulanacağını belirtir.-->
+                <Style TargetType="Border">
+                    <!--, düğmenin kenarlığının köşelerini 5 piksellik bir yarıçapla yuvarlar.-->
+                    <Setter Property="CornerRadius" Value="0"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+
+    </Application.Resources>
+</Application>

@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="SatrancUI.OyunBitisMenusu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SatrancUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <!-- Kenarlık tanımlıyoruz ve genişlik 275 yükseklik 125 alıyoruz -->
+    <Border Width="275"
+            Height="125"
+            Style="{StaticResource BorderStyle}">
+        <!--Grid: Oyun sonu ekranının layout'unu tanımlamak için bir Grid öğesi kullanıyor. Grid, içeriği satırlar ve sütunlar halinde düzenlememize olanak tanır.  -->
+        <Grid>
+
+            <!-- Bu Satır ve Sütun blokları, Grid'in satır ve sütunlarını tanımlar. Örnek kodda, 3 satır ve 2 sütun tanımladık. Yıldız işareti (*) esnek genişlik anlamına gelir, yani her satır ve sütun kullanılabilir alana göre yatay veya dikey olarak genişleyebilir. -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+
+            <!-- TextBlock: Bu öğe, metin görüntülemek için kullanılır. Kodda iki TextBlock elementi var:
+            Kazanan Metni: İlk TextBlock, Grid.ColumnSpan="2" ile iki sütuna yayılcak şekilde ayarlanır. Bu, metnin ekranın genişliğine göre yatay olarak uzamasını sağlar. WinnerText adıyla tanımlanan bu metin bloğu muhtemelen oyunun kazananını belirtir.
+            Sebep Metni: İkinci TextBlock, Grid.Row="1" ile ikinci satıra yerleştirilir ve yine iki sütuna yayılır. Bu metin bloğu ise muhtemelen oyunun kazanılma/kaybedilme sebebini açıklar. -->
+            <TextBlock Grid.ColumnSpan="2"
+                       x:Name="WinnerText"
+                       Text="WINNER TEXT"
+                       Style="{StaticResource TextStyle}"
+                       FontSize="28"/>
+            <TextBlock Grid.Row="1"
+                       Grid.ColumnSpan="2"
+                       x:Name="ReasonText"
+                       Text="REASON TEXT"
+                       Style="{StaticResource TextStyle}"
+                       FontSize="16"/>
+
+            <!--Button: Bu öğe, tıklanabilen bir buton oluşturur. Kodda iki Button elementi var:
+             eniden Başlat Butonu: Bu buton, Grid.Row="2" ile üçüncü satıra yerleştirilir ve muhtemelen oyunu yeniden başlatma işlevi görür.
+              Çıkış Butonu: Bu buton da üçüncü satıra yerleştirilir, ancak Grid.Column="1" ile ikinci sütuna konumlandırılır. Bu buton muhtemelen oyundan çıkış işlemini gerçekleştidik.-->
+            <Button Grid.Row="2"
+                    Content="YENİDEN BAŞLAT"
+                    Style="{StaticResource ButtonStyle}"
+                    Width="80"
+                    Height="30"
+                    FontSize="10"
+                    Click="Restart_Click"/>
+            <Button Grid.Row="2"
+                    Grid.Column="1"
+                    Content="ÇIKIŞ"
+                    Style="{StaticResource ButtonStyle}"
+                    Width="80"
+                    Height="30"
+                    FontSize="10"
+                    Click="Exit_Click"/>
+        </Grid>
+    </Border>
+</UserControl>

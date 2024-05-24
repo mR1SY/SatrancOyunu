@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="SatrancUI.TasSecmeMenusu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SatrancUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border Width="400"
+            Height="200"
+            Style="{StaticResource BorderStyle}">
+        <Grid RenderOptions.BitmapScalingMode="HighQuality">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="TAŞ SEÇİN"
+                       Style="{StaticResource TextStyle}"
+                       FontSize="20"/>
+
+            <!-- Siyah taşlar -->
+            <UniformGrid Rows="1" Columns="6" Cursor="Hand" Grid.Row="2">
+                <Image x:Name="SiyahPiyonResmi" MouseDown="TasResmi_MouseDown" Tag="Piyon" Source="Assets/SiyahPiyon.png"/>
+                <Image x:Name="SiyahAtResmi" MouseDown="TasResmi_MouseDown" Tag="At" Source="Assets/SiyahAt.png"/>
+                <Image x:Name="SiyahFilResmi" MouseDown="TasResmi_MouseDown" Tag="Fil" Source="Assets/SiyahFil.png"/>
+                <Image x:Name="SiyahKaleResmi" MouseDown="TasResmi_MouseDown" Tag="Kale" Source="Assets/SiyahKale.png"/>
+                <Image x:Name="SiyahVezirResmi" MouseDown="TasResmi_MouseDown" Tag="Vezir" Source="Assets/SiyahVezir.png"/>
+                <Image x:Name="SiyahSahResmi" MouseDown="TasResmi_MouseDown" Tag="Sah" Source="Assets/SiyahSah.png"/>
+            </UniformGrid>
+
+            <!-- Beyaz taşlar -->
+            <UniformGrid Rows="1" Columns="6" Cursor="Hand" Grid.Row="1">
+                <Image x:Name="BeyazPiyonResmi" MouseDown="TasResmi_MouseDown" Tag="Piyon" Source="Assets/BeyazPiyon.png"/>
+                <Image x:Name="BeyazAtResmi" MouseDown="TasResmi_MouseDown" Tag="At" Source="Assets/BeyazAt.png"/>
+                <Image x:Name="BeyazFilResmi" MouseDown="TasResmi_MouseDown" Tag="Fil" Source="Assets/BeyazFil.png"/>
+                <Image x:Name="BeyazKaleResmi" MouseDown="TasResmi_MouseDown" Tag="Kale" Source="Assets/BeyazKale.png"/>
+                <Image x:Name="BeyazVezirResmi" MouseDown="TasResmi_MouseDown" Tag="Vezir" Source="Assets/BeyazVezir.png"/>
+                <Image x:Name="BeyazSahResmi" MouseDown="TasResmi_MouseDown" Tag="Sah" Source="Assets/BeyazSah.png"/>
+            </UniformGrid>
+        </Grid>
+    </Border>
+</UserControl>
+    

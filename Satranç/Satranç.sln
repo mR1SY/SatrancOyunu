@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatrancMantigi", "ClassLibrary1\SatrancMantigi.csproj", "{B40A73BA-21A3-404C-B7D4-78B218675E5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatrancUI", "SatrancUI\SatrancUI.csproj", "{30E61037-1CBB-4AA0-BD70-683E558F6A10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B40A73BA-21A3-404C-B7D4-78B218675E5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B40A73BA-21A3-404C-B7D4-78B218675E5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B40A73BA-21A3-404C-B7D4-78B218675E5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B40A73BA-21A3-404C-B7D4-78B218675E5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30E61037-1CBB-4AA0-BD70-683E558F6A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30E61037-1CBB-4AA0-BD70-683E558F6A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30E61037-1CBB-4AA0-BD70-683E558F6A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30E61037-1CBB-4AA0-BD70-683E558F6A10}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EBBE7387-296A-414F-B4F3-4C9F96A40295}
+	EndGlobalSection
+EndGlobal

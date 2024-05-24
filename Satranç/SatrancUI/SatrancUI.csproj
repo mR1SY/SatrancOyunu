@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\BeyazAt.png" />
+    <None Remove="Assets\BeyazFil.png" />
+    <None Remove="Assets\BeyazIsaretci.cur" />
+    <None Remove="Assets\BeyazKale.png" />
+    <None Remove="Assets\BeyazPiyon.png" />
+    <None Remove="Assets\BeyazSah.png" />
+    <None Remove="Assets\BeyazSahTehditAltinda.png" />
+    <None Remove="Assets\BeyazVezir.png" />
+    <None Remove="Assets\icon.ico" />
+    <None Remove="Assets\SiyahAt.png" />
+    <None Remove="Assets\SiyahFil.png" />
+    <None Remove="Assets\SiyahIsaretci.cur" />
+    <None Remove="Assets\SiyahKale.png" />
+    <None Remove="Assets\SiyahPiyon.png" />
+    <None Remove="Assets\SiyahSah.png" />
+    <None Remove="Assets\SiyahSahTehditAltinda.png" />
+    <None Remove="Assets\SiyahVezir.png" />
+    <None Remove="Assets\Tahta.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClassLibrary1\SatrancMantigi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\BeyazAt.png" />
+    <Resource Include="Assets\BeyazFil.png" />
+    <Resource Include="Assets\BeyazIsaretci.cur" />
+    <Resource Include="Assets\BeyazKale.png" />
+    <Resource Include="Assets\BeyazPiyon.png" />
+    <Resource Include="Assets\BeyazSah.png" />
+    <Resource Include="Assets\BeyazSahTehditAltinda.png" />
+    <Resource Include="Assets\BeyazVezir.png" />
+    <Resource Include="Assets\icon.ico" />
+    <Resource Include="Assets\SiyahAt.png" />
+    <Resource Include="Assets\SiyahFil.png" />
+    <Resource Include="Assets\SiyahIsaretci.cur" />
+    <Resource Include="Assets\SiyahKale.png" />
+    <Resource Include="Assets\SiyahPiyon.png" />
+    <Resource Include="Assets\SiyahSah.png" />
+    <Resource Include="Assets\SiyahSahTehditAltinda.png" />
+    <Resource Include="Assets\SiyahVezir.png" />
+    <Resource Include="Assets\Tahta.png" />
+  </ItemGroup>
+
+</Project>
