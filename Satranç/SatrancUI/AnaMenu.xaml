@@ -12,14 +12,19 @@
         WindowStartupLocation="CenterScreen">
         <Border Style="{StaticResource BorderStyle}" >
             <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="150"/>
-                        <RowDefinition Height="75"/>
-                        <RowDefinition Height="75"/>
-                        <RowDefinition Height="75"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Satranç" 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="150"/>
+                <RowDefinition Height="75"/>
+                <RowDefinition Height="75"/>
+                <RowDefinition Height="75"/>
+            </Grid.RowDefinitions>
+            <ContentControl x:Name="MenuContainer"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="300"
+                Height="200">
+            </ContentControl>
+            <TextBlock Text="Satranç"
                                FontSize="52" 
                                FontWeight="Bold"
                                HorizontalAlignment="Center"

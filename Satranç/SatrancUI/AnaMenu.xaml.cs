@@ -12,12 +12,18 @@ namespace SatrancUI
 
         private void OyunaBaslaButon_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow oyunPenceresi = new MainWindow(); // Yeni bir oyun penceresi oluştur
-            oyunPenceresi.Show(); // Oyun penceresini göster
-            oyunPenceresi.DevamEtButonu.Visibility = Visibility.Collapsed;
-            this.Close(); // Ana menü penceresini kapat
-        }
+            OyunModuMenusu oyunModuMenusu = new OyunModuMenusu();
+            oyunModuMenusu.ModSecildi += yapayZekaModu =>
+            {
+                MainWindow oyunPenceresi = new MainWindow();
+                oyunPenceresi.yapayZekaModu = yapayZekaModu; // Oyun modunu ayarla
+                oyunPenceresi.Show();
+                oyunPenceresi.DevamEtButonu.Visibility = Visibility.Collapsed;
+                this.Close();
+            };
 
+            MenuContainer.Content = oyunModuMenusu; // Menü Container'ına Oyun Modu Menüsü'nü ekleyin
+        }
         private void TahtaDuzenleButon_Click(object sender, RoutedEventArgs e)
         {
             MainWindow duzenlemePenceresi = new MainWindow();

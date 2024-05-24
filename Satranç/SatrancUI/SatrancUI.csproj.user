@@ -16,6 +16,9 @@
     <Compile Update="OyunBittiMenu.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="OyunModu.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="TasSecmeMenusu.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -34,6 +37,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="OyunBittiMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="OyunModu.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="TasSecmeMenusu.xaml">

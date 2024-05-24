@@ -60,6 +60,7 @@ namespace SatrancUI
         private bool tasSecmeMenusuAcik = false;
         private TasSecmeMenusu acikTasSecmeMenusu = null;
 
+        public bool yapayZekaModu = false;
 
         private void TasSecmeMenusu_Closed(object sender, EventArgs e)
         {
@@ -688,13 +689,217 @@ namespace SatrancUI
                 Grid.SetRow(SiyahSureText, 6);
                 Grid.SetRow(SiyahOyuncuText, 5);
             }
+
+            if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // varsayalım ki yapay zeka siyah taşlarla oynuyor
+            {
+                // Yapay zeka hamlesini hesapla
+                Hamle yapayZekaHamlesi = YapayZekaHamlesiHesapla(); // Bu metodu daha sonra yazacağız
+
+                // Yapay zeka hamlesini gerçekleştir
+                TasimaHamlesi(yapayZekaHamlesi);
+            }
             //Her hamle oynandığında oyun bittimi diye kontrol ediyoruz
             if (oyunDurumu.OyunBittiMi())
             {
                 OyunBitisiGoster();
             }
         }
+        private Hamle YapayZekaHamlesiHesapla()
+        {
+            int derinlik = 3; // Yapay zekanın bakacağı hamle sayısı
+            int enIyiDeger = int.MinValue;
+            Hamle enIyiHamle = null;
 
+            foreach (Hamle hamle in oyunDurumu.ButunYasalHamlelerIcin(Oyuncu.Siyah))
+            {
+                Tahta yeniTahta = oyunDurumu.Tahta.Kopya();
+                hamle.Execute(yeniTahta);
+                int deger = Minimax(yeniTahta, derinlik - 1, false, int.MinValue, int.MaxValue);
+                if (deger > enIyiDeger)
+                {
+                    enIyiDeger = deger;
+                    enIyiHamle = hamle;
+                }
+            }
+
+            return enIyiHamle;
+        }
+
+
+        private int DegerlendirmeFonksiyonu(Tahta tahta)
+        {
+            int puan = 0;
+
+            // Taş değerleri
+            Dictionary<TasTuru, int> tasDegerleri = new Dictionary<TasTuru, int>()
+    {
+        {TasTuru.Piyon, 100},
+        {TasTuru.At, 320},
+        {TasTuru.Fil, 330},
+        {TasTuru.Kale, 500},
+        {TasTuru.Vezir, 900},
+        {TasTuru.Sah, 20000}
+    };
+
+            // Tahtadaki tüm taşlar için puanı hesapla
+            for (int r = 0; r < 8; r++)
+            {
+                for (int c = 0; c < 8; c++)
+                {
+                    Tas tas = tahta[r, c];
+                    if (tas != null)
+                    {
+                        int tasDegeri = tasDegerleri[tas.Tur];
+
+                        // Taş konumuna göre puan ayarlaması (örnek)
+                        if (tas.Tur == TasTuru.Piyon)
+                        {
+                            // Piyonlar ilerledikçe değer kazansın
+                            tasDegeri += (tas.Renk == Oyuncu.Beyaz) ? r * 10 : (7 - r) * 10;
+                        }
+
+                        if (tas.Renk == Oyuncu.Siyah)
+                        {
+                            puan += tasDegeri;
+                        }
+                        else
+                        {
+                            puan -= tasDegeri;
+                        }
+                    }
+                }
+            }
+
+            // Merkez kontrolü (örnek)
+            puan += MerkezKontrolu(tahta, Oyuncu.Siyah) * 20;
+            puan -= MerkezKontrolu(tahta, Oyuncu.Beyaz) * 20;
+
+            // Geliştirme (örnek)
+            puan += Gelistirme(tahta, Oyuncu.Siyah) * 10;
+            puan -= Gelistirme(tahta, Oyuncu.Beyaz) * 10;
+
+            // Şah güvenliği (örnek)
+            puan -= SahGuvenligi(tahta, Oyuncu.Siyah) * 15;
+            puan += SahGuvenligi(tahta, Oyuncu.Beyaz) * 15;
+
+            return puan;
+        }
+
+        private int MerkezKontrolu(Tahta tahta, Oyuncu oyuncu)
+        {
+            int puan = 0;
+            // Merkez kareler (d4, e4, d5, e5)
+            for (int r = 3; r <= 4; r++)
+            {
+                for (int c = 3; c <= 4; c++)
+                {
+                    if (tahta[r, c] != null && tahta[r, c].Renk == oyuncu)
+                    {
+                        puan++;
+                    }
+                }
+            }
+            return puan;
+        }
+
+        private int Gelistirme(Tahta tahta, Oyuncu oyuncu)
+        {
+            int puan = 0;
+            // At ve fillerin geliştirilmesi
+            for (int c = 0; c < 8; c++)
+            {
+                if (oyuncu == Oyuncu.Beyaz)
+                {
+                    if (tahta[7, c] != null && (tahta[7, c].Tur == TasTuru.At || tahta[7, c].Tur == TasTuru.Fil))
+                    {
+                        puan--; // Beyaz taşlar başlangıç konumlarında kalmış
+                    }
+                }
+                else // oyuncu == Oyuncu.Siyah
+                {
+                    if (tahta[0, c] != null && (tahta[0, c].Tur == TasTuru.At || tahta[0, c].Tur == TasTuru.Fil))
+                    {
+                        puan++; // Siyah taşlar başlangıç konumlarında kalmış
+                    }
+                }
+            }
+            return puan;
+        }
+
+        private int SahGuvenligi(Tahta tahta, Oyuncu oyuncu)
+        {
+            int puan = 0;
+            Pozisyon sahPozisyonu = tahta.TasBul(oyuncu, TasTuru.Sah);
+
+            // Şahın etrafındaki piyonlar
+            if (oyuncu == Oyuncu.Beyaz)
+            {
+                if (sahPozisyonu.Satir > 0 && sahPozisyonu.Sutun > 0 && tahta[sahPozisyonu.Satir - 1, sahPozisyonu.Sutun - 1] != null && tahta[sahPozisyonu.Satir - 1, sahPozisyonu.Sutun - 1].Renk == oyuncu && tahta[sahPozisyonu.Satir - 1, sahPozisyonu.Sutun - 1].Tur == TasTuru.Piyon)
+                {
+                    puan++;
+                }
+                if (sahPozisyonu.Satir > 0 && sahPozisyonu.Sutun < 7 && tahta[sahPozisyonu.Satir - 1, sahPozisyonu.Sutun + 1] != null && tahta[sahPozisyonu.Satir - 1, sahPozisyonu.Sutun + 1].Renk == oyuncu && tahta[sahPozisyonu.Satir - 1, sahPozisyonu.Sutun + 1].Tur == TasTuru.Piyon)
+                {
+                    puan++;
+                }
+            }
+            else // oyuncu == Oyuncu.Siyah
+            {
+                if (sahPozisyonu.Satir < 7 && sahPozisyonu.Sutun > 0 && tahta[sahPozisyonu.Satir + 1, sahPozisyonu.Sutun - 1] != null && tahta[sahPozisyonu.Satir + 1, sahPozisyonu.Sutun - 1].Renk == oyuncu && tahta[sahPozisyonu.Satir + 1, sahPozisyonu.Sutun - 1].Tur == TasTuru.Piyon)
+                {
+                    puan++;
+                }
+                if (sahPozisyonu.Satir < 7 && sahPozisyonu.Sutun < 7 && tahta[sahPozisyonu.Satir + 1, sahPozisyonu.Sutun + 1] != null && tahta[sahPozisyonu.Satir + 1, sahPozisyonu.Sutun + 1].Renk == oyuncu && tahta[sahPozisyonu.Satir + 1, sahPozisyonu.Sutun + 1].Tur == TasTuru.Piyon)
+                {
+                    puan++;
+                }
+            }
+
+            return puan;
+        }
+        private int Minimax(Tahta tahta, int derinlik, bool maximizingPlayer, int alfa, int beta)
+        {
+            // Derinlik 0'a ulaştıysa veya oyun bittiyse değerlendirme fonksiyonunu kullan
+            if (derinlik == 0 || new OyunDurumu(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz, tahta).OyunBittiMi())
+            {
+                return DegerlendirmeFonksiyonu(tahta);
+            }
+
+            if (maximizingPlayer)
+            {
+                int maxEval = int.MinValue;
+                foreach (Hamle hamle in new OyunDurumu(Oyuncu.Siyah, tahta).ButunYasalHamlelerIcin(Oyuncu.Siyah))
+                {
+                    Tahta yeniTahta = tahta.Kopya();
+                    hamle.Execute(yeniTahta);
+                    int eval = Minimax(yeniTahta, derinlik - 1, false, alfa, beta);
+                    maxEval = Math.Max(maxEval, eval);
+                    alfa = Math.Max(alfa, eval);
+                    if (beta <= alfa)
+                    {
+                        break; // Beta budaması
+                    }
+                }
+                return maxEval;
+            }
+            else
+            {
+                int minEval = int.MaxValue;
+                foreach (Hamle hamle in new OyunDurumu(Oyuncu.Beyaz, tahta).ButunYasalHamlelerIcin(Oyuncu.Beyaz))
+                {
+                    Tahta yeniTahta = tahta.Kopya();
+                    hamle.Execute(yeniTahta);
+                    int eval = Minimax(yeniTahta, derinlik - 1, true, alfa, beta);
+                    minEval = Math.Min(minEval, eval);
+                    beta = Math.Min(beta, eval);
+                    if (beta <= alfa)
+                    {
+                        break; // Alfa budaması
+                    }
+                }
+                return minEval;
+            }
+        }
         #endregion
 
         #region Seçilen_Parça_İçin_Yasal_Hamlelerin_Toplanması_Ve_Saklanması

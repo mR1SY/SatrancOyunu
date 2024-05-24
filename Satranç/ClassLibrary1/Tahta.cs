@@ -232,7 +232,7 @@ namespace SatrancMantigi
 
         #region Tahtada_Taşın_Alt_Kısmındaki_Kare_Rengini_Bulma_Metodu
 
-        private Pozisyon TasBul(Oyuncu renk, TasTuru tur)
+      public Pozisyon TasBul(Oyuncu renk, TasTuru tur)
         {
             return TasPozisyonlariIcin(renk).First(poz => this[poz].Tur == tur);
         }
