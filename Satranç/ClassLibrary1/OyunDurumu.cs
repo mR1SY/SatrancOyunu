@@ -103,13 +103,13 @@ namespace SatrancMantigi
             //Burada tüm aday hamleler için değişken oluşturacağız
             //Oyuncuya ait bir taş içeren tüm pozisyonları dikkate alacağız
             //Ve daha sonra birçok seç seçeneğini kullanarak her parça için hamleleri topluyoruz
-            IEnumerable<Hamle> AdaylariTasima = Tahta.TasPozisyonlariIcin(oyuncu).SelectMany(pos =>
+            return Tahta.TasPozisyonlariIcin(oyuncu).SelectMany(pos =>
             {
                 Tas tas = Tahta[pos];
                 return tas.HamleYapmak(pos, Tahta);
-            });
+            }).Where(hamle => hamle.Yasal(Tahta));
             //Kural dışı olanları yani yasal olmayanları filtreliyoruz
-            return AdaylariTasima.Where(move => move.Yasal(Tahta));
+            //return AdaylariTasima.Where(move => move.Yasal(Tahta));
         }
 
         #endregion

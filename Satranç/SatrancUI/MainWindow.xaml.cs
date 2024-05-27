@@ -49,6 +49,7 @@ namespace SatrancUI
 
         #endregion
 
+        //private bool layoutUpdatedEventEklendi = false; // Yeni değişken
         public bool tasDuzenlemeModu = false;
         private TasTuru secilenTasTuru = TasTuru.Piyon;
 
@@ -291,68 +292,70 @@ namespace SatrancUI
                 {
                     Tas tas = tahta[r, c];
 
-                    if (tas != null && tas.Tur == TasTuru.Sah && oyunDurumu.Tahta.TehditAltinda(tas.Renk)) // Şahın tehdit altında olup olmadığını kontrol et
+                    if (tas != null && tas.Tur == TasTuru.Sah && oyunDurumu.Tahta.TehditAltinda(tas.Renk))
                     {
                         if (tas.Renk == Oyuncu.Beyaz)
                         {
-                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/BeyazSahTehditAltinda.png"); // Beyaz şah tehdit görseli
+                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/BeyazSahTehditAltinda.png");
                         }
                         else
                         {
-                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/SiyahSahTehditAltinda.png"); // Siyah şah tehdit görseli
+                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/SiyahSahTehditAltinda.png");
                         }
                     }
                     else
                     {
-                        TaslarinResimleri[r, c].Source = Resimler.ResimAl(tas); // Normal şah veya diğer taşlar için normal görseli yükle
+                        TaslarinResimleri[r, c].Source = Resimler.ResimAl(tas);
                     }
-                    // LayoutUpdated olayına abone ol
+                    // LayoutUpdated olayını kullanarak tahta ve taşları döndür
                     TahtaIzgarasi.LayoutUpdated += (sender, e) =>
                     {
-                        // Taşları döndür (siyah oyuncu sırası ise)
-                        if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
-                        {
-                            for (int r = 0; r < 8; r++)
+                        if (!yapayZekaModu) // Yapay zeka modunda dönmeyi engelle
+                        {                            // Taşları döndür (siyah oyuncu sırası ise)
+                            if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
                             {
-                                for (int c = 0; c < 8; c++)
+                                for (int r = 0; r < 8; r++)
                                 {
-                                    TaslarinResimleri[r, c].RenderTransform = new RotateTransform(180, TaslarinResimleri[r, c].ActualWidth / 2, TaslarinResimleri[r, c].ActualHeight / 2);
+                                    for (int c = 0; c < 8; c++)
+                                    {
+                                        TaslarinResimleri[r, c].RenderTransform = new RotateTransform(180, TaslarinResimleri[r, c].ActualWidth / 2, TaslarinResimleri[r, c].ActualHeight / 2);
+                                    }
                                 }
-                            }
 
-                            TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
-                        }
-                        else
-                        {
-                            // Döndürmeyi sıfırla (beyaz oyuncu sırası ise)
-                            for (int r = 0; r < 8; r++)
+                                TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
+                            }
+                            else
                             {
-                                for (int c = 0; c < 8; c++)
+                                // Döndürmeyi sıfırla (beyaz oyuncu sırası ise)
+                                for (int r = 0; r < 8; r++)
                                 {
-                                    TaslarinResimleri[r, c].RenderTransform = null;
+                                    for (int c = 0; c < 8; c++)
+                                    {
+                                        TaslarinResimleri[r, c].RenderTransform = null;
+                                    }
                                 }
-                            }
 
-                            TahtaIzgarasi.RenderTransform = null;
+                                TahtaIzgarasi.RenderTransform = null;
+                            }
                         }
                     };
                 }
-            }
 
-            // Tahtayı döndür (siyah oyuncu sırası ise)
-            if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
-            {
-                TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
-            }
-            else
-            {
-                // Döndürmeyi sıfırla (beyaz oyuncu sırası ise)
-                TahtaIzgarasi.RenderTransform = null;
+                // Tahtayı döndür (yapay zeka modu değilse ve siyah oyuncu sırası ise)
+                if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+                {
+                    TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
+                }
+                else
+                {
+                    // Döndürmeyi sıfırla (beyaz oyuncu sırası ise)
+                    TahtaIzgarasi.RenderTransform = null;
+                }
             }
         }
-        #endregion
+            #endregion
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+            private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (tasDuzenlemeModu && e.Key == Key.Delete && SecilmisPoz != null)
             {
@@ -614,7 +617,7 @@ namespace SatrancUI
         #region Hamleyi_Gerçekleştir_Ve_Tahtaya_Kaydet
 
         //Bu metod oyun durumuna şunu söyler: Verilen hamleyi gerçekleştirin.
-        private void TasimaHamlesi(Hamle hamle)
+        private async void TasimaHamlesi(Hamle hamle)
         {
             // Düzenleme modunda hamle yapma
             if (tasDuzenlemeModu)
@@ -652,6 +655,21 @@ namespace SatrancUI
             // Yasal hamleleri yeniden hesapla ve önbelleğe al
             OnbellekHamleleri(oyunDurumu.TaslarIcinYasalHamleler(hamle.ToPos));
 
+            if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+            {
+                Hamle yapayZekaHamlesi = await Task.Run(() => YapayZekaHamlesiHesapla());
+
+                // Yapay zeka hamlesi null değilse gerçekleştir
+                if (yapayZekaHamlesi != null)
+                {
+                    TasimaHamlesi(yapayZekaHamlesi);
+                }
+                else
+                {
+                    // Hamle null ise, isteğe bağlı olarak bir mesaj gösterilebilir
+                    // MessageBox.Show("Yapay zeka hamle yapamadı!");
+                }
+            }
             // Süre sayaclarını değiştir
             if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
             {
@@ -706,11 +724,20 @@ namespace SatrancUI
         }
         private Hamle YapayZekaHamlesiHesapla()
         {
+            // Yasal hamleleri kontrol et
+            var yasalHamleler = oyunDurumu.ButunYasalHamlelerIcin(Oyuncu.Siyah).ToList();
+
+            // Yasal hamle yoksa null döndür
+            if (yasalHamleler.Count == 0)
+            {
+                return null;
+            }
+
             int derinlik = 3; // Yapay zekanın bakacağı hamle sayısı
             int enIyiDeger = int.MinValue;
             Hamle enIyiHamle = null;
 
-            foreach (Hamle hamle in oyunDurumu.ButunYasalHamlelerIcin(Oyuncu.Siyah))
+            foreach (Hamle hamle in yasalHamleler)
             {
                 Tahta yeniTahta = oyunDurumu.Tahta.Kopya();
                 hamle.Execute(yeniTahta);
@@ -724,11 +751,110 @@ namespace SatrancUI
 
             return enIyiHamle;
         }
+        private int VezirErkenHareketCezasi(Tahta tahta, Oyuncu oyuncu)
+        {
+            if (oyuncu == Oyuncu.Beyaz)
+            {
+                if (tahta[7, 3] == null || tahta[7, 3].Tasindi)
+                {
+                    return 1; // Beyaz vezir hareket etmişse ceza
+                }
+            }
+            else // oyuncu == Oyuncu.Siyah
+            {
+                if (tahta[0, 3] == null || tahta[0, 3].Tasindi)
+                {
+                    return 1; // Siyah vezir hareket etmişse ceza
+                }
+            }
 
+            return 0; // Vezir hareket etmemişse ceza verme
+        }
+
+        private int VezirGuvenligi(Tahta tahta, Oyuncu oyuncu)
+        {
+            Pozisyon vezirPozisyonu = tahta.TasBul(oyuncu, TasTuru.Vezir);
+
+            // Vezir tehdit altında ise cezalandır
+            if (tahta.TehditAltinda(vezirPozisyonu, oyuncu))
+            {
+                return -1;
+            }
+
+            return 1; // Vezir güvende ise puan ver
+        }
+
+        private int SahErkenHareketCezasi(Tahta tahta, Oyuncu oyuncu)
+        {
+            if (oyuncu == Oyuncu.Beyaz)
+            {
+                if (tahta[7, 4] == null || tahta[7, 4].Tasindi)
+                {
+                    return 1; // Beyaz şah hareket etmişse ceza
+                }
+            }
+            else // oyuncu == Oyuncu.Siyah
+            {
+                if (tahta[0, 4] == null || tahta[0, 4].Tasindi)
+                {
+                    return 1; // Siyah şah hareket etmişse ceza
+                }
+            }
+
+            return 0; // Şah hareket etmemişse ceza verme
+        }
+
+        private int RokAvantajı(Tahta tahta, Oyuncu oyuncu)
+        {
+            if (oyuncu == Oyuncu.Beyaz)
+            {
+                // Beyaz şah hareket etmişse ve rok yapmamışsa cezalandır
+                if (tahta[7, 4] == null || tahta[7, 4].Tasindi)
+                {
+                    return -1;
+                }
+                // Beyaz rok yapmışsa puan ver
+                if ((tahta[7, 6] != null && tahta[7, 6].Tur == TasTuru.Sah) ||
+                    (tahta[7, 2] != null && tahta[7, 2].Tur == TasTuru.Sah))
+                {
+                    return 1;
+                }
+            }
+            else // oyuncu == Oyuncu.Siyah
+            {
+                // Siyah şah hareket etmişse ve rok yapmamışsa cezalandır
+                if (tahta[0, 4] == null || tahta[0, 4].Tasindi)
+                {
+                    return -1;
+                }
+                // Siyah rok yapmışsa puan ver
+                if ((tahta[0, 6] != null && tahta[0, 6].Tur == TasTuru.Sah) ||
+                    (tahta[0, 2] != null && tahta[0, 2].Tur == TasTuru.Sah))
+                {
+                    return 1;
+                }
+            }
+
+            return 0; // Rok durumu yoksa puan verme
+        }
 
         private int DegerlendirmeFonksiyonu(Tahta tahta)
         {
             int puan = 0;
+
+            // Vezirin güvenliğini değerlendirme
+            puan += VezirGuvenligi(tahta, Oyuncu.Siyah) * 50;
+            puan -= VezirGuvenligi(tahta, Oyuncu.Beyaz) * 50;
+
+            puan -= VezirErkenHareketCezasi(tahta, Oyuncu.Siyah) * 30;
+            puan += VezirErkenHareketCezasi(tahta, Oyuncu.Beyaz) * 30;
+
+            puan += RokAvantajı(tahta, Oyuncu.Siyah) * 50; // Rok yapılmışsa puanı artır
+            puan -= RokAvantajı(tahta, Oyuncu.Beyaz) * 50;
+
+            // Şahın erken hareketlerini cezalandırma
+            puan -= SahErkenHareketCezasi(tahta, Oyuncu.Siyah) * 20;
+            puan += SahErkenHareketCezasi(tahta, Oyuncu.Beyaz) * 20;
 
             // Taş değerleri
             Dictionary<TasTuru, int> tasDegerleri = new Dictionary<TasTuru, int>()
@@ -859,8 +985,19 @@ namespace SatrancUI
         }
         private int Minimax(Tahta tahta, int derinlik, bool maximizingPlayer, int alfa, int beta)
         {
+            OyunDurumu geçiciOyunDurumu = new OyunDurumu(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz, tahta);
+
             // Derinlik 0'a ulaştıysa veya oyun bittiyse değerlendirme fonksiyonunu kullan
-            if (derinlik == 0 || new OyunDurumu(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz, tahta).OyunBittiMi())
+            if (derinlik == 0 || geçiciOyunDurumu.OyunBittiMi())
+            {
+                return DegerlendirmeFonksiyonu(tahta);
+            }
+
+            // Yasal hamleleri kontrol et
+            var yasalHamleler = geçiciOyunDurumu.ButunYasalHamlelerIcin(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz).ToList();
+
+            // Yasal hamle yoksa, mevcut durumu değerlendir ve döndür
+            if (yasalHamleler.Count == 0)
             {
                 return DegerlendirmeFonksiyonu(tahta);
             }
@@ -868,7 +1005,7 @@ namespace SatrancUI
             if (maximizingPlayer)
             {
                 int maxEval = int.MinValue;
-                foreach (Hamle hamle in new OyunDurumu(Oyuncu.Siyah, tahta).ButunYasalHamlelerIcin(Oyuncu.Siyah))
+                foreach (Hamle hamle in yasalHamleler)
                 {
                     Tahta yeniTahta = tahta.Kopya();
                     hamle.Execute(yeniTahta);
@@ -885,7 +1022,7 @@ namespace SatrancUI
             else
             {
                 int minEval = int.MaxValue;
-                foreach (Hamle hamle in new OyunDurumu(Oyuncu.Beyaz, tahta).ButunYasalHamlelerIcin(Oyuncu.Beyaz))
+                foreach (Hamle hamle in yasalHamleler)
                 {
                     Tahta yeniTahta = tahta.Kopya();
                     hamle.Execute(yeniTahta);

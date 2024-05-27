@@ -789,3 +789,11 @@ C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\Satranç\Satr
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\Satranç\SatrancUI\obj\Debug\net8.0-windows\ref\SatrancUI.dll
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunModu.g.cs
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunModu.baml
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\AnaMenu.g.cs
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\DurdurmaMenusu.g.cs
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunModu.g.cs
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\TasSecmeMenusu.g.cs
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\AnaMenu.baml
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\DurdurmaMenusu.baml
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunModu.baml
+C:\Users\ozant\Desktop\Satranç\SatrancUI\obj\Debug\net8.0-windows\TasSecmeMenusu.baml

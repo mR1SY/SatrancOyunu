@@ -22,7 +22,7 @@ namespace SatrancUI
                 this.Close();
             };
 
-            MenuContainer.Content = oyunModuMenusu; // Menü Container'ına Oyun Modu Menüsü'nü ekleyin
+            MenuContainer.Content = oyunModuMenusu;
         }
         private void TahtaDuzenleButon_Click(object sender, RoutedEventArgs e)
         {

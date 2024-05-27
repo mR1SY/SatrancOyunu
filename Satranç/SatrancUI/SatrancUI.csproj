@@ -27,6 +27,7 @@
     <None Remove="Assets\SiyahSahTehditAltinda.png" />
     <None Remove="Assets\SiyahVezir.png" />
     <None Remove="Assets\Tahta.png" />
+    <None Remove="Assets\Tahta_180.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +53,7 @@
     <Resource Include="Assets\SiyahSahTehditAltinda.png" />
     <Resource Include="Assets\SiyahVezir.png" />
     <Resource Include="Assets\Tahta.png" />
+    <Resource Include="Assets\Tahta_180.png" />
   </ItemGroup>
 
 </Project>

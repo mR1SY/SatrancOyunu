@@ -12,19 +12,19 @@
         WindowStartupLocation="CenterScreen">
         <Border Style="{StaticResource BorderStyle}" >
             <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="150"/>
-                <RowDefinition Height="75"/>
-                <RowDefinition Height="75"/>
-                <RowDefinition Height="75"/>
-            </Grid.RowDefinitions>
-            <ContentControl x:Name="MenuContainer"
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="75"/>
+                    <RowDefinition Height="75"/>
+                    <RowDefinition Height="75"/>
+                </Grid.RowDefinitions>
+                <ContentControl x:Name="MenuContainer"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Width="300"
                 Height="200">
-            </ContentControl>
-            <TextBlock Text="Satranç"
+                </ContentControl>
+                <TextBlock Text="Satranç"
                                FontSize="52" 
                                FontWeight="Bold"
                                HorizontalAlignment="Center"
@@ -32,36 +32,39 @@
                                Margin="50"
                                Style="{StaticResource TextStyle}"/>
 
-                    <Button x:Name="OyunaBaslaButon" 
+                <Button x:Name="OyunaBaslaButon" 
                             Content="Oyuna Başla" 
                             HorizontalAlignment="Center"
                             Width="200"
                             Height="50"
                             Margin="10"
                             Grid.Row="1"
+                            FontSize="25"
                             Style="{StaticResource ButtonStyle}"
                             Click="OyunaBaslaButon_Click"/>
 
-                    <Button x:Name="TahtaDuzenleButon" 
+                <Button x:Name="TahtaDuzenleButon" 
                             Content="Tahtayı Düzenle" 
                             HorizontalAlignment="Center"
                             Width="200"
                             Height="50"
                             Margin="10"
                             Grid.Row="2"
+                            FontSize="25"
                             Style="{StaticResource ButtonStyle}"
                             Click="TahtaDuzenleButon_Click"/>
 
-                    <Button x:Name="CikisButon" 
+                <Button x:Name="CikisButon" 
                             Content="Çıkış" 
                             HorizontalAlignment="Center"
                             Width="200"
                             Height="50"
                             Margin="10"
                             Grid.Row="3"
+                            FontSize="25"
                             Style="{StaticResource ButtonStyle}"
                             Click="CikisButon_Click"/>
-                </Grid>
+            </Grid>
         </Border>
 </Window>
     

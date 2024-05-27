@@ -135,6 +135,15 @@ namespace SatrancMantigi
                 });
         }
 
+        public bool TehditAltinda(Pozisyon pozisyon, Oyuncu oyuncu)
+        {
+            return TasPozisyonlariIcin(oyuncu.Rakip()).Any(poz =>
+            {
+                Tas tas = this[poz];
+                return tas.RakipSahiEleGecirilebilir(poz, this) && tas.HamleYapmak(poz, this).Any(h => h.ToPos == pozisyon);
+            });
+        }
+
         //Son aşama olarak tahtayı kopyalamamız gerekiyor
         public Tahta Kopya()
         {
@@ -234,7 +243,7 @@ namespace SatrancMantigi
 
       public Pozisyon TasBul(Oyuncu renk, TasTuru tur)
         {
-            return TasPozisyonlariIcin(renk).First(poz => this[poz].Tur == tur);
+            return TasPozisyonlariIcin(renk).FirstOrDefault(poz => this[poz].Tur == tur);
         }
 
         #endregion

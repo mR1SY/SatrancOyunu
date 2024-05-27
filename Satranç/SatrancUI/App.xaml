@@ -11,13 +11,13 @@
         <SolidColorBrush x:Key="StrokeColor">#000000</SolidColorBrush>
 
         <!--DolguRengi-->
-        <SolidColorBrush x:Key="FillColor">#f4a460</SolidColorBrush>
+        <SolidColorBrush x:Key="FillColor">#f3e0c2</SolidColorBrush>
 
         <!--MetinRengi-->
         <SolidColorBrush x:Key="TextColor">#000000</SolidColorBrush>
 
         <!--DüğmeRengi-->
-        <SolidColorBrush x:Key="ButtonColor">#8b4513</SolidColorBrush>
+        <SolidColorBrush x:Key="ButtonColor">#f7ebd7</SolidColorBrush>
 
 
         <!--Style Elemanı: Bu satır, WPF uygulamamızdaki diğer öğelere uygulanabilen yeni bir stil tanımlar.
