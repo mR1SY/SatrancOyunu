@@ -400,8 +400,8 @@ namespace SatrancUI
             beyazSureSayaci.Stop();
 
             DurdurmaMenusu durdurmaMenusu = new DurdurmaMenusu(this);
-            MenuContainer.Content = durdurmaMenusu;
             durdurmaMenusu.mainWindow = this;
+            MenuContainer.Content = durdurmaMenusu;
 
             durdurmaMenusu.SecilenSecenek += (secenek, mw) =>
             {
@@ -415,24 +415,20 @@ namespace SatrancUI
                 {
                     Application.Current.Shutdown();
                 }
-                else if (secenek == Secenek.DevamEt)
+                else if (secenek == Secenek.DevamEt && !tasDuzenlemeModu)
                 {
-                    if (!tasDuzenlemeModu) // Taş düzenleme modu aktif değilse
+                    // Süre sayaçlarını tekrar başlat
+                    if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
                     {
-                        // Süre sayaçlarını tekrar başlat
-                        if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
-                        {
-                            beyazSureSayaci.Start();
-                        }
-                        else
-                        {
-                            siyahSureSayaci.Start();
-                        }
+                        beyazSureSayaci.Start();
+                    }
+                    else
+                    {
+                        siyahSureSayaci.Start();
                     }
                 }
             };
         }
-
         public void AnaMenuyeDon()
         {
             // Ana menüyü aç
@@ -576,9 +572,9 @@ namespace SatrancUI
                 return; // Metodu sonlandır
             }
 
-            if (hamleBellegi.TryGetValue(poz, out Hamle hamle))
+            if (SecilmisPoz != null && hamleBellegi.TryGetValue(poz, out Hamle hamle))
             {
-                if (hamle != null) // hamle null değilse işlemleri yap
+                if (hamle != null && hamle.FromPos == SecilmisPoz) // hamle null değilse ve FromPos seçili pozisyona eşitse işlemleri yap
                 {
                     if (hamle.Tur == HamleTuru.PiyonTerfi)
                     {
@@ -590,7 +586,6 @@ namespace SatrancUI
                     }
                 }
             }
-
             // Seçili kareyi kaldırırız
             SecilmisPoz = null;
         }

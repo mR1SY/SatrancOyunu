@@ -149,7 +149,7 @@ namespace SatrancMantigi
         {
             //Önce yeni bir boş tahta oluşturuyoruz
             Tahta Kopya = new Tahta();
-            
+
             //Sonra bir parça içeren tüm pozisyonlar üzerinde döngü yapıyoruz
             foreach (Pozisyon poz in TasPozisyonlari())
             {

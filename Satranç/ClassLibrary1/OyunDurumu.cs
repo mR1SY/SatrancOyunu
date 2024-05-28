@@ -72,7 +72,6 @@ namespace SatrancMantigi
 
         //50 hamle değişken artırımı bu bölgenin içinde
         #region Piyon_Hareket_Kontrol
-
         public void HareketEt(Hamle hamle)
         {
             if (hamle != null) // hamle null değilse işlemleri yap
