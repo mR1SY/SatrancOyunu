@@ -112,7 +112,6 @@ namespace SatrancUI
             DevamEtButonu.Visibility = Visibility.Visible;
         }
 
-
         private void MainWindow_Closed(object sender, EventArgs e)
         {
             TasSecmeMenusunuKapat(); // TasSecmeMenusu'nu kapat
@@ -339,17 +338,15 @@ namespace SatrancUI
                             }
                         }
                     };
-                }
-
-                // Tahtayı döndür (yapay zeka modu değilse ve siyah oyuncu sırası ise)
-                if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
-                {
-                    TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
-                }
-                else
-                {
-                    // Döndürmeyi sıfırla (beyaz oyuncu sırası ise)
-                    TahtaIzgarasi.RenderTransform = null;
+                    // Arkaplan resmini ayarla
+                    if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+                    {
+                        TahtaIzgarasi.Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Assets/Tahta_180.png")));
+                    }
+                    else
+                    {
+                        TahtaIzgarasi.Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Assets/Tahta.png")));
+                    }
                 }
             }
         }
@@ -581,13 +578,16 @@ namespace SatrancUI
 
             if (hamleBellegi.TryGetValue(poz, out Hamle hamle))
             {
-                if (hamle.Tur == HamleTuru.PiyonTerfi)
+                if (hamle != null) // hamle null değilse işlemleri yap
                 {
-                    TerfiTasima(hamle.FromPos, hamle.ToPos);
-                }
-                else
-                {
-                    TasimaHamlesi(hamle);
+                    if (hamle.Tur == HamleTuru.PiyonTerfi)
+                    {
+                        TerfiTasima(hamle.FromPos, hamle.ToPos);
+                    }
+                    else
+                    {
+                        TasimaHamlesi(hamle);
+                    }
                 }
             }
 
@@ -619,107 +619,126 @@ namespace SatrancUI
         //Bu metod oyun durumuna şunu söyler: Verilen hamleyi gerçekleştirin.
         private async void TasimaHamlesi(Hamle hamle)
         {
-            // Düzenleme modunda hamle yapma
-            if (tasDuzenlemeModu)
+            if (hamle != null)
             {
-                // Taşı kaldırma
-                if (oyunDurumu.Tahta[hamle.FromPos] != null)
+                // Düzenleme modunda hamle yapma
+                if (tasDuzenlemeModu)
                 {
-                    TaslarinResimleri[hamle.FromPos.Satir, hamle.FromPos.Sutun].Source = null;
-                    oyunDurumu.Tahta[hamle.FromPos] = null;
+                    // Taşı kaldırma
+                    if (oyunDurumu.Tahta[hamle.FromPos] != null)
+                    {
+                        TaslarinResimleri[hamle.FromPos.Satir, hamle.FromPos.Sutun].Source = null;
+                        oyunDurumu.Tahta[hamle.FromPos] = null;
+                    }
+                    // Taşı yerleştirme (eğer boş değilse)
+                    if (oyunDurumu.Tahta[hamle.ToPos] != null)
+                    {
+                        TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = null;
+                        oyunDurumu.Tahta[hamle.ToPos] = null;
+                    }
+                    // Taşı yeni konuma yerleştir
+                    oyunDurumu.Tahta[hamle.ToPos] = oyunDurumu.Tahta[hamle.FromPos]; // Taşı yeni konuma yerleştir
+                    oyunDurumu.Tahta[hamle.FromPos] = null; // Taşı eski konumdan kaldır
+                                                            // Tahtayı döndür ve arkaplan resmini değiştir
+                                                            // Tahtayı döndür
+                    if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+                    {
+                        TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
+                    }
+                    else
+                    {
+                        TahtaIzgarasi.RenderTransform = null;
+                    }
+
+                    // TahtaIzgarasi'nin layoutunu güncelle, bu da TahtaCiz metodunu tetikleyecek
+                    TahtaIzgarasi.UpdateLayout();
+
+                    Vurgular[hamle.FromPos.Satir, hamle.FromPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0)); // Açık yeşil
+                    Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0)); // Açık yeşil
+
+                    TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = Resimler.ResimAl(oyunDurumu.Tahta[hamle.ToPos]);
+
+                    // Hamle yapıldıktan sonra seçimi kaldır
+                    SecilmisPoz = null;
+                    VurgulariGizle(); // Vurgulamayı temizle
+                    return;
                 }
-                // Taşı yerleştirme (eğer boş değilse)
-                if (oyunDurumu.Tahta[hamle.ToPos] != null)
+                oyunDurumu.HareketEt(hamle);
+                //Ve değişiklikleri yansıtacak şekilde tahtayı güncelle.
+                TahtaCiz(oyunDurumu.Tahta);
+                ImlecAyarla(oyunDurumu.MevcutOyuncu);
+
+                oyunDurumu.HamleyiKaydet(hamle);
+
+                // Yasal hamleleri yeniden hesapla ve önbelleğe al
+                OnbellekHamleleri(oyunDurumu.TaslarIcinYasalHamleler(hamle.ToPos));
+
+                if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
                 {
-                    TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = null;
-                    oyunDurumu.Tahta[hamle.ToPos] = null;
+                    Hamle yapayZekaHamlesi = await Task.Run(() => YapayZekaHamlesiHesapla());
+
+                    // Yapay zeka hamlesi null değilse gerçekleştir
+                    if (yapayZekaHamlesi != null)
+                    {
+                        TasimaHamlesi(yapayZekaHamlesi);
+                    }
+                    else
+                    {
+                        // Hamle null ise, isteğe bağlı olarak bir mesaj gösterilebilir
+                        // MessageBox.Show("Yapay zeka hamle yapamadı!");
+                    }
                 }
-                // Taşı yeni konuma yerleştir
-                oyunDurumu.Tahta[hamle.ToPos] = oyunDurumu.Tahta[hamle.FromPos]; // Taşı yeni konuma yerleştir
-                oyunDurumu.Tahta[hamle.FromPos] = null; // Taşı eski konumdan kaldır
-                // Taş resmini ayarla
-                TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = Resimler.ResimAl(oyunDurumu.Tahta[hamle.ToPos]);
-
-                // Hamle yapıldıktan sonra seçimi kaldır
-                SecilmisPoz = null;
-                VurgulariGizle(); // Vurgulamayı temizle
-                return;
-            }
-            oyunDurumu.HareketEt(hamle);
-            //Ve değişiklikleri yansıtacak şekilde tahtayı güncelle.
-            TahtaCiz(oyunDurumu.Tahta);
-            ImlecAyarla(oyunDurumu.MevcutOyuncu);
-
-            oyunDurumu.HamleyiKaydet(hamle);
-
-            // Yasal hamleleri yeniden hesapla ve önbelleğe al
-            OnbellekHamleleri(oyunDurumu.TaslarIcinYasalHamleler(hamle.ToPos));
-
-            if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
-            {
-                Hamle yapayZekaHamlesi = await Task.Run(() => YapayZekaHamlesiHesapla());
-
-                // Yapay zeka hamlesi null değilse gerçekleştir
-                if (yapayZekaHamlesi != null)
+                // Süre sayaclarını değiştir
+                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
                 {
-                    TasimaHamlesi(yapayZekaHamlesi);
+                    siyahSureSayaci.Stop();
+                    beyazSureSayaci.Start();
                 }
                 else
                 {
-                    // Hamle null ise, isteğe bağlı olarak bir mesaj gösterilebilir
-                    // MessageBox.Show("Yapay zeka hamle yapamadı!");
+                    beyazSureSayaci.Stop();
+                    siyahSureSayaci.Start();
                 }
-            }
-            // Süre sayaclarını değiştir
-            if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
-            {
-                siyahSureSayaci.Stop();
-                beyazSureSayaci.Start();
-            }
-            else
-            {
-                beyazSureSayaci.Stop();
-                siyahSureSayaci.Start();
-            }
-            if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz) // Sıra beyaza geçtiyse
-            {
-                SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
-                BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
-                SiyahSureText.VerticalAlignment = VerticalAlignment.Bottom;
-                SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Top;
-                BeyazSureText.VerticalAlignment = VerticalAlignment.Top;
-                BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Bottom;
-                Grid.SetRow(SiyahSureText, 0);
-                Grid.SetRow(SiyahOyuncuText, 1);
-                Grid.SetRow(BeyazSureText, 6);
-                Grid.SetRow(BeyazOyuncuText, 5);
-            }
-            else // Sıra siyaha geçtiyse
-            {
-                SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
-                BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
-                SiyahSureText.VerticalAlignment = VerticalAlignment.Top;
-                SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Bottom;
-                BeyazSureText.VerticalAlignment = VerticalAlignment.Bottom;
-                BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Top;
-                Grid.SetRow(BeyazSureText, 0);
-                Grid.SetRow(BeyazOyuncuText, 1);
-                Grid.SetRow(SiyahSureText, 6);
-                Grid.SetRow(SiyahOyuncuText, 5);
-            }
+                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz) // Sıra beyaza geçtiyse
+                {
+                    SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
+                    BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
+                    SiyahSureText.VerticalAlignment = VerticalAlignment.Bottom;
+                    SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Top;
+                    BeyazSureText.VerticalAlignment = VerticalAlignment.Top;
+                    BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Bottom;
+                    Grid.SetRow(SiyahSureText, 0);
+                    Grid.SetRow(SiyahOyuncuText, 1);
+                    Grid.SetRow(BeyazSureText, 6);
+                    Grid.SetRow(BeyazOyuncuText, 5);
+                }
+                else // Sıra siyaha geçtiyse
+                {
+                    SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
+                    BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
+                    SiyahSureText.VerticalAlignment = VerticalAlignment.Top;
+                    SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Bottom;
+                    BeyazSureText.VerticalAlignment = VerticalAlignment.Bottom;
+                    BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Top;
+                    Grid.SetRow(BeyazSureText, 0);
+                    Grid.SetRow(BeyazOyuncuText, 1);
+                    Grid.SetRow(SiyahSureText, 6);
+                    Grid.SetRow(SiyahOyuncuText, 5);
+                }
 
-            if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // varsayalım ki yapay zeka siyah taşlarla oynuyor
-            {
-                // Yapay zeka hamlesini hesapla
-                Hamle yapayZekaHamlesi = YapayZekaHamlesiHesapla(); // Bu metodu daha sonra yazacağız
+                if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // varsayalım ki yapay zeka siyah taşlarla oynuyor
+                {
+                    // Yapay zeka hamlesini hesapla
+                    Hamle yapayZekaHamlesi = YapayZekaHamlesiHesapla(); // Bu metodu daha sonra yazacağız
 
-                // Yapay zeka hamlesini gerçekleştir
-                TasimaHamlesi(yapayZekaHamlesi);
-            }
-            //Her hamle oynandığında oyun bittimi diye kontrol ediyoruz
-            if (oyunDurumu.OyunBittiMi())
-            {
-                OyunBitisiGoster();
+                    // Yapay zeka hamlesini gerçekleştir
+                    TasimaHamlesi(yapayZekaHamlesi);
+                }
+                //Her hamle oynandığında oyun bittimi diye kontrol ediyoruz
+                if (oyunDurumu.OyunBittiMi())
+                {
+                    OyunBitisiGoster();
+                }
             }
         }
         private Hamle YapayZekaHamlesiHesapla()
@@ -727,13 +746,15 @@ namespace SatrancUI
             // Yasal hamleleri kontrol et
             var yasalHamleler = oyunDurumu.ButunYasalHamlelerIcin(Oyuncu.Siyah).ToList();
 
-            // Yasal hamle yoksa null döndür
+            // Yasal hamle yoksa yapay zekayı pas geçir
             if (yasalHamleler.Count == 0)
             {
-                return null;
+                // Yapay zekanın pas geçtiğini belirten bir mesaj yazdırabilirsiniz
+                // Console.WriteLine("Yapay zeka pas geçiyor.");
+                return null; // veya özel bir "Pas" hamlesi döndürebilirsiniz
             }
 
-            int derinlik = 3; // Yapay zekanın bakacağı hamle sayısı
+            int derinlik = 5; // Yapay zekanın bakacağı hamle sayısı
             int enIyiDeger = int.MinValue;
             Hamle enIyiHamle = null;
 

@@ -75,23 +75,25 @@ namespace SatrancMantigi
 
         public void HareketEt(Hamle hamle)
         {
-            //Basitce oyuncunun enpassant konumunu sıfır olarak ayarlıyoruz
-            Tahta.PiyonAtlamaPozisyonunuAyarla(MevcutOyuncu, null);
-            bool yakalaYaDaPiyon = hamle.Execute(Tahta);
-
-            if (yakalaYaDaPiyon)
+            if (hamle != null) // hamle null değilse işlemleri yap
             {
-                YakalamaVeyaPiyonHamlesiYok = 0;
-                durumGecmisi.Clear();
-            }
-            else
-            {
-                YakalamaVeyaPiyonHamlesiYok++;
-            }
+                Tahta.PiyonAtlamaPozisyonunuAyarla(MevcutOyuncu, null);
+                bool yakalaYaDaPiyon = hamle.Execute(Tahta);
 
-            MevcutOyuncu = MevcutOyuncu.Rakip();
-            DurumStringiniGuncelle();
-            OyunBitisiKontrol();
+                if (yakalaYaDaPiyon)
+                {
+                    YakalamaVeyaPiyonHamlesiYok = 0;
+                    durumGecmisi.Clear();
+                }
+                else
+                {
+                    YakalamaVeyaPiyonHamlesiYok++;
+                }
+
+                MevcutOyuncu = MevcutOyuncu.Rakip();
+                DurumStringiniGuncelle();
+                OyunBitisiKontrol();
+            }
         }
         #endregion
 

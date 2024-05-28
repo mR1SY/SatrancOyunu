@@ -1,8 +1,3 @@
+Beyaz-Piyon h4
+Siyah-Piyon a5
 Beyaz-Piyon a4
-Siyah-Piyon d5
-Beyaz-Piyon c4
-Siyah-Piyon xc4
-Beyaz-Piyon a5
-Siyah-At c6
-Beyaz-Piyon g4
-Siyah-Fil xg4

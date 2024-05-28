@@ -18,7 +18,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Grid x:Name="TahtaIzgarasi" 
+            <Grid x:Name="TahtaIzgarasi"
                   MouseDown="TahtaIzgarasi_MouseDown">
                 <Grid.Background>
                     <ImageBrush ImageSource="Assets/Tahta.png"/>
