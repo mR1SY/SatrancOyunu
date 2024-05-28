@@ -53,12 +53,14 @@ namespace SatrancUI
         public bool tasDuzenlemeModu = false;
         private TasTuru secilenTasTuru = TasTuru.Piyon;
 
+        private List<Rectangle> hamleVurgulari = new List<Rectangle>();
+
         // Zamanlayıcılar için değişkenler
         private DispatcherTimer siyahSureSayaci;
         private DispatcherTimer beyazSureSayaci;
         private TimeSpan siyahKalanSure = TimeSpan.FromMinutes(10);
         private TimeSpan beyazKalanSure = TimeSpan.FromMinutes(10);
-        private bool tasSecmeMenusuAcik = false;
+
         private TasSecmeMenusu acikTasSecmeMenusu = null;
 
         public bool yapayZekaModu = false;
@@ -156,15 +158,13 @@ namespace SatrancUI
             siyahKalanSure -= TimeSpan.FromSeconds(1);
             SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
 
-            if (siyahKalanSure == TimeSpan.Zero)
+            if (siyahKalanSure <= TimeSpan.Zero)
             {
                 siyahSureSayaci.Stop();
-                // Siyah'ın süresi bittiğinde oyunu bitir ve sebebini belirt
-                oyunDurumu.OyunuBitir(Oyuncu.Beyaz, BitisSebebi.SureDoldu); // Oyuncu.Beyaz kazandı, sebep: Süre Doldu
+                oyunDurumu.OyunuBitir(Oyuncu.Beyaz, BitisSebebi.SureDoldu);
                 OyunBitisiGoster();
             }
         }
-
         private void BeyazSureSayaci_Tick(object sender, EventArgs e)
         {
             beyazKalanSure -= TimeSpan.FromSeconds(1);
@@ -619,6 +619,21 @@ namespace SatrancUI
         //Bu metod oyun durumuna şunu söyler: Verilen hamleyi gerçekleştirin.
         private async void TasimaHamlesi(Hamle hamle)
         {
+            // Süre sayaçlarını değiştir (Yapay Zeka Modu)
+            if (yapayZekaModu)
+            {
+                if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+                {
+                    siyahSureSayaci.Stop();
+                    beyazSureSayaci.Start();
+                }
+                else
+                {
+                    beyazSureSayaci.Stop();
+                    siyahSureSayaci.Start();
+                }
+            }
+
             if (hamle != null)
             {
                 // Düzenleme modunda hamle yapma
@@ -639,8 +654,7 @@ namespace SatrancUI
                     // Taşı yeni konuma yerleştir
                     oyunDurumu.Tahta[hamle.ToPos] = oyunDurumu.Tahta[hamle.FromPos]; // Taşı yeni konuma yerleştir
                     oyunDurumu.Tahta[hamle.FromPos] = null; // Taşı eski konumdan kaldır
-                                                            // Tahtayı döndür ve arkaplan resmini değiştir
-                                                            // Tahtayı döndür
+
                     if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
                     {
                         TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
@@ -653,15 +667,18 @@ namespace SatrancUI
                     // TahtaIzgarasi'nin layoutunu güncelle, bu da TahtaCiz metodunu tetikleyecek
                     TahtaIzgarasi.UpdateLayout();
 
-                    Vurgular[hamle.FromPos.Satir, hamle.FromPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0)); // Açık yeşil
-                    Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0)); // Açık yeşil
-
                     TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = Resimler.ResimAl(oyunDurumu.Tahta[hamle.ToPos]);
 
                     // Hamle yapıldıktan sonra seçimi kaldır
                     SecilmisPoz = null;
                     VurgulariGizle(); // Vurgulamayı temizle
+
                     return;
+                }
+                if (!tasDuzenlemeModu)
+                {
+                    Vurgular[hamle.FromPos.Satir, hamle.FromPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
+                    Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
                 }
                 oyunDurumu.HareketEt(hamle);
                 //Ve değişiklikleri yansıtacak şekilde tahtayı güncelle.
@@ -682,11 +699,6 @@ namespace SatrancUI
                     {
                         TasimaHamlesi(yapayZekaHamlesi);
                     }
-                    else
-                    {
-                        // Hamle null ise, isteğe bağlı olarak bir mesaj gösterilebilir
-                        // MessageBox.Show("Yapay zeka hamle yapamadı!");
-                    }
                 }
                 // Süre sayaclarını değiştir
                 if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
@@ -699,7 +711,7 @@ namespace SatrancUI
                     beyazSureSayaci.Stop();
                     siyahSureSayaci.Start();
                 }
-                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz) // Sıra beyaza geçtiyse
+                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz && !yapayZekaModu) // Sıra beyaza geçtiyse
                 {
                     SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
                     BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
@@ -712,7 +724,7 @@ namespace SatrancUI
                     Grid.SetRow(BeyazSureText, 6);
                     Grid.SetRow(BeyazOyuncuText, 5);
                 }
-                else // Sıra siyaha geçtiyse
+                else if(oyunDurumu.MevcutOyuncu == Oyuncu.Siyah && !yapayZekaModu) // Sıra siyaha geçtiyse
                 {
                     SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
                     BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
@@ -743,20 +755,30 @@ namespace SatrancUI
         }
         private Hamle YapayZekaHamlesiHesapla()
         {
-            // Yasal hamleleri kontrol et
             var yasalHamleler = oyunDurumu.ButunYasalHamlelerIcin(Oyuncu.Siyah).ToList();
 
-            // Yasal hamle yoksa yapay zekayı pas geçir
             if (yasalHamleler.Count == 0)
             {
-                // Yapay zekanın pas geçtiğini belirten bir mesaj yazdırabilirsiniz
-                // Console.WriteLine("Yapay zeka pas geçiyor.");
-                return null; // veya özel bir "Pas" hamlesi döndürebilirsiniz
+                return null;
             }
 
-            int derinlik = 5; // Yapay zekanın bakacağı hamle sayısı
+            int derinlik = 4;
             int enIyiDeger = int.MinValue;
             Hamle enIyiHamle = null;
+
+            // Hamleleri sırala
+            yasalHamleler = yasalHamleler.OrderByDescending(h =>
+            {
+                // Önce taş yakalayan hamleleri sırala
+                if (h.TasSilindi)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }).ToList();
 
             foreach (Hamle hamle in yasalHamleler)
             {
@@ -1004,24 +1026,36 @@ namespace SatrancUI
 
             return puan;
         }
+        private Dictionary<string, int> transpositionTable = new Dictionary<string, int>();
+
         private int Minimax(Tahta tahta, int derinlik, bool maximizingPlayer, int alfa, int beta)
         {
+            string tahtaKonumu = TahtaKonumunuAl(tahta);
+
+            // Konum daha önce değerlendirildiyse, değeri transposition table'dan al
+            if (transpositionTable.ContainsKey(tahtaKonumu))
+            {
+                return transpositionTable[tahtaKonumu];
+            }
+
             OyunDurumu geçiciOyunDurumu = new OyunDurumu(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz, tahta);
 
-            // Derinlik 0'a ulaştıysa veya oyun bittiyse değerlendirme fonksiyonunu kullan
             if (derinlik == 0 || geçiciOyunDurumu.OyunBittiMi())
             {
                 return DegerlendirmeFonksiyonu(tahta);
             }
 
-            // Yasal hamleleri kontrol et
             var yasalHamleler = geçiciOyunDurumu.ButunYasalHamlelerIcin(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz).ToList();
 
-            // Yasal hamle yoksa, mevcut durumu değerlendir ve döndür
             if (yasalHamleler.Count == 0)
             {
                 return DegerlendirmeFonksiyonu(tahta);
             }
+
+            // Hamleleri sırala (maximizingPlayer için azalan, minimizingPlayer için artan sırada)
+            yasalHamleler = maximizingPlayer
+                ? yasalHamleler.OrderByDescending(h => h.TasSilindi ? 1 : 0).ToList()
+                : yasalHamleler.OrderBy(h => h.TasSilindi ? 1 : 0).ToList();
 
             if (maximizingPlayer)
             {
@@ -1038,6 +1072,10 @@ namespace SatrancUI
                         break; // Beta budaması
                     }
                 }
+
+                // Hesaplanan değeri transposition table'a kaydet
+                transpositionTable[tahtaKonumu] = maxEval;
+
                 return maxEval;
             }
             else
@@ -1055,8 +1093,48 @@ namespace SatrancUI
                         break; // Alfa budaması
                     }
                 }
+
+                // Hesaplanan değeri transposition table'a kaydet
+                transpositionTable[tahtaKonumu] = minEval;
+
                 return minEval;
             }
+        }
+
+        // Tahta konumunu temsil eden bir string döndüren fonksiyon
+        private string TahtaKonumunuAl(Tahta tahta)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int r = 0; r < 8; r++)
+            {
+                for (int c = 0; c < 8; c++)
+                {
+                    Tas tas = tahta[r, c];
+                    if (tas == null)
+                    {
+                        sb.Append("-"); // Boş kare
+                    }
+                    else
+                    {
+                        sb.Append(tas.Renk == Oyuncu.Beyaz ? char.ToUpper(TasKarakteri(tas)) : TasKarakteri(tas));
+                    }
+                }
+            }
+            return sb.ToString();
+        }
+
+        private static char TasKarakteri(Tas tas)
+        {
+            return tas.Tur switch
+            {
+                TasTuru.Piyon => 'p',
+                TasTuru.At => 'a',
+                TasTuru.Kale => 'k',
+                TasTuru.Fil => 'f',
+                TasTuru.Vezir => 'v',
+                TasTuru.Sah => 's',
+                _ => '-' // Boş kare
+            };
         }
         #endregion
 
@@ -1153,6 +1231,9 @@ namespace SatrancUI
                     Application.Current.Shutdown();
                 }
             };
+            // Zamanlayıcıları durdur
+            siyahSureSayaci.Stop();
+            beyazSureSayaci.Stop();
         }
         #endregion
 

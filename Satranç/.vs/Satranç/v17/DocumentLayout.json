@@ -15,16 +15,16 @@
       "RelativeMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|solutionrelative:satrancui\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|c:\\users\\mr_1sy\\desktop\\i wanna make model\\satran\u00E7 offline deneme\\satran\u00E7\\satrancui\\anamenu.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|solutionrelative:satrancui\\anamenu.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B40A73BA-21A3-404C-B7D4-78B218675E5C}|ClassLibrary1\\SatrancMantigi.csproj|c:\\users\\mr_1sy\\desktop\\i wanna make model\\satran\u00E7 offline deneme\\satran\u00E7\\classlibrary1\\oyundurumu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B40A73BA-21A3-404C-B7D4-78B218675E5C}|ClassLibrary1\\SatrancMantigi.csproj|solutionrelative:classlibrary1\\oyundurumu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|c:\\users\\mr_1sy\\desktop\\i wanna make model\\satran\u00E7 offline deneme\\satran\u00E7\\satrancui\\oyunmodu.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|solutionrelative:satrancui\\oyunmodu.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B40A73BA-21A3-404C-B7D4-78B218675E5C}|ClassLibrary1\\SatrancMantigi.csproj|c:\\users\\mr_1sy\\desktop\\i wanna make model\\satran\u00E7 offline deneme\\satran\u00E7\\classlibrary1\\oyundurumu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B40A73BA-21A3-404C-B7D4-78B218675E5C}|ClassLibrary1\\SatrancMantigi.csproj|solutionrelative:classlibrary1\\oyundurumu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|c:\\users\\mr_1sy\\desktop\\i wanna make model\\satran\u00E7 offline deneme\\satran\u00E7\\satrancui\\anamenu.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|solutionrelative:satrancui\\anamenu.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{30E61037-1CBB-4AA0-BD70-683E558F6A10}|SatrancUI\\SatrancUI.csproj|c:\\users\\mr_1sy\\desktop\\i wanna make model\\satran\u00E7 offline deneme\\satran\u00E7\\satrancui\\resimler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -87,13 +87,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "OyunDurumu.cs",
               "DocumentMoniker": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satran\u00E7 Offline Deneme\\Satran\u00E7\\ClassLibrary1\\OyunDurumu.cs",
               "RelativeDocumentMoniker": "ClassLibrary1\\OyunDurumu.cs",
               "ToolTip": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satran\u00E7 Offline Deneme\\Satran\u00E7\\ClassLibrary1\\OyunDurumu.cs",
               "RelativeToolTip": "ClassLibrary1\\OyunDurumu.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAM4AAAAAAAAA",
+              "ViewState": "AQIAAOIAAAAAAAAAAAAiwFUAAAApAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-28T04:02:38.538Z",
               "EditorCaption": ""
@@ -113,7 +113,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "AnaMenu.xaml.cs",
               "DocumentMoniker": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satran\u00E7 Offline Deneme\\Satran\u00E7\\SatrancUI\\AnaMenu.xaml.cs",
               "RelativeDocumentMoniker": "SatrancUI\\AnaMenu.xaml.cs",
@@ -132,7 +132,7 @@
               "RelativeDocumentMoniker": "SatrancUI\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satran\u00E7 Offline Deneme\\Satran\u00E7\\SatrancUI\\MainWindow.xaml.cs",
               "RelativeToolTip": "SatrancUI\\MainWindow.xaml.cs",
-              "ViewState": "AQIAAD8BAAAAAAAAAAAwwFwBAAAVAAAA",
+              "ViewState": "AQIAANIEAAAAAAAAAAAowOQEAAAxAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-27T18:34:58.417Z",
               "EditorCaption": ""
