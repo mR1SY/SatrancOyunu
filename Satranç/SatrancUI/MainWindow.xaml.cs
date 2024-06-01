@@ -81,7 +81,7 @@ namespace SatrancUI
                     popup.IsOpen = false; // Popup'ı kapat
                     acikTasSecmeMenusu = null; // Takip değişkenini sıfırla    
                 }
-                    acikTasSecmeMenusu = null;
+                acikTasSecmeMenusu = null;
             }
         }
         public void KareyeTasEkle(Pozisyon poz, Oyuncu oyuncu, TasTuru tur)
@@ -241,7 +241,7 @@ namespace SatrancUI
             }
 
             // Eğer herhangi bir hamle yapıldıysa veya yeterli taş yoksa süre sayaçlarını başlat
-            if (oyunDurumu.Tahta.ParcaSayisi().ToplamSayi > 2 && oyunDurumu.MevcutOyuncu==Oyuncu.Siyah)
+            if (oyunDurumu.Tahta.ParcaSayisi().ToplamSayi > 2 && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
             {
                 siyahSureSayaci.IsEnabled = true;
             }
@@ -350,9 +350,9 @@ namespace SatrancUI
                 }
             }
         }
-            #endregion
+        #endregion
 
-            private void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (tasDuzenlemeModu && e.Key == Key.Delete && SecilmisPoz != null)
             {
@@ -719,7 +719,7 @@ namespace SatrancUI
                     Grid.SetRow(BeyazSureText, 6);
                     Grid.SetRow(BeyazOyuncuText, 5);
                 }
-                else if(oyunDurumu.MevcutOyuncu == Oyuncu.Siyah && !yapayZekaModu) // Sıra siyaha geçtiyse
+                else if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah && !yapayZekaModu) // Sıra siyaha geçtiyse
                 {
                     SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
                     BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");

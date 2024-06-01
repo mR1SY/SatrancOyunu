@@ -63,6 +63,8 @@
                 <Button x:Name="DevamEtButonu" Content="▶" FontSize="20" Margin="10" Click="DevamEtButonu_Click" Grid.Row="4"/>
 
                 <TextBlock x:Name="BeyazSureText" Text="10:00" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="6"/>
+
+                
             </Grid>
         </Grid>
     </Viewbox>

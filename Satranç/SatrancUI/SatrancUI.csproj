@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="RenkSecmeMenusu.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\BeyazAt.png" />
     <None Remove="Assets\BeyazFil.png" />
     <None Remove="Assets\BeyazIsaretci.cur" />
@@ -28,6 +32,11 @@
     <None Remove="Assets\SiyahVezir.png" />
     <None Remove="Assets\Tahta.png" />
     <None Remove="Assets\Tahta_180.png" />
+    <None Remove="Assets\VS.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="RenkSecmeMenusu.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,6 +63,7 @@
     <Resource Include="Assets\SiyahVezir.png" />
     <Resource Include="Assets\Tahta.png" />
     <Resource Include="Assets\Tahta_180.png" />
+    <Resource Include="Assets\VS.png" />
   </ItemGroup>
 
 </Project>

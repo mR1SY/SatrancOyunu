@@ -28,6 +28,7 @@
                     Content="NORMAL OYUN"
                     Style="{StaticResource ButtonStyle}"
                     Width="100"
+                    FontSize="13"
                     Height="30"
                     Click="NormalOyunButon_Click"/>
 
