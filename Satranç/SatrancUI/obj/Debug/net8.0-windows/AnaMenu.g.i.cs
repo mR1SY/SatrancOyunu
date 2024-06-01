@@ -85,7 +85,7 @@ namespace SatrancUI {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/SatrancUI;component/anamenu.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/SatrancUI;V1.0.0.0;component/anamenu.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\AnaMenu.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

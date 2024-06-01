@@ -69,7 +69,7 @@ namespace SatrancUI {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/SatrancUI;component/oyunbittimenu.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/SatrancUI;V1.0.0.0;component/oyunbittimenu.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\OyunBittiMenu.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

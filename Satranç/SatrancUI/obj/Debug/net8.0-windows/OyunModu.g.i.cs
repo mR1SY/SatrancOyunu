@@ -53,7 +53,7 @@ namespace SatrancUI {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/SatrancUI;component/oyunmodu.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/SatrancUI;V1.0.0.0;component/oyunmodu.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\OyunModu.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

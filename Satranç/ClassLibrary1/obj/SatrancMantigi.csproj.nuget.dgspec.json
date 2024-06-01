@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj": {}
+    "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj": {
+    "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj",
+        "projectUniqueName": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj",
         "projectName": "SatrancMantigi",
-        "projectPath": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj",
+        "projectPath": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj",
         "packagesPath": "C:\\Users\\mR_1SY\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\ClassLibrary1\\obj\\",
+        "outputPath": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mR_1SY\\AppData\\Roaming\\NuGet\\NuGet.Config",

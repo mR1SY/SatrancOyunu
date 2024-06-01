@@ -32,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\SatrancUI\\SatrancUI.csproj",
+      "projectUniqueName": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\SatrancUI\\SatrancUI.csproj",
       "projectName": "SatrancUI",
-      "projectPath": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\SatrancUI\\SatrancUI.csproj",
+      "projectPath": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\SatrancUI\\SatrancUI.csproj",
       "packagesPath": "C:\\Users\\mR_1SY\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\SatrancUI\\obj\\",
+      "outputPath": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\SatrancUI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\mR_1SY\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -54,8 +54,8 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "projectReferences": {
-            "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj": {
-              "projectPath": "C:\\Users\\mR_1SY\\Desktop\\I wanna Make Model\\Satranç Offline Deneme\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj"
+            "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj": {
+              "projectPath": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj"
             }
           }
         }
