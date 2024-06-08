@@ -674,12 +674,14 @@ namespace SatrancUI
 
                     return;
                 }
+                oyunDurumu.HareketEt(hamle);
+                VurgulariGizle();
+
                 if (!tasDuzenlemeModu)
                 {
                     Vurgular[hamle.FromPos.Satir, hamle.FromPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
                     Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
                 }
-                oyunDurumu.HareketEt(hamle);
                 //Ve değişiklikleri yansıtacak şekilde tahtayı güncelle.
                 TahtaCiz(oyunDurumu.Tahta);
                 ImlecAyarla(oyunDurumu.MevcutOyuncu);
