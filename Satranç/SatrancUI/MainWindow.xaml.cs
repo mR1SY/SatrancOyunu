@@ -454,7 +454,7 @@ namespace SatrancUI
             Point point = e.GetPosition(TasIzgarasi);
             Pozisyon poz = KarePozisyona(point);
 
-            if (yapayZekaModu && oyunDurumu.Tahta[poz]?.Renk == Oyuncu.Siyah)
+            if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
             {
                 return; // Yapay zekanın taşına tıklandıysa hiçbir işlem yapma
             }
