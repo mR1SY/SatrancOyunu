@@ -2,325 +2,319 @@
 
 namespace SatrancMantigi
 {
-    //Bu sınıf tüm aktif taşları saklayacak ve çeşitli yardımcı metodlar saklayacak
+    // Satranç tahtasını ve üzerindeki taşları temsil eden sınıf.
     public class Tahta
     {
-        #region Temel_Konumsal_Tanımlama
-        //Taşları depolamak için dikdörtgen(çift boyutlu) bir dizi tanımlıyoruz.
-        private readonly Tas[,] taslar = new Tas[8, 8];
+        #region Tanımlamalar
+        private readonly Tas[,] taslar = new Tas[8, 8]; // 8x8 boyutunda bir dizi, satranç taşlarını tutar.
+        #endregion
 
+        #region Her oyuncu için en passant yakalama pozisyonunu tutar
         private readonly Dictionary<Oyuncu, Pozisyon> piyonAtlamaPozisyonlari = new Dictionary<Oyuncu, Pozisyon>()
+        // Her oyuncu için en passant yakalama pozisyonunu tutar.
         {
-            //Bir oyuncu piyonlarından birini iki hamle hareket ettirdikten sonra atladığı konumu burada saklar bu atlanan konum geçerken alma(En Passant) olarak adlandırılır
-            {Oyuncu.Beyaz, null },
-            {Oyuncu.Siyah, null }
+            {Oyuncu.Beyaz, null }, // Beyaz oyuncu için en passant yakalama pozisyonu (başlangıçta null).
+            {Oyuncu.Siyah, null }  // Siyah oyuncu için en passant yakalama pozisyonu (başlangıçta null).
         };
+        #endregion
 
-        public Tas this[int satir, int sutun]
+        #region Verilen satır ve sütun numaralarındaki taşı döndüren indeksleyici
+        public Tas this[int satir, int sutun] // Verilen satır ve sütun numaralarındaki taşı döndüren indeksleyici.
         {
-            get { return taslar[satir, sutun]; }
-            set { taslar[satir, sutun] = value; }
+            get { return taslar[satir, sutun]; } // Taşı döndürür.
+            set { taslar[satir, sutun] = value; } // Taşı ayarlar.
         }
-        
-        //Bir satır ve bir sütun veya bir konum nesnesi sağlayarak taşı belirli bir kareye alabilir ve ayarlayabiliriz.
-        public Tas this[Pozisyon pozisyon]
+        #endregion
+
+        #region Verilen pozisyondaki taşı döndüren indeksleyici
+        public Tas this[Pozisyon pozisyon] // Verilen pozisyondaki taşı döndüren indeksleyici.
         {
-            get { return this[pozisyon.Satir, pozisyon.Sutun]; }
-            set { this[pozisyon.Satir, pozisyon.Sutun] = value; }
+            get { return this[pozisyon.Satir, pozisyon.Sutun]; } // Taşı döndürür.
+            set { this[pozisyon.Satir, pozisyon.Sutun] = value; } // Taşı ayarlar.
+        }
+        #endregion
+
+        #region Oyunun başlangıç durumundaki tahtayı oluşturan statik metod
+        public static Tahta Baslangic() // Oyunun başlangıç durumundaki tahtayı oluşturan statik metod.
+        {
+            Tahta tahta = new Tahta(); // Yeni bir Tahta nesnesi oluşturur.
+            tahta.BaslangicParcalariEkle(); // Başlangıç taşlarını tahtaya ekler.
+            return tahta; // Oluşturulan tahtayı döndürür.
+        }
+        #endregion
+
+        #region Başlangıç taşlarını tahtaya ekleyen metod
+        private void BaslangicParcalariEkle() // Başlangıç taşlarını tahtaya ekleyen metod.
+        {
+            this[0, 0] = new Kale(Oyuncu.Siyah); // Siyah kale (a8).
+            this[0, 1] = new At(Oyuncu.Siyah); // Siyah at (b8).
+            this[0, 2] = new Fil(Oyuncu.Siyah); // Siyah fil (c8).
+            this[0, 3] = new Vezir(Oyuncu.Siyah); // Siyah vezir (d8).
+            this[0, 4] = new Sah(Oyuncu.Siyah); // Siyah şah (e8).
+            this[0, 5] = new Fil(Oyuncu.Siyah); // Siyah fil (f8).
+            this[0, 6] = new At(Oyuncu.Siyah); // Siyah at (g8).
+            this[0, 7] = new Kale(Oyuncu.Siyah); // Siyah kale (h8).
+
+            this[7, 0] = new Kale(Oyuncu.Beyaz); // Beyaz kale (a1).
+            this[7, 1] = new At(Oyuncu.Beyaz); // Beyaz at (b1).
+            this[7, 2] = new Fil(Oyuncu.Beyaz); // Beyaz fil (c1).
+            this[7, 3] = new Vezir(Oyuncu.Beyaz); // Beyaz vezir (d1).
+            this[7, 4] = new Sah(Oyuncu.Beyaz); // Beyaz şah (e1).
+            this[7, 5] = new Fil(Oyuncu.Beyaz); // Beyaz fil (f1).
+            this[7, 6] = new At(Oyuncu.Beyaz); // Beyaz at (g1).
+            this[7, 7] = new Kale(Oyuncu.Beyaz); // Beyaz kale (h1).
+
+            for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
+            {
+                this[1, c] = new Piyon(Oyuncu.Siyah); // Siyah piyonlar (2. satır).
+                this[6, c] = new Piyon(Oyuncu.Beyaz); // Beyaz piyonlar (7. satır).
+            }
+        }
+        #endregion
+
+        #region Verilen pozisyonun tahtanın içinde olup olmadığını kontrol eden statik metod
+        public static bool IcerideMi(Pozisyon pozisyon) // Verilen pozisyonun tahtanın içinde olup olmadığını kontrol eden statik metod.
+        {
+            return pozisyon.Satir >= 0 && pozisyon.Satir < 8 && pozisyon.Sutun >= 0 && pozisyon.Sutun < 8;
+            // Pozisyonun satır ve sütun numaraları 0 ile 7 arasında ise true döner.
+        }
+        #endregion
+
+        #region Verilen pozisyonun boş olup olmadığını kontrol eden metod
+        public bool BosMu(Pozisyon pozisyon) // Verilen pozisyonun boş olup olmadığını kontrol eden metod.
+        {
+            return this[pozisyon] == null; // Pozisyonda taş yoksa true döner.
+        }
+        #endregion
+
+        #region Tahtadaki tüm taşların pozisyonlarını döndüren metod
+        public IEnumerable<Pozisyon> TasPozisyonlari() // Tahtadaki tüm taşların pozisyonlarını döndüren metod.
+        {
+            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
+            {
+                for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
+                {
+                    Pozisyon poz = new Pozisyon(r, c); // Pozisyon nesnesi oluşturur.
+
+                    if (!BosMu(poz)) // Pozisyon boş değilse...
+                    {
+                        yield return poz; // Pozisyonu döndürür.
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Verilen oyuncunun taşlarının pozisyonlarını döndüren metod
+        public IEnumerable<Pozisyon> TasPozisyonlariIcin(Oyuncu oyuncu) // Verilen oyuncunun taşlarının pozisyonlarını döndüren metod.
+        {
+            return TasPozisyonlari().Where(poz => this[poz].Renk == oyuncu); // Tüm taş pozisyonları arasından verilen oyuncunun taşlarını filtreler.
+        }
+        #endregion
+
+        #region Verilen renkteki ve türdeki ilk taşı bulur ve pozisyonunu döndürür
+        public Pozisyon TasBul(Oyuncu renk, TasTuru tur) // Verilen renkteki ve türdeki ilk taşı bulur ve pozisyonunu döndürür.
+        {
+            return TasPozisyonlariIcin(renk).FirstOrDefault(poz => this[poz].Tur == tur);
+        }
+        #endregion
+
+        #region Verilen oyuncunun şahının tehdit altında olup olmadığını kontrol eden metod
+        public bool TehditAltinda(Oyuncu oyuncu) // Verilen oyuncunun şahının tehdit altında olup olmadığını kontrol eden metod.
+        {
+            return TasPozisyonlariIcin(oyuncu.Rakip()).Any(poz => // Rakip oyuncunun taşlarının pozisyonları üzerinde döngü yapar.
+            {
+                Tas tas = this[poz]; // Pozisyondaki taşı alır.
+                return tas.RakipSahiEleGecirilebilir(poz, this); // Taşın rakip şahı ele geçirip geçiremeyeceğini kontrol eder.
+            });
+        }
+        #endregion
+
+        #region Verilen pozisyonun verilen oyuncunun taşları tarafından tehdit edilip edilmediğini kontrol eden metod
+        public bool TehditAltinda(Pozisyon pozisyon, Oyuncu oyuncu) // Verilen pozisyonun verilen oyuncunun taşları tarafından tehdit edilip edilmediğini kontrol eden metod.
+        {
+            return TasPozisyonlariIcin(oyuncu.Rakip()).Any(poz => // Rakip oyuncunun taşlarının pozisyonları üzerinde döngü yapar.
+            {
+                Tas tas = this[poz]; // Pozisyondaki taşı alır.
+                return tas.RakipSahiEleGecirilebilir(poz, this) && tas.HamleYapmak(poz, this).Any(h => h.ToPos == pozisyon);
+                // Taşın rakip şahı ele geçirip geçiremeyeceğini ve verilen pozisyona hamle yapıp yapamayacağını kontrol eder.
+            });
+        }
+        #endregion
+
+        #region Tahtanın bir kopyasını oluşturan metod
+        public Tahta Kopya() // Tahtanın bir kopyasını oluşturan metod.
+        {
+            Tahta Kopya = new Tahta(); // Yeni bir Tahta nesnesi oluşturur.
+
+            foreach (Pozisyon poz in TasPozisyonlari()) // Tahtadaki tüm taş pozisyonları üzerinde döngü yapar.
+            {
+                Kopya[poz] = this[poz].Kopya(); // Taşları kopyalar.
+            }
+
+            return Kopya; // Kopya tahtayı döndürür.
+        }
+        #endregion
+
+        #region Tahtadaki taşların sayısını döndüren metod
+        public Sayma ParcaSayisi() // Tahtadaki taşların sayısını döndüren metod.
+        {
+            Sayma sayma = new Sayma(); // Yeni bir Sayma nesnesi oluşturur.
+
+            foreach (Pozisyon poz in TasPozisyonlari()) // Tahtadaki tüm taş pozisyonları üzerinde döngü yapar.
+            {
+                Tas tas = this[poz]; // Pozisyondaki taşı alır.
+                sayma.Artis(tas.Renk, tas.Tur); // Taşın rengine ve türüne göre sayacı artırır.
+            }
+            return sayma; // Sayma nesnesini döndürür.
+        }
+        #endregion
+
+        #region Tahtada yetersiz materyal olup olmadığını kontrol eden metod
+        public bool YetersizMateryal() // Tahtada yetersiz materyal olup olmadığını kontrol eden metod.
+        {
+            Sayma sayma = ParcaSayisi(); // Taş sayısını alır.
+
+            return SahVSSahMi(sayma) || SahFilVSSahMi(sayma) || SahAtVSSahMi(sayma) || SahFilVSSahFilMi(sayma);
+            // Yetersiz materyal durumlarını kontrol eder.
+        }
+        #endregion
+
+        #region Sadece iki şahın kaldığı durumu kontrol eder
+        private static bool SahVSSahMi(Sayma sayma) // Sadece iki şahın kaldığı durumu kontrol eder.
+        {
+            return sayma.ToplamSayi == 2; // Toplam taş sayısı 2 ise true döner.
+        }
+        #endregion
+
+        #region Şah ve fil vs şah durumunu kontrol eder
+        private static bool SahFilVSSahMi(Sayma sayma) // Şah ve fil vs şah durumunu kontrol eder.
+        {
+            return sayma.ToplamSayi == 3 && (sayma.Beyaz(TasTuru.Fil) == 1 || sayma.Siyah(TasTuru.Fil) == 1);
+            // Toplam taş sayısı 3 ise ve bir tarafta bir fil varsa true döner.
         }
 
-        public Pozisyon PiyonAtlamaPozisyonunuAl(Oyuncu oyuncu)
+        private static bool SahAtVSSahMi(Sayma sayma) // Şah ve at vs şah durumunu kontrol eder.
+        {
+            return sayma.ToplamSayi == 3 && (sayma.Beyaz(TasTuru.At) == 1 || sayma.Siyah(TasTuru.At) == 1);
+            // Toplam taş sayısı 3 ise ve bir tarafta bir at varsa true döner.
+        }
+        #endregion
+
+        #region Şah ve fil vs şah ve fil durumunu kontrol eder
+        private bool SahFilVSSahFilMi(Sayma sayma) // Şah ve fil vs şah ve fil durumunu kontrol eder.
+        {
+            if (sayma.ToplamSayi != 4) // Toplam taş sayısı 4 değilse...
+            {
+                return false; // False döner.
+            }
+
+            if (sayma.Beyaz(TasTuru.Fil) != 1 || sayma.Siyah(TasTuru.Fil) != 1) // Her iki tarafta da birer fil yoksa...
+            {
+                return false; // False döner.
+            }
+
+            Pozisyon bFilPoz = TasBul(Oyuncu.Beyaz, TasTuru.Fil); // Beyaz filin pozisyonunu bulur.
+            Pozisyon sFilPoz = TasBul(Oyuncu.Siyah, TasTuru.Fil); // Siyah filin pozisyonunu bulur.
+
+            return bFilPoz.KareRengi() == sFilPoz.KareRengi(); // Filler aynı renkte karelerde ise true döner.
+        }
+        #endregion
+
+        #region Şah ve kalenin hareket edip etmediğini kontrol eder
+        private bool HareketEtmeyenSahVeKaleMi(Pozisyon sahPoz, Pozisyon kalePoz) // Şah ve kalenin hareket edip etmediğini kontrol eder.
+        {
+            if (BosMu(sahPoz) || BosMu(kalePoz)) // Pozisyonlardan biri boşsa...
+            {
+                return false; // False döner.
+            }
+
+            Tas sah = this[sahPoz]; // Şahı alır.
+            Tas kale = this[kalePoz]; // Kaleyi alır.
+
+            return sah.Tur == TasTuru.Sah && kale.Tur == TasTuru.Kale && !sah.Tasindi && !kale.Tasindi;
+            // Şah ve kale hareket etmemişse true döner.
+        }
+        #endregion
+
+        #region Verilen oyuncunun şah kanadı rok hakkı olup olmadığını kontrol eder
+        public bool RokHakkiSahKanadi(Oyuncu oyuncu) // Verilen oyuncunun şah kanadı rok hakkı olup olmadığını kontrol eder.
+        {
+            return oyuncu switch
+            {
+                Oyuncu.Beyaz => HareketEtmeyenSahVeKaleMi(new Pozisyon(7, 4), new Pozisyon(7, 7)), // Beyaz şah ve kale.
+                Oyuncu.Siyah => HareketEtmeyenSahVeKaleMi(new Pozisyon(0, 4), new Pozisyon(0, 7)), // Siyah şah ve kale.
+                _ => false // Diğer durumlarda false.
+            };
+        }
+        #endregion
+
+        #region Verilen oyuncunun vezir kanadı rok hakkı olup olmadığını kontrol eder
+        public bool RokHakkiVezirKanadi(Oyuncu oyuncu) // Verilen oyuncunun vezir kanadı rok hakkı olup olmadığını kontrol eder.
+        {
+            return oyuncu switch
+            {
+                Oyuncu.Beyaz => HareketEtmeyenSahVeKaleMi(new Pozisyon(7, 4), new Pozisyon(7, 0)), // Beyaz şah ve kale.
+                Oyuncu.Siyah => HareketEtmeyenSahVeKaleMi(new Pozisyon(0, 4), new Pozisyon(0, 0)), // Siyah şah ve kale.
+                _ => false // Diğer durumlarda false.
+            };
+        }
+        #endregion
+
+        #region Verilen oyuncunun en passant yakalama pozisyonunu döndürür
+        public Pozisyon PiyonAtlamaPozisyonunuAl(Oyuncu oyuncu) // Verilen oyuncunun en passant yakalama pozisyonunu döndürür.
         {
             return piyonAtlamaPozisyonlari[oyuncu];
         }
 
-        public void PiyonAtlamaPozisyonunuAyarla(Oyuncu oyuncu, Pozisyon poz)
+        public void PiyonAtlamaPozisyonunuAyarla(Oyuncu oyuncu, Pozisyon poz) // Verilen oyuncunun en passant yakalama pozisyonunu ayarlar.
         {
             piyonAtlamaPozisyonlari[oyuncu] = poz;
         }
         #endregion
 
-        #region Tahta_Taşları_Yerleştirme
-        //Bu metod taşların doğru şekilde kurulduğu bir tahta döndürüyor.
-        public static Tahta Baslangic()
+        #region Verilen pozisyonlarda verilen oyuncunun piyonu olup olmadığını kontrol eder
+        private bool PiyonVarMi(Oyuncu oyuncu, Pozisyon[] piyonPozisyonlari, Pozisyon atlamaPoz) // Verilen pozisyonlarda verilen oyuncunun piyonu olup olmadığını kontrol eder.
         {
-            Tahta tahta = new Tahta(); //Boş tahta oluşturuyoruz
-            tahta.BaslangicParcalariEkle(); //Tüm taşları metodla birlikte ekliyoruz
-            return tahta; //Geri döndürüyoruz
-        }
-        
-        //Bu metod içerisinde taşların konumsal yapılandırılmasını sağlıyoruz
-        private void BaslangicParcalariEkle()
-        {
-            this[0, 0] = new Kale(Oyuncu.Siyah);
-            this[0, 1] = new At(Oyuncu.Siyah);
-            this[0, 2] = new Fil(Oyuncu.Siyah);
-            this[0, 3] = new Vezir(Oyuncu.Siyah);
-            this[0, 4] = new Sah(Oyuncu.Siyah);
-            this[0, 5] = new Fil(Oyuncu.Siyah);
-            this[0, 6] = new At(Oyuncu.Siyah);
-            this[0, 7] = new Kale(Oyuncu.Siyah);
-
-            this[7, 0] = new Kale(Oyuncu.Beyaz);
-            this[7, 1] = new At(Oyuncu.Beyaz);
-            this[7, 2] = new Fil(Oyuncu.Beyaz);
-            this[7, 3] = new Vezir(Oyuncu.Beyaz);
-            this[7, 4] = new Sah(Oyuncu.Beyaz);
-            this[7, 5] = new Fil(Oyuncu.Beyaz);
-            this[7, 6] = new At(Oyuncu.Beyaz);
-            this[7, 7] = new Kale(Oyuncu.Beyaz);
-
-            for (int c = 0; c < 8; c++)
+            foreach (Pozisyon poz in piyonPozisyonlari.Where(IcerideMi)) // Pozisyonlar üzerinde döngü yapar.
             {
-                this[1, c] = new Piyon(Oyuncu.Siyah);
-                this[6, c] = new Piyon(Oyuncu.Beyaz);
-            }
-        }
-        #endregion
-
-        #region Taş_Tahtanın_İçindemi
-        //Döndürülen konum tahtanın içinde mi kontrolü burada yapılıyor
-        public static bool IcerideMi(Pozisyon pozisyon)
-        {
-            return pozisyon.Satir >= 0 && pozisyon.Satir < 8 && pozisyon.Sutun >= 0 && pozisyon.Sutun < 8;
-        }
-        #endregion
-
-        #region Poziyon_Boşmu
-        
-        //Oynanacak pozisyon boş mu bunu kontrol ediyor
-        public bool BosMu(Pozisyon pozisyon)
-        {
-            return this[pozisyon] == null;
-        }
-        #endregion
-
-        #region Şah_Tehdit_Altındayken
-
-        public IEnumerable<Pozisyon> TasPozisyonlari()
-        {
-            for(int r=0;r<8;r++)
-            {
-                for (int c = 0; c < 8; c++)
+                Tas tas = this[poz]; // Pozisyondaki taşı alır.
+                if (tas == null || tas.Renk != oyuncu || tas.Tur != TasTuru.Piyon) // Taş yoksa, rakip taşsa veya piyon değilse...
                 {
-                    Pozisyon poz = new Pozisyon(r, c);
-
-                    if (!BosMu(poz))
-                    {
-                        yield return poz;
-                    }
-                }
-            }
-        }
-
-
-        //Bir taşı içeren tüm konumları elde etmek için bu kısmı yazıyoruz
-        public IEnumerable<Pozisyon> TasPozisyonlariIcin(Oyuncu oyuncu)
-        {
-            //Yalnızca doğru renkleri içeren konumları seçeceğiz
-            return TasPozisyonlari().Where(poz => this[poz].Renk == oyuncu);
-        }
-
-
-        //Oyuncuyu parametre alır ve ancak o oyuncunun şahı şahta ise true değerini döndürür. 
-        public bool TehditAltinda(Oyuncu oyuncu)
-        {
-            //Bunu yapmak için rakibin taşlarından herhangi birinin oyuncunun şahını ele geçirip geçiremeyceğini kontrol ediyoruz
-
-            return TasPozisyonlariIcin(oyuncu.Rakip()).Any(poz =>
-                {
-                    //Böylece rakip taşı alırız ve sonra çagırarak rakip şahı yakalayabilir
-                    Tas tas = this[poz];
-                    return tas.RakipSahiEleGecirilebilir(poz, this);
-                });
-        }
-
-        public bool TehditAltinda(Pozisyon pozisyon, Oyuncu oyuncu)
-        {
-            return TasPozisyonlariIcin(oyuncu.Rakip()).Any(poz =>
-            {
-                Tas tas = this[poz];
-                return tas.RakipSahiEleGecirilebilir(poz, this) && tas.HamleYapmak(poz, this).Any(h => h.ToPos == pozisyon);
-            });
-        }
-
-        //Son aşama olarak tahtayı kopyalamamız gerekiyor
-        public Tahta Kopya()
-        {
-            //Önce yeni bir boş tahta oluşturuyoruz
-            Tahta Kopya = new Tahta();
-
-            //Sonra bir parça içeren tüm pozisyonlar üzerinde döngü yapıyoruz
-            foreach (Pozisyon poz in TasPozisyonlari())
-            {
-                //Döngüden sonra taşları yeni tahtaya kopyalıyoruz
-                Kopya[poz] = this[poz].Kopya();
-            }
-            //Kopyayı geri veriyoruz
-            return Kopya;
-        }
-        #endregion
-
-        #region Yetersiz_Taş_Toplam_Sayı
-        //Bu metod tahtadaki tüm taşların muhasebesini döndürür
-        public Sayma ParcaSayisi()
-        {
-            Sayma sayma = new Sayma();
-            //Sayma sınıfından bir nesne oluşturuyourz ve her biri için tahtadaki tüm işgal edilen konumlar üzerinde döngü oluştururz
-
-            foreach (Pozisyon poz in TasPozisyonlari())
-            {
-                //Parçayı alırız
-                Tas tas = this[poz];
-                
-                //Ve döngüden sonra sayım tamamlandıktan sonra rengi ve türü için sayımı arttırırız
-                sayma.Artis(tas.Renk, tas.Tur);
-            }
-            return sayma;
-        }
-        #endregion
-
-        #region Yetersiz_Taş_Ana_Kalıp
-        //Eğer tahtada kalan parçalar herhangi bir oyuncunun diğerini şah mat etmesi için yeterli değilse doğru değerini döndürür
-        public bool YetersizMateryal()
-        {
-            Sayma sayma = ParcaSayisi();
-
-            //Tahtadaki mevcut parçaları sayarak başlarız
-            return SahVSSahMi(sayma) || SahFilVSSahMi(sayma) || SahAtVSSahMi(sayma) || SahFilVSSahFilMi(sayma);
-        }
-        #endregion
-
-        #region Yetersiz_Taş_Şah_Vs_Şah
-
-        //Bu metodda şaha şah mı kaldı diye kontrol ediyoruz
-        private static bool SahVSSahMi(Sayma sayma)
-        {
-            //Eğer sona iki taş kalmışsa bunlar şahlardır kesinlikle
-            return sayma.ToplamSayi == 2;
-        }
-        #endregion
-
-        #region Yetersiz_Taş_Şah_Fil_Vs_Şah
-        private static bool SahFilVSSahMi(Sayma sayma)
-        {
-            //Üç taş kalıp kalmadığını ve bunlardan birinin beyaz bir fil mi yoksa siyah bir fil mi olup olmadığını kontrol ediyoruz
-            return sayma.ToplamSayi == 3 && (sayma.Beyaz(TasTuru.Fil) == 1 || sayma.Siyah(TasTuru.Fil) == 1);
-        }
-        #endregion
-
-        #region Yetersiz_Taş_Şah_At_Vs_Şah
-        private static bool SahAtVSSahMi(Sayma sayma)
-        {
-            //Üç taş kalıp kalmadığını ve bunlardan birinin beyaz bir at mi yoksa siyah bir at mı olup olmadığını kontrol ediyoruz
-            return sayma.ToplamSayi == 3 && (sayma.Beyaz(TasTuru.At) == 1 || sayma.Siyah(TasTuru.At) == 1);
-        }
-        #endregion
-
-        #region Yetersiz_Taş_Şah_Fil_Vs_Şah_Fil
-        private bool SahFilVSSahFilMi(Sayma sayma)
-        {
-            //dört taş kalıp kalmadığını kontrol ediyoruz eğer kalmamışsa oyun devam eder yani false
-            if (sayma.ToplamSayi != 4)
-            {
-                return false;
-            }
-            //Kalan taş türlerinden olan filler eğer 0' ya da 2'ye eşitse oyun yine devam eder yani false döner
-            if (sayma.Beyaz(TasTuru.Fil) != 1 || sayma.Siyah(TasTuru.Fil) != 1)
-            {
-                return false;
-            }
-
-            //Son olarak karşılıklı bir şekilde ters veya ortak renkte birer file ve birer şaha sahip olma durumu beraberlik doğuracağı için gerekli false elemelerini yaptıktan sonra true değerini döndürüyoruz
-            Pozisyon bFilPoz = TasBul(Oyuncu.Beyaz, TasTuru.Fil);
-            Pozisyon sFilPoz = TasBul(Oyuncu.Siyah, TasTuru.Fil);
-
-            return bFilPoz.KareRengi() == sFilPoz.KareRengi();
-        }
-        #endregion
-
-        #region Tahtada_Taşın_Alt_Kısmındaki_Kare_Rengini_Bulma_Metodu
-
-      public Pozisyon TasBul(Oyuncu renk, TasTuru tur)
-        {
-            return TasPozisyonlariIcin(renk).FirstOrDefault(poz => this[poz].Tur == tur);
-        }
-
-        #endregion
-
-        #region 3_Katlı_Tekrar_İçin_Ana_Metodlar
-        private bool HareketEtmeyenSahVeKaleMi(Pozisyon sahPoz, Pozisyon kalePoz)
-        {
-            if (BosMu(sahPoz) || BosMu(kalePoz))
-            {
-                return false;
-            }
-
-            Tas sah = this[sahPoz];
-            Tas kale = this[kalePoz];
-
-            return sah.Tur == TasTuru.Sah && kale.Tur == TasTuru.Kale && !sah.Tasindi && !kale.Tasindi;
-        }
-
-        public bool RokHakkiSahKanadi(Oyuncu oyuncu)
-        {
-            return oyuncu switch
-            {
-                Oyuncu.Beyaz => HareketEtmeyenSahVeKaleMi(new Pozisyon(7, 4), new Pozisyon(7, 7)),
-                Oyuncu.Siyah => HareketEtmeyenSahVeKaleMi(new Pozisyon(0, 4), new Pozisyon(0, 7)),
-                _ => false
-            };
-        }
-
-        public bool RokHakkiVezirKanadi(Oyuncu oyuncu)
-        {
-            return oyuncu switch
-            {
-                Oyuncu.Beyaz => HareketEtmeyenSahVeKaleMi(new Pozisyon(7, 4), new Pozisyon(7, 0)),
-                Oyuncu.Siyah => HareketEtmeyenSahVeKaleMi(new Pozisyon(0, 4), new Pozisyon(0, 0)),
-                _ => false
-            };
-        }
-
-        private bool PiyonVarMi(Oyuncu oyuncu, Pozisyon[] piyonPozisyonlari, Pozisyon atlamaPoz)
-        {
-            foreach (Pozisyon poz in piyonPozisyonlari.Where(IcerideMi))
-            {
-                Tas tas = this[poz];
-                if (tas == null || tas.Renk != oyuncu || tas.Tur != TasTuru.Piyon)
-                {
-                    continue;
+                    continue; // Döngünün bir sonraki adımına geçer.
                 }
 
-                EnPassant hamle = new EnPassant(poz, atlamaPoz);
-                if (hamle.Yasal(this))
+                EnPassant hamle = new EnPassant(poz, atlamaPoz); // EnPassant hamlesi oluşturur.
+                if (hamle.Yasal(this)) // Hamle yasal ise...
                 {
-                    return true;
+                    return true; // True döner.
                 }
             }
 
-            return false;
+            return false; // Hiçbir piyon bulunamadıysa false döner.
         }
+        #endregion
 
-        public bool EnPassantYakalayabilirMi(Oyuncu oyuncu)
+        #region Verilen oyuncunun en passant yakalama yapabilip yapamayacağını kontrol eder
+        public bool EnPassantYakalayabilirMi(Oyuncu oyuncu) // Verilen oyuncunun en passant yakalama yapabilip yapamayacağını kontrol eder.
         {
-            Pozisyon atlamaPoz = PiyonAtlamaPozisyonunuAl(oyuncu.Rakip());
+            Pozisyon atlamaPoz = PiyonAtlamaPozisyonunuAl(oyuncu.Rakip()); // Rakip oyuncunun en passant yakalama pozisyonunu alır.
 
-            if (atlamaPoz == null)
+            if (atlamaPoz == null) // En passant yakalama pozisyonu yoksa...
             {
-                return false;
+                return false; // False döner.
             }
 
             Pozisyon[] piyonPozisyonlari = oyuncu switch
+            // Oyuncuya göre en passant yakalama yapabilecek piyonların pozisyonlarını belirler.
             {
-                Oyuncu.Beyaz => new Pozisyon[] { atlamaPoz + Yon.GuneyBati, atlamaPoz + Yon.GuneyDogu },
-                Oyuncu.Siyah => new Pozisyon[] { atlamaPoz + Yon.KuzeyBati, atlamaPoz + Yon.KuzeyDogu },
-                _ => Array.Empty<Pozisyon>()
+                Oyuncu.Beyaz => new Pozisyon[] { atlamaPoz + Yon.GuneyBati, atlamaPoz + Yon.GuneyDogu }, // Beyaz oyuncu.
+                Oyuncu.Siyah => new Pozisyon[] { atlamaPoz + Yon.KuzeyBati, atlamaPoz + Yon.KuzeyDogu }, // Siyah oyuncu.
+                _ => Array.Empty<Pozisyon>() // Diğer durumlarda boş bir dizi.
             };
 
-            return PiyonVarMi(oyuncu, piyonPozisyonlari, atlamaPoz);
+            return PiyonVarMi(oyuncu, piyonPozisyonlari, atlamaPoz); // Piyon varsa true döner.
         }
         #endregion
-
     }
 }

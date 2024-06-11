@@ -872,3 +872,40 @@ C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\SatrancUI\obj
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.pdb
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.genruntimeconfig.cache
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\SatrancUI\obj\Debug\net8.0-windows\ref\SatrancUI.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\bin\Debug\net8.0-windows\SatrancUI.exe
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\bin\Debug\net8.0-windows\SatrancUI.deps.json
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\bin\Debug\net8.0-windows\SatrancUI.runtimeconfig.json
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\bin\Debug\net8.0-windows\SatrancUI.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\bin\Debug\net8.0-windows\SatrancUI.pdb
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\bin\Debug\net8.0-windows\SatrancMantigi.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\bin\Debug\net8.0-windows\SatrancMantigi.pdb
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.csproj.AssemblyReference.cache
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\AnaMenu.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\DurdurmaMenusu.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunBittiMenu.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunModu.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\TasSecmeMenusu.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\TerfiMenusu.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI_MarkupCompile.cache
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI_MarkupCompile.lref
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\App.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\AnaMenu.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\DurdurmaMenusu.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunBittiMenu.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\OyunModu.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\TasSecmeMenusu.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\TerfiMenusu.baml
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.g.resources
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.AssemblyInfoInputs.cache
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.AssemblyInfo.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.csproj.CoreCompileInputs.cache
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.csproj.Up2Date
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\refint\SatrancUI.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.pdb
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\SatrancUI.genruntimeconfig.cache
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\ref\SatrancUI.dll

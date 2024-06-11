@@ -2,149 +2,123 @@
 
 namespace SatrancMantigi
 {
+    // Piyon taşını temsil eden sınıf.
     public class Piyon : Tas
     {
-        #region Piyon_Özellikleri
+        #region Özellikler
+        public override TasTuru Tur => TasTuru.Piyon; // Taş türünü Piyon olarak tanımlar.
+        public override Oyuncu Renk { get; } // Piyonun rengini tutar.
 
-        //Piyonun tür özelliği
-        public override TasTuru Tur => TasTuru.Piyon;
-
-        //Piyonun renk özelliği
-        public override Oyuncu Renk { get; }
-
-        private readonly Yon Ileri;
+        private readonly Yon Ileri; // Piyonun ileri hareket yönünü tanımlar.
         #endregion
 
-        #region Piyon_Renk_Tanımlaması
-
-        public Piyon(Oyuncu renk)
+        #region Yapıcı metod
+        public Piyon(Oyuncu renk) // Piyon nesnesini renk parametresiyle oluşturan yapıcı metod.
         {
-            Renk = renk;
-            if (renk == Oyuncu.Beyaz)
+            Renk = renk; // Piyonun rengini renk parametresinden alır.
+            if (renk == Oyuncu.Beyaz) // Eğer renk beyaz ise...
             {
-                Ileri = Yon.Kuzey;
+                Ileri = Yon.Kuzey; // İleri yönü kuzey olarak ayarlar.
             }
-            else if (renk == Oyuncu.Siyah)
+            else if (renk == Oyuncu.Siyah) // Eğer renk siyah ise...
             {
-                Ileri = Yon.Guney;
+                Ileri = Yon.Guney; // İleri yönü güney olarak ayarlar.
             }
         }
         #endregion
 
-        #region Piyon_Kopyalama
-        //Burada taş taşınacağı için taşınma sırasında önce kopyalanacağından dolayı kopyalama metodunu çalıştırıyoruz
-        public override Tas Kopya()
+        #region Piyon nesnesinin bir kopyasını oluşturan metod
+        public override Tas Kopya() // Piyon nesnesinin bir kopyasını oluşturan metod.
         {
-            Piyon kopya = new Piyon(Renk);
-            kopya.Tasindi = Tasindi;
-            return kopya;
+            Piyon kopya = new Piyon(Renk); // Yeni bir Piyon nesnesi oluşturur ve rengini kopyalar.
+            kopya.Tasindi = Tasindi; // Taşın hareket edip etmediği bilgisini kopyalar.
+            return kopya; // Kopya Piyon nesnesini döndürür.
         }
         #endregion
 
-        #region Piyon_İleri_Hamle
-
-        private static bool Ilerleyebilirmi(Pozisyon poz, Tahta tahta)
+        #region Piyonun verilen pozisyona ilerleyip ilerleyemeyeceğini kontrol eden metod
+        private static bool Ilerleyebilirmi(Pozisyon poz, Tahta tahta) // Piyonun verilen pozisyona ilerleyip ilerleyemeyeceğini kontrol eden metod.
         {
-            //Konum tahta içinde mi ve konum boş mu. İkisini birlikse sağlarsa "true" döndürür.
-            return Tahta.IcerideMi(poz) && tahta.BosMu(poz);
+            return Tahta.IcerideMi(poz) && tahta.BosMu(poz); // Pozisyon tahtanın içindeyse ve boşsa true döner.
         }
         #endregion
 
-        #region Piyon_Çapraz_Yakalama
-        private bool Yakalama(Pozisyon poz, Tahta tahta)
+        #region Piyonun verilen pozisyondaki taşı yakalayıp yakalayamayacağını kontrol eden metod
+        private bool Yakalama(Pozisyon poz, Tahta tahta) // Piyonun verilen pozisyondaki taşı yakalayıp yakalayamayacağını kontrol eden metod.
         {
-            //Eğer tahtanın içinde değilse veya pozisyon boşsa çapraz olarak alamaz 
-            if (!Tahta.IcerideMi(poz) || tahta.BosMu(poz))
+            if (!Tahta.IcerideMi(poz) || tahta.BosMu(poz)) // Pozisyon tahtanın içinde değilse veya boşsa false döner.
             {
-                return false;
+                return false; // False döner.
             }
-            //Ancak doluysa ve rakibe(karşıt renk) aitse alabilir
-            return tahta[poz].Renk != Renk;
+            return tahta[poz].Renk != Renk; // Pozisyondaki taşın rengi piyonun renginden farklıysa (rakip taş) true döner.
         }
         #endregion
 
-        #region Piyon_Terfi
-        //Dört terfi oluşturan yardımcı yöntem ekliyoruz ve hamle yöntemi iki konum parametresi alır
-        private static IEnumerable<Hamle> TerfiHamleleri(Pozisyon from, Pozisyon to)
+        #region Piyon terfi durumunda olası hamleleri oluşturan metod
+        private static IEnumerable<Hamle> TerfiHamleleri(Pozisyon from, Pozisyon to) // Piyon terfi durumunda olası hamleleri oluşturan metod.
         {
-            //Burada taş türünü yield ile döndürüyoruz yani normal return yerine her değeri tek tek döndürüyor ve de ekstra olarak her döndürme sırasında fonksiyonu duraklatıyor ki bellek kullanımını azaltsın
-            yield return new PiyonTerfi(from, to, TasTuru.At);
-            yield return new PiyonTerfi(from, to, TasTuru.Fil);
-            yield return new PiyonTerfi(from, to, TasTuru.Kale);
-            yield return new PiyonTerfi(from, to, TasTuru.Vezir);
+            yield return new PiyonTerfi(from, to, TasTuru.At); // At terfisi.
+            yield return new PiyonTerfi(from, to, TasTuru.Fil); // Fil terfisi.
+            yield return new PiyonTerfi(from, to, TasTuru.Kale); // Kale terfisi.
+            yield return new PiyonTerfi(from, to, TasTuru.Vezir); // Vezir terfisi.
             //Ama terfi olayı sadece düz değil başka bir taşı da çapraz yiyebileceği için:
         }
         #endregion
 
-        #region Piyon_İleri_Hamle_Koleksiyonu
-
-        //Burası piyonun yapabileceği ileri veya ele geçiremediği hamleleri koleksiyon olarak tutacak
-
-        private IEnumerable<Hamle> IleriHamleler(Pozisyon from, Tahta tahta)
+        #region Piyonun ileri hamlelerini hesaplayan metod
+        private IEnumerable<Hamle> IleriHamleler(Pozisyon from, Tahta tahta) // Piyonun ileri hamlelerini hesaplayan metod.
         {
-            //Piyon başlangıçta iki kare iletleyebilme özellğine sahip olduğundan mütevellit burada hemen önündeki konumu tanımlıyoruz
-            Pozisyon birHamlePozisyonu = from + Ileri;
+            Pozisyon birHamlePozisyonu = from + Ileri; // Bir kare ilerideki pozisyonu hesaplar.
 
-            //Burada piyonun hareket edip edemediğini kontrol ediyoruz
-            if (Ilerleyebilirmi(birHamlePozisyonu, tahta))
+            if (Ilerleyebilirmi(birHamlePozisyonu, tahta)) // Bir kare ilerideki pozisyona ilerlenebiliyorsa...
             {
-                //Piyonun 0. veya 7. satıra ilerleyip ilerlemediğini kontrol ediyoruz
-                if (birHamlePozisyonu.Satir == 0 || birHamlePozisyonu.Satir == 7)
+                if (birHamlePozisyonu.Satir == 0 || birHamlePozisyonu.Satir == 7) // Piyon terfi satırına ulaştıysa...
                 {
-                    //Eğer öyleyse dört terfi hamlesinin tümünü döndürürüz
-                    foreach (Hamle trfHamlesi in TerfiHamleleri(from, birHamlePozisyonu))
+                    foreach (Hamle trfHamlesi in TerfiHamleleri(from, birHamlePozisyonu)) // Terfi hamleleri üzerinde döngü yapar.
                     {
-                        yield return trfHamlesi;
+                        yield return trfHamlesi; // Terfi hamlesini döndürür.
                     }
                 }
-                //Eğer piyon tahtanın diğer ucuna ulaşmazsa
-                else
+
+                else // Piyon terfi satırına ulaşmadıysa...
                 {
-                    //O zaman sadece normal hamleye ihtiyacımız var
-                    yield return new NormalHamle(from, birHamlePozisyonu);
+                    yield return new NormalHamle(from, birHamlePozisyonu); // Normal ileri hamleyi döndürür.
                 }
 
-                Pozisyon ikiHamlePozisyonu = birHamlePozisyonu + Ileri;
+                Pozisyon ikiHamlePozisyonu = birHamlePozisyonu + Ileri; // İki kare ilerideki pozisyonu hesaplar.
 
-                //Piyon ancak daha önce hareket etmediyse oraya hareket edebilir(yani ilk iki hamlelik olaydan bahsediyoruz)
-                if (!Tasindi && Ilerleyebilirmi(ikiHamlePozisyonu, tahta))
+                if (!Tasindi && Ilerleyebilirmi(ikiHamlePozisyonu, tahta)) // Piyon daha önce hareket etmediyse ve iki kare ilerlenebiliyorsa...
                 {
-                    //Çift hamle için normal hareket sınıfını kullanıyoruz
-                    yield return new CiftPiyon(from, ikiHamlePozisyonu);
+                    yield return new CiftPiyon(from, ikiHamlePozisyonu); // Çift piyon hamlesini döndürür.
                 }
             }
         }
         #endregion
 
-        #region Piyon_Çapraz_Hamle_Koleksiyon
-        private IEnumerable<Hamle> CaprazHamleler(Pozisyon from, Tahta tahta)
+        #region Piyonun çapraz hamlelerini hesaplayan metod
+        private IEnumerable<Hamle> CaprazHamleler(Pozisyon from, Tahta tahta) // Piyonun çapraz hamlelerini hesaplayan metod.
         {
-            foreach (Yon yon in new Yon[] { Yon.Bati, Yon.Dogu })
+            foreach (Yon yon in new Yon[] { Yon.Bati, Yon.Dogu }) // Batı ve doğu yönleri (çapraz) üzerinde döngü yapar.
             {
-                Pozisyon to = from + Ileri + yon;
+                Pozisyon to = from + Ileri + yon; // Çaprazdaki pozisyonu hesaplar.
 
-                //Dönüşünde ikinci pzosiyonun rakip piyon tarafından atlanıp atlanmadığını kontrol etmelidir
-                if (to == tahta.PiyonAtlamaPozisyonunuAl(Renk.Rakip()))
+                if (to == tahta.PiyonAtlamaPozisyonunuAl(Renk.Rakip())) // Çaprazdaki pozisyon en passant yakalama pozisyonuna eşitse...
                 {
-                    //Eğer öyleyse piyon enpassant ile ele geçirilebilir ve değilse o zaman else if kısmına geçer
-                    yield return new EnPassant(from, to);
+                    yield return new EnPassant(from, to); // En passant hamlesini döndürür.
                 }
 
-                //Bu kısımda çaprazda bir taş yakalayıp yakalayamayağını kontrol ediyoruz
-                else if (Yakalama(to, tahta))
+                else if (Yakalama(to, tahta)) // Çaprazdaki pozisyonda rakip taş varsa...
                 {
-                    if (to.Satir == 0 || to.Satir == 7)
+                    if (to.Satir == 0 || to.Satir == 7) // Piyon terfi satırına ulaştıysa...
                     {
-                        foreach (Hamle trfHamlesi in TerfiHamleleri(from, to))
+                        foreach (Hamle trfHamlesi in TerfiHamleleri(from, to)) // Terfi hamleleri üzerinde döngü yapar.
                         {
-                            yield return trfHamlesi;
+                            yield return trfHamlesi; // Terfi hamlesini döndürür.
                         }
                     }
-                    //Eğer piyon tahtanın diğer ucuna ulaşmazsa
-                    else
+                    else // Piyon terfi satırına ulaşmadıysa...
                     {
-                        //O zaman sadece normal hamleye ihtiyacımız var
-                        yield return new NormalHamle(from, to);
+                        yield return new NormalHamle(from, to); // Normal çapraz yakalama hamlesini döndürür.
                     }
 
                 }
@@ -152,28 +126,21 @@ namespace SatrancMantigi
         }
         #endregion
 
-        #region İleri_Ve_Çapraz_Hamleleri_Uygulama_Koleksiyonu
-        //Bu kısımda piyonun çapraz ve düz hamlelerini kütüphane şeklinde saklıyoruz
-        public override IEnumerable<Hamle> HamleYapmak(Pozisyon from, Tahta tahta)
+        #region Piyonun yapabileceği tüm hamleleri (ileri ve çapraz) döndüren metod
+        public override IEnumerable<Hamle> HamleYapmak(Pozisyon from, Tahta tahta) // Piyonun yapabileceği tüm hamleleri (ileri ve çapraz) döndüren metod.
         {
-            return IleriHamleler(from, tahta).Concat(CaprazHamleler(from, tahta));
+            return IleriHamleler(from, tahta).Concat(CaprazHamleler(from, tahta)); // İleri hamleler ve çapraz hamleleri birleştirir.
         }
         #endregion
 
-        #region Rakip_Şahı_Ele_Geçirilebilir_Mi_OVERRİDE
-
-        //Rakip şahı ele geçirlebilir mi seçeneği varsayılan olarak burası için işe yarayacak ancak piyonlar yalnızca çapraz olarak ele geçirebildiği için tüm hamleleri kontrol etmek doğru gelmiyor
-
-        public override bool RakipSahiEleGecirilebilir(Pozisyon from, Tahta tahta)
+        #region Piyonun rakip şahı ele geçirip geçiremeyeceğini kontrol eden metod
+        public override bool RakipSahiEleGecirilebilir(Pozisyon from, Tahta tahta) // Piyonun rakip şahı ele geçirip geçiremeyeceğini kontrol eden metod.
         {
-            //Bu kısımda yapılan herhangi çapraz hamlenin şahı ele geçirip geçiremeyeceğini kontrol edelim
-            return CaprazHamleler(from, tahta).Any(hamle =>
+            return CaprazHamleler(from, tahta).Any(hamle => // Çapraz hamleler arasında şahı ele geçiren bir hamle olup olmadığını kontrol eder.
             {
-                Tas tas = tahta[hamle.ToPos];
-                //Konumdaki taşı alırız ve bunu şah olup olmadğını kontrol ederiz. Şahın rakibe ait olup olmadığını kontrol etmeye gerek yoktur. Çünkü asla şahı ele geçiren bir hamle üretilemeyecek.
-                return tas != null && tas.Tur == TasTuru.Sah;
+                Tas tas = tahta[hamle.ToPos]; // Hedef pozisyondaki taşı alır.
+                return tas != null && tas.Tur == TasTuru.Sah; // Taş şah ise true döner.
             });
-
         }
         #endregion
     }

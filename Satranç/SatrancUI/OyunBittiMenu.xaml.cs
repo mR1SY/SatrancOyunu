@@ -1,103 +1,66 @@
 ﻿using SatrancMantigi;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SatrancUI
 {
+    // Oyun bitiminde görüntülenen menüyü temsil eden UserControl sınıfı.
     public partial class OyunBitisMenusu : UserControl
     {
-        #region Seçili_Seçenek_Tanımlama
-        //SeciliSecenek adlı bir olay tanımlar. Bu olay, kullanıcının menüdeki bir seçeneği seçtiğinde tetiklenir ve Secenek enum tipinde bir parametre alır.
-        public event Action<Secenek> SeciliSecenek;
-        #endregion
+        public event Action<Secenek> SeciliSecenek; // Menüden bir seçenek seçildiğinde tetiklenen olay.
 
-        #region Menüde_Oyun_Durumu
-        public OyunBitisMenusu(OyunDurumu oyunDurumu)
+        public OyunBitisMenusu(OyunDurumu oyunDurumu) // OyunBitisMenusu nesnesini oyun durumu bilgisiyle oluşturan yapıcı metod.
         {
-            InitializeComponent();
+            InitializeComponent(); // UserControl bileşenlerini başlatır.
 
-            //Oyun sonucunu yakalıyoruz
-            Sonuc sonuc = oyunDurumu.Sonuc;
-            //Oyun matla bitmişse kazananın metnini çekiyoruz
-            WinnerText.Text = KazananınMetniniAl(sonuc.Kazanan);
-            //Oyun berabere bitmişse berabere durmunu çekiyoruz ve sebebini bildiriyoruz
-            ReasonText.Text = SebepMetniniAl(sonuc.Sebep, oyunDurumu.MevcutOyuncu);
+            Sonuc sonuc = oyunDurumu.Sonuc; // Oyunun sonucunu alır.
+            WinnerText.Text = KazananınMetniniAl(sonuc.Kazanan); // Kazananı metin olarak ayarlar.
+            ReasonText.Text = SebepMetniniAl(sonuc.Sebep, oyunDurumu.MevcutOyuncu); // Bitiş sebebini metin olarak ayarlar.
         }
-        #endregion
 
-        #region Kazanma_Metnini_Alma
-        private static string KazananınMetniniAl(Oyuncu kazanan)
+        private static string KazananınMetniniAl(Oyuncu kazanan) // Kazananı metin olarak döndüren metod.
         {
-
-            return kazanan switch
+            return kazanan switch // Kazanan oyuncuya göre metin döndürür.
             {
-                //Eğer kazanan beyazsa geri dön beyaz kazandı
-                Oyuncu.Beyaz => "BEYAZ KAZANDI!",
-                
-                //Eğer kazanan siyahsa geri dön beyaz kazandı
-                Oyuncu.Siyah => "SİYAH KAZANDI!",
-                
-                //Bu durum hiç gerçekleşmeyecek ama bunu yapmadığımızda switch sikayet eder :)
-                _ => "BERABERLİK"
+                Oyuncu.Beyaz => "BEYAZ KAZANDI!", // Beyaz oyuncu kazandıysa.
+                Oyuncu.Siyah => "SİYAH KAZANDI!", // Siyah oyuncu kazandıysa.
+                _ => "BERABERLİK" // Beraberlik durumunda.
             };
         }
-        #endregion
 
-        #region Ad_Döndürme
-        //Bir oyuncuyu alır ve adını bir dize olarak döndürür
-        private static string OyuncuStringi(Oyuncu oyuncu)
+        private static string OyuncuStringi(Oyuncu oyuncu) // Oyuncuyu metin olarak döndüren metod.
         {
-            return oyuncu switch
+            return oyuncu switch // Oyuncuya göre metin döndürür.
             {
-                Oyuncu.Beyaz => "BEYAZ",
-                Oyuncu.Siyah => "SİYAH",
-                _ => ""
+                Oyuncu.Beyaz => "BEYAZ", // Beyaz oyuncu.
+                Oyuncu.Siyah => "SİYAH", // Siyah oyuncu.
+                _ => "" // Diğer durumlarda boş dize.
             };
         }
-        #endregion
 
-        #region Oyun_Sonu_Metnini_Alma
-        private static string SebepMetniniAl(BitisSebebi sebep, Oyuncu mevcutOyuncu)
+        private static string SebepMetniniAl(BitisSebebi sebep, Oyuncu mevcutOyuncu) // Bitiş sebebini metin olarak döndüren metod.
         {
-            return sebep switch
+            return sebep switch // Bitiş sebebine göre metin döndürür.
             {
-                BitisSebebi.Pat => $"PAT - {OyuncuStringi(mevcutOyuncu)} HAMLE YAPAMIYOR",
-                BitisSebebi.SahMat => $"ŞAH MAT - {OyuncuStringi(mevcutOyuncu)} HAMLE YAPAMIYOR",
-                BitisSebebi.ElliHamleKurali => "ELLİ-HAMLE KURALI",
-                BitisSebebi.YetersizTas => "YETERSİZ TAŞ",
-                BitisSebebi.UcKatliTekrar => "ÜÇ KATLI TEKRAR",
-                BitisSebebi.SureDoldu => $"{OyuncuStringi(mevcutOyuncu)}'IN SÜRESİ DOLDU!",
-                _ => ""
+                BitisSebebi.Pat => $"PAT - {OyuncuStringi(mevcutOyuncu)} HAMLE YAPAMIYOR", // Pat durumunda.
+                BitisSebebi.SahMat => $"ŞAH MAT - {OyuncuStringi(mevcutOyuncu)} HAMLE YAPAMIYOR", // Şah mat durumunda.
+                BitisSebebi.ElliHamleKurali => "ELLİ-HAMLE KURALI", // 50 hamle kuralı durumunda.
+                BitisSebebi.YetersizTas => "YETERSİZ TAŞ", // Yetersiz taş durumunda.
+                BitisSebebi.UcKatliTekrar => "ÜÇ KATLI TEKRAR", // Üç katlı tekrar durumunda.
+                BitisSebebi.SureDoldu => $"{OyuncuStringi(mevcutOyuncu)}'IN SÜRESİ DOLDU!", // Süre dolması durumunda.
+                _ => "" // Diğer durumlarda boş dize.
             };
         }
-        #endregion
 
-        #region Yeniden_Başlat_Butonu
-        //Yeniden başlata basıldığında içinden geçen olayı bulacağız
-        private void Restart_Click(object sender, RoutedEventArgs e)
+        private void Restart_Click(object sender, RoutedEventArgs e) // "Yeniden Başlat" butonuna tıklandığında çalışacak metod.
         {
-            //Buradaki soru işareti olayın yalnızca kayıtlı bir olay işleyicisi varsa ortaya çıkmasını sağlar
-            SeciliSecenek?.Invoke(Secenek.YenidenBaslat);
+            SeciliSecenek?.Invoke(Secenek.YenidenBaslat); // SeciliSecenek olayını tetikler ve Secenek.YenidenBaslat'ı parametre olarak gönderir.
         }
-        #endregion
 
-        #region Çıkış_Butonu
-        private void Exit_Click(object sender, RoutedEventArgs e)
+        private void Exit_Click(object sender, RoutedEventArgs e) // "Çıkış" butonuna tıklandığında çalışacak metod.
         {
-            SeciliSecenek?.Invoke(Secenek.Cikis);
+            SeciliSecenek?.Invoke(Secenek.Cikis); // SeciliSecenek olayını tetikler ve Secenek.Cikis'i parametre olarak gönderir.
         }
-        #endregion
     }
 }

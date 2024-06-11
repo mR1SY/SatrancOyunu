@@ -1,4 +1,9 @@
-﻿using System.Text;
+﻿using SatrancMantigi;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,763 +14,667 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using SatrancMantigi;
 using SatrancUI;
-using System.Collections.Generic;
-using SatrancMantigi.Taslar;
 using System.Windows.Controls.Primitives;
-using System.Linq; // Distinct() için eklendi
+using SatrancMantigi.Taslar;
 
 namespace SatrancUI
 {
+    // Satranç oyununun oynandığı ana pencereyi temsil eden sınıf.
     public partial class MainWindow : Window
     {
-        #region Genel_Pencere_Tanımlamaları
-        //Görüntü kontrolleri için diziyi tanımlıyoruz
-        private readonly Image[,] TaslarinResimleri = new Image[8, 8];
+        #region Tanımlamalar
+        private readonly Image[,] TaslarinResimleri = new Image[8, 8]; // Satranç taşlarını gösteren Image nesneleri dizisi.
+        private readonly Rectangle[,] Vurgular = new Rectangle[8, 8]; // Seçili kareyi ve olası hamleleri vurgulamak için Rectangle nesneleri dizisi.
 
-        //Bu kısımda vurgular için çift boyutlu bir dizi tanımlıyoruz
-        private readonly Rectangle[,] Vurgular = new Rectangle[8, 8];
-        private readonly Dictionary<Pozisyon, Hamle> hamleBellegi = new Dictionary<Pozisyon, Hamle>();
+        private OyunDurumu oyunDurumu; // Oyunun mevcut durumunu tutar.
+        private Pozisyon SecilmisPoz = null; // Seçili karenin pozisyonunu tutar (seçili kare yoksa null).
 
-        //Önce mevcut oyuncu taşımak istediği parçaya tıklar. O parça seçilir ve konumu seçilen konumda saklanır. Ardından oyun durumuna sorarız, seçilen parçayı hareket ettiren bu hamleleri yapabilir, daha sonra bunlar önbellekte anahtar olarak saklanır ve bunları ekranda vurgu karelerini kullanarak gösteririz. Daha sonra vurgulardan birine tıklar, bu gerçekleştiğinde önbellekten karşılık gelen hamleyi alırız ve konumlandırırız.
+        public bool tasDuzenlemeModu = false; // Taş düzenleme modunun aktif olup olmadığını belirten bool değişkeni (varsayılan: false).
+        private TasTuru secilenTasTuru = TasTuru.Piyon; // Taş düzenleme modunda seçilen taş türünü tutar (varsayılan: Piyon).
 
-        #region Vurgu_Örneği
-        /*
-                     Seçilen poz 
-                  (0,3)(SiyahVezir)
+        private List<Rectangle> hamleVurgulari = new List<Rectangle>(); // Olası hamleleri vurgulamak için kullanılan Rectangle nesnelerini tutan liste.
 
-                      hamlebelleği
-               (1,4) ----->  (0,3) -> (1,4)
-               (2,5) ----->  (0,3) -> (2,5)
-               (3,6) ----->  (0,3) -> (3,6)
-               (4,7) ----->  (0,3) -> (4,7)
+        private DispatcherTimer siyahSureSayaci; // Siyah oyuncunun süresini tutan zamanlayıcı.
+        private DispatcherTimer beyazSureSayaci; // Beyaz oyuncunun süresini tutan zamanlayıcı.
+        private TimeSpan siyahKalanSure = TimeSpan.FromMinutes(10); // Siyah oyuncunun kalan süresi (varsayılan: 10 dakika).
+        private TimeSpan beyazKalanSure = TimeSpan.FromMinutes(10); // Beyaz oyuncunun kalan süresi (varsayılan: 10 dakika).
 
-        */
+        private TasSecmeMenusu acikTasSecmeMenusu = null; // Açık olan taş seçme menüsü nesnesine referans (açık menü yoksa null).
+
+        public bool yapayZekaModu = false; // Yapay zeka modunun aktif olup olmadığını belirten bool değişkeni (varsayılan: false).
         #endregion
 
-        private OyunDurumu oyunDurumu;
-        private Pozisyon SecilmisPoz = null;
-
-        #endregion
-
-        //private bool layoutUpdatedEventEklendi = false; // Yeni değişken
-        public bool tasDuzenlemeModu = false;
-        private TasTuru secilenTasTuru = TasTuru.Piyon;
-
-        private List<Rectangle> hamleVurgulari = new List<Rectangle>();
-
-        // Zamanlayıcılar için değişkenler
-        private DispatcherTimer siyahSureSayaci;
-        private DispatcherTimer beyazSureSayaci;
-        private TimeSpan siyahKalanSure = TimeSpan.FromMinutes(10);
-        private TimeSpan beyazKalanSure = TimeSpan.FromMinutes(10);
-
-        private TasSecmeMenusu acikTasSecmeMenusu = null;
-
-        public bool yapayZekaModu = false;
-
-        private void TasSecmeMenusu_Closed(object sender, EventArgs e)
+        #region Yapıcı metod
+        public MainWindow() // MainWindow penceresini oluşturan yapıcı metod.
         {
-            // Popup kapandığında takip değişkenini sıfırla
-            acikTasSecmeMenusu = null;
-        }
+            InitializeComponent(); // Pencere bileşenlerini başlatır.
+            TahtayiBaslat(); // Satranç tahtasını başlatır.
+            oyunDurumu = new OyunDurumu(Oyuncu.Beyaz, Tahta.Baslangic()); // Yeni bir oyun durumu oluşturur.
+            oyunDurumu.HamleDosyasiniSil(); // Hamle dosyasını siler.
 
-        private void TasSecmeMenusunuKapat()
-        {
-            if (acikTasSecmeMenusu != null)
+            if (tasDuzenlemeModu) // Taş düzenleme modu aktifse...
             {
-                if (acikTasSecmeMenusu.Parent is Popup popup)
+                TasDuzenlemeModuBaslat(); // Taş düzenleme modunu başlatır.
+            }
+            else // Taş düzenleme modu aktif değilse...
+            {
+                oyunDurumu = new OyunDurumu(Oyuncu.Beyaz, Tahta.Baslangic()); // Yeni bir oyun durumu oluşturur.
+                TahtaCiz(oyunDurumu.Tahta); // Tahtayı çizer.
+                VurgulariGizle(); // Vurguları gizler.
+            }
+            this.Closed += MainWindow_Closed; // Pencere kapatıldığında MainWindow_Closed metodunu çalıştırır.
+
+            siyahSureSayaci = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) }; // Siyah oyuncunun süresini tutan zamanlayıcıyı oluşturur.
+            siyahSureSayaci.Tick += SiyahSureSayaci_Tick; // Zamanlayıcının her saniye SiyahSureSayaci_Tick metodunu çalıştırmasını sağlar.
+            beyazSureSayaci = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) }; // Beyaz oyuncunun süresini tutan zamanlayıcıyı oluşturur.
+            beyazSureSayaci.Tick += BeyazSureSayaci_Tick; // Zamanlayıcının her saniye BeyazSureSayaci_Tick metodunu çalıştırmasını sağlar.
+
+            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // Siyah oyuncunun kalan süresini ekrana yazar.
+            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // Beyaz oyuncunun kalan süresini ekrana yazar.
+        }
+        #endregion
+
+        #region Pencere kapatıldığında çalışacak olay işleyicisi
+        private void MainWindow_Closed(object sender, EventArgs e) // Pencere kapatıldığında çalışacak olay işleyicisi.
+        {
+            TasSecmeMenusunuKapat(); // Taş seçme menüsünü kapatır.
+        }
+        #endregion
+
+        #region Taş seçme menüsü kapatıldığında çalışacak olay işleyicisi
+        private void TasSecmeMenusu_Closed(object sender, EventArgs e) // Taş seçme menüsü kapatıldığında çalışacak olay işleyicisi.
+        {
+            acikTasSecmeMenusu = null; // Açık taş seçme menüsü referansını null olarak ayarlar.
+        }
+        #endregion
+
+        #region Tahta ızgarasına tıklandığında çalışacak olay işleyicisi
+        private void TahtaIzgarasi_MouseDown(object sender, MouseButtonEventArgs e) // Tahta ızgarasına tıklandığında çalışacak olay işleyicisi.
+        {
+            if (MenuEkrandaMi()) // Menü açıksa...
+            {
+                if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)
+                // Sol veya sağ fare tuşuna basılırsa...
                 {
-                    popup.Closed -= TasSecmeMenusu_Closed; // Olay işleyicisini kaldır
-                    popup.IsOpen = false; // Popup'ı kapat
-                    acikTasSecmeMenusu = null; // Takip değişkenini sıfırla    
-                }
-                acikTasSecmeMenusu = null;
-            }
-        }
-        public void KareyeTasEkle(Pozisyon poz, Oyuncu oyuncu, TasTuru tur)
-        {
-            oyunDurumu.Tahta[poz] = TasOlustur(oyuncu, tur); // tur parametresini kullanın
-            TaslarinResimleri[poz.Satir, poz.Sutun].Source = Resimler.ResimAl(oyunDurumu.Tahta[poz]);
-        }
-
-        private Tas TasOlustur(Oyuncu renk, TasTuru tur)
-        {
-            return tur switch
-            {
-                TasTuru.Piyon => new Piyon(renk),
-                TasTuru.At => new At(renk),
-                TasTuru.Kale => new Kale(renk),
-                TasTuru.Fil => new Fil(renk),
-                TasTuru.Vezir => new Vezir(renk),
-                TasTuru.Sah => new Sah(renk),
-                _ => null
-            };
-        }
-
-        private void TasDuzenlemeModuBaslat()
-        {
-            // Zamanlayıcıları devre dışı bırak
-            siyahSureSayaci.IsEnabled = false;
-            beyazSureSayaci.IsEnabled = false;
-
-            // Düzenleme modu için gerekli diğer ayarlamaları buraya ekleyin
-            DevamEtButonu.Visibility = Visibility.Visible;
-        }
-
-        private void MainWindow_Closed(object sender, EventArgs e)
-        {
-            TasSecmeMenusunuKapat(); // TasSecmeMenusu'nu kapat
-        }
-
-
-        #region Ana_Pencere_Load_Kısmı
-        public MainWindow()
-        {
-            InitializeComponent();
-            TahtayiBaslat();
-            oyunDurumu = new OyunDurumu(Oyuncu.Beyaz, Tahta.Baslangic());
-            oyunDurumu.HamleDosyasiniSil();
-
-            if (tasDuzenlemeModu)
-            {
-                TasDuzenlemeModuBaslat();
-            }
-            else
-            {
-                oyunDurumu = new OyunDurumu(Oyuncu.Beyaz, Tahta.Baslangic());
-                TahtaCiz(oyunDurumu.Tahta);
-                VurgulariGizle(); // Başlangıçta vurguları temizle
-            }
-            this.Closed += MainWindow_Closed;
-
-            siyahSureSayaci = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            siyahSureSayaci.Tick += SiyahSureSayaci_Tick;
-            beyazSureSayaci = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            beyazSureSayaci.Tick += BeyazSureSayaci_Tick;
-
-            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
-            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
-        }
-
-        #endregion
-
-        #region Zamanlayıcı_Olayları
-
-        private void SiyahSureSayaci_Tick(object sender, EventArgs e)
-        {
-            siyahKalanSure -= TimeSpan.FromSeconds(1);
-            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
-
-            if (siyahKalanSure <= TimeSpan.Zero)
-            {
-                siyahSureSayaci.Stop();
-                oyunDurumu.OyunuBitir(Oyuncu.Beyaz, BitisSebebi.SureDoldu);
-                OyunBitisiGoster();
-            }
-        }
-        private void BeyazSureSayaci_Tick(object sender, EventArgs e)
-        {
-            beyazKalanSure -= TimeSpan.FromSeconds(1);
-            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
-
-            if (beyazKalanSure == TimeSpan.Zero)
-            {
-                beyazSureSayaci.Stop();
-                // Beyaz'ın süresi bittiğinde oyunu bitir ve sebebini belirt
-                oyunDurumu.OyunuBitir(Oyuncu.Siyah, BitisSebebi.SureDoldu); // Oyuncu.Siyah kazandı, sebep: Süre Doldu
-                OyunBitisiGoster();
-            }
-        }
-        #endregion
-
-        private void DurdurButonu_Click(object sender, RoutedEventArgs e)
-        {
-            siyahSureSayaci.Stop(); // siyahZamanlayici yerine siyahSureSayaci
-            beyazSureSayaci.Stop(); // beyazZamanlayici yerine beyazSureSayaci
-        }
-        private void YenidenBaslatButonu_Click(object sender, RoutedEventArgs e)
-        {
-            // Zamanlayıcıları sıfırla ve başlat
-            beyazKalanSure = TimeSpan.FromMinutes(10);
-            siyahKalanSure = TimeSpan.FromMinutes(10);
-            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // BeyazSure yerine BeyazSureText
-            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // SiyahSure yerine SiyahSureText
-
-            // Vurguları temizle
-            for (int r = 0; r < 8; r++)
-            {
-                for (int c = 0; c < 8; c++)
-                {
-                    Vurgular[r, c].Fill = Brushes.Transparent;
+                    return; // Metodu sonlandırır (menü açıkken tahtaya müdahaleyi engeller).
                 }
             }
 
-            beyazSureSayaci.Stop(); // beyazZamanlayici yerine beyazSureSayaci
-            siyahSureSayaci.Stop(); // siyahZamanlayici yerine siyahSureSayaci
-            OyunuYenidenBaslat();
-        }
+            Point point = e.GetPosition(TasIzgarasi); // Fare imlecinin tahta ızgarasına göre konumunu alır.
+            Pozisyon poz = KarePozisyona(point); // Fare imlecinin konumunu satranç tahtası koordinatlarına dönüştürür.
 
-        private void DevamEtButonu_Click(object sender, RoutedEventArgs e)
-        {
-            // Şah sayısını kontrol et
-            Sayma sayma = oyunDurumu.Tahta.ParcaSayisi();
-            if (sayma.Beyaz(TasTuru.Sah) != 1 || sayma.Siyah(TasTuru.Sah) != 1)
+            if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // Yapay zeka modu aktifse ve tıklanan kare siyah oyuncuya aitse...
             {
-                MessageBox.Show("Her iki oyuncunun da bir şahı olmalı.");
-                return; // Devam etme
+                return; // Metodu sonlandırır (yapay zekanın taşına tıklanmasını engeller).
             }
 
-            // Vurguları temizle
-            for (int r = 0; r < 8; r++)
+            if (e.LeftButton == MouseButtonState.Pressed) // Sol fare tuşuna basılırsa...
             {
-                for (int c = 0; c < 8; c++)
+                if (tasDuzenlemeModu) // Taş düzenleme modunda ise...
                 {
-                    Vurgular[r, c].Fill = Brushes.Transparent;
+                    SecilmisPoz = poz; // Tıklanan kareyi seçili kare olarak ayarlar.
+                    VurgulariGizle(); // Vurguları gizler.
+                    Vurgular[SecilmisPoz.Satir, SecilmisPoz.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 0)); // Seçili kareyi sarı renkle vurgular.
+                }
+                else // Taş düzenleme modunda değilse...
+                {
+                    SecilenPozisyondanItibaren(poz); // Seçili kareye göre hamleleri hesaplar ve vurgular.
                 }
             }
-            // Şahın tehdit altında olup olmadığını kontrol et
+
+            if (tasDuzenlemeModu && e.RightButton == MouseButtonState.Pressed) // Taş düzenleme modunda ise ve sağ fare tuşuna basılırsa...
+            {
+                Oyuncu oyuncu = !oyunDurumu.Tahta.BosMu(poz) ? oyunDurumu.Tahta[poz].Renk : oyunDurumu.MevcutOyuncu;
+                // Tıklanan karede taş varsa taşın rengini alır, yoksa mevcut oyuncunun rengini alır.
+
+                TasSecmeMenusunuKapat(); // Açık olan taş seçme menüsünü kapatır.
+
+                TasSecmeMenusu tasSecmeMenusu = new TasSecmeMenusu(oyuncu, this); // Yeni bir taş seçme menüsü oluşturur.
+                tasSecmeMenusu.TıklananPozisyon = poz; // Taş seçme menüsüne tıklanan kareyi bildirir.
+                Popup popup = new Popup // Yeni bir Popup penceresi oluşturur.
+                {
+                    Child = tasSecmeMenusu, // Taş seçme menüsünü Popup'ın içeriği olarak ayarlar.
+                    IsOpen = true, // Popup'ı açar.
+                    PlacementTarget = TasIzgarasi, // Popup'ın yerleştirileceği hedefi ayarlar (tahta ızgarası).
+                    Placement = PlacementMode.MousePoint, // Popup'ı fare imlecinin konumuna yerleştirir.
+                    StaysOpen = false // Popup'ın tıklama dışında kapatılmasını sağlar.
+                };
+
+                acikTasSecmeMenusu = tasSecmeMenusu; // Açık taş seçme menüsü referansını ayarlar.
+
+                popup.Closed += TasSecmeMenusu_Closed; // Popup kapatıldığında TasSecmeMenusu_Closed metodunu çalıştırır.
+
+                tasSecmeMenusu.SecilenTas += tur => // Taş seçme menüsünden bir taş seçildiğinde çalışacak olay işleyicisi.
+                {
+                    popup.IsOpen = false; // Popup'ı kapatır.
+                    secilenTasTuru = tur; // Seçilen taş türünü kaydeder.
+                    KareyeTasEkle(poz, oyuncu, tur); // Seçilen taşı tahtaya ekler.
+
+                    acikTasSecmeMenusu = null; // Açık taş seçme menüsü referansını null olarak ayarlar.
+                };
+            }
+        }
+        #endregion
+
+        #region Klavye tuşuna basıldığında çalışacak olay işleyicisi
+        private void Window_KeyDown(object sender, KeyEventArgs e) // Klavye tuşuna basıldığında çalışacak olay işleyicisi.
+        {
+            if (tasDuzenlemeModu && e.Key == Key.Delete && SecilmisPoz != null) // Taş düzenleme modunda ise ve Delete tuşuna basıldıysa ve bir kare seçiliyse...
+            {
+                oyunDurumu.Tahta[SecilmisPoz] = null; // Seçili karedeki taşı siler.
+                TaslarinResimleri[SecilmisPoz.Satir, SecilmisPoz.Sutun].Source = null; // Taşın görüntüsünü temizler.
+                SecilmisPoz = null; // Seçili kareyi sıfırlar.
+                VurgulariGizle(); // Vurguları gizler.
+                for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
+                {
+                    for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
+                    {
+                        Vurgular[r, c].Fill = Brushes.Transparent; // Tüm vurguları temizler.
+                    }
+                }
+            }
+
+            if (e.Key == Key.Escape) // Escape tuşuna basıldıysa...
+            {
+                if (MenuEkrandaMi() && MenuContainer.Content is DurdurmaMenusu) // Durdurma menüsü açıksa...
+                {
+                    MenuContainer.Content = null; // Durdurma menüsünü kapatır.
+
+                    if (!tasDuzenlemeModu) // Taş düzenleme modunda değilse...
+                    {
+                        if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz) // Sıra beyaz oyuncu daysa...
+                        {
+                            beyazSureSayaci.Start(); // Beyaz oyuncunun süresini başlatır.
+                        }
+                        else // Sıra siyah oyuncu daysa...
+                        {
+                            siyahSureSayaci.Start(); // Siyah oyuncunun süresini başlatır.
+                        }
+                    }
+                }
+                else if (!MenuEkrandaMi()) // Durdurma menüsü açık değilse...
+                {
+                    DurdurmaMenusunuGoster(); // Durdurma menüsünü gösterir.
+                }
+            }
+        }
+        #endregion
+
+        #region Siyah oyuncunun süresi her saniye azaldığında çalışacak metod
+        private void SiyahSureSayaci_Tick(object sender, EventArgs e) // Siyah oyuncunun süresi her saniye azaldığında çalışacak metod.
+        {
+            siyahKalanSure -= TimeSpan.FromSeconds(1); // Siyah oyuncunun kalan süresinden 1 saniye çıkarır.
+            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // Siyah oyuncunun kalan süresini ekrana yazar.
+
+            if (siyahKalanSure <= TimeSpan.Zero) // Siyah oyuncunun süresi bittiyse...
+            {
+                siyahSureSayaci.Stop(); // Zamanlayıcıyı durdurur.
+                oyunDurumu.OyunuBitir(Oyuncu.Beyaz, BitisSebebi.SureDoldu); // Oyunu Beyaz oyuncunun kazanmasıyla bitirir (sebep: Süre Doldu).
+                OyunBitisiGoster(); // Oyun bitiş ekranını gösterir.
+            }
+        }
+        #endregion
+
+        #region Beyaz oyuncunun süresi her saniye azaldığında çalışacak metod
+        private void BeyazSureSayaci_Tick(object sender, EventArgs e) // Beyaz oyuncunun süresi her saniye azaldığında çalışacak metod.
+        {
+            beyazKalanSure -= TimeSpan.FromSeconds(1); // Beyaz oyuncunun kalan süresinden 1 saniye çıkarır.
+            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // Beyaz oyuncunun kalan süresini ekrana yazar.
+
+            if (beyazKalanSure <= TimeSpan.Zero) // Beyaz oyuncunun süresi bittiyse...
+            {
+                beyazSureSayaci.Stop(); // Zamanlayıcıyı durdurur.
+                oyunDurumu.OyunuBitir(Oyuncu.Siyah, BitisSebebi.SureDoldu); // Oyunu Siyah oyuncunun kazanmasıyla bitirir (sebep: Süre Doldu).
+                OyunBitisiGoster(); // Oyun bitiş ekranını gösterir.
+            }
+        }
+        #endregion
+
+        #region "Durdur" butonuna tıklandığında çalışacak metod
+        private void DurdurButonu_Click(object sender, RoutedEventArgs e) // "Durdur" butonuna tıklandığında çalışacak metod.
+        {
+            siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
+            beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
+        }
+        #endregion
+
+        #region "Yeniden Başlat" butonuna tıklandığında çalışacak metod
+        private void YenidenBaslatButonu_Click(object sender, RoutedEventArgs e) // "Yeniden Başlat" butonuna tıklandığında çalışacak metod.
+        {
+            beyazKalanSure = TimeSpan.FromMinutes(10); // Beyaz oyuncunun süresini sıfırlar (10 dakika).
+            siyahKalanSure = TimeSpan.FromMinutes(10); // Siyah oyuncunun süresini sıfırlar (10 dakika).
+            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // Beyaz oyuncunun kalan süresini ekrana yazar.
+            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // Siyah oyuncunun kalan süresini ekrana yazar.
+
+            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
+            {
+                for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
+                {
+                    Vurgular[r, c].Fill = Brushes.Transparent; // Tüm vurguları temizler.
+                }
+            }
+
+            beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
+            siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
+            OyunuYenidenBaslat(); // Oyunu yeniden başlatır.
+        }
+        #endregion
+
+        #region "Devam Et" butonuna tıklandığında çalışacak metod
+        private void DevamEtButonu_Click(object sender, RoutedEventArgs e) // "Devam Et" butonuna tıklandığında çalışacak metod.
+        {
+            Sayma sayma = oyunDurumu.Tahta.ParcaSayisi(); // Tahtadaki taşların sayısını alır.
+            if (sayma.Beyaz(TasTuru.Sah) != 1 || sayma.Siyah(TasTuru.Sah) != 1) // Her iki tarafta da birer şah yoksa...
+            {
+                MessageBox.Show("Her iki oyuncunun da bir şahı olmalı."); // Hata mesajı gösterir.
+                return; // Metodu sonlandırır.
+            }
+
+            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
+            {
+                for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
+                {
+                    Vurgular[r, c].Fill = Brushes.Transparent; // Tüm vurguları temizler.
+                }
+            }
+
             if (oyunDurumu.Tahta.TehditAltinda(oyunDurumu.MevcutOyuncu) || oyunDurumu.Tahta.TehditAltinda(oyunDurumu.MevcutOyuncu.Rakip()))
+            // Şahlardan biri tehdit altında ise...
             {
-                MessageBox.Show("Şahınız tehdit altında.");
-                return; // Devam etme
+                MessageBox.Show("Şahınız tehdit altında."); // Hata mesajı gösterir.
+                return; // Metodu sonlandırır.
             }
 
-            // Oyun bitiş durumunu kontrol et
-            oyunDurumu.OyunBitisiKontrol();
-            if (oyunDurumu.OyunBittiMi())
+            oyunDurumu.OyunBitisiKontrol(); // Oyun bitiş koşullarını kontrol eder.
+            if (oyunDurumu.OyunBittiMi()) // Oyun bittiyse...
             {
-                OyunBitisiGoster(); // Oyun bitiş ekranını göster
-                return; // Devam etme
+                OyunBitisiGoster(); // Oyun bitiş ekranını gösterir.
+                return; // Metodu sonlandırır.
             }
 
-            // Eğer herhangi bir hamle yapıldıysa veya yeterli taş yoksa süre sayaçlarını başlat
             if (oyunDurumu.Tahta.ParcaSayisi().ToplamSayi > 2 && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+            // Tahtada 2'den fazla taş varsa ve sıra siyah oyuncu daysa...
             {
-                siyahSureSayaci.IsEnabled = true;
+                siyahSureSayaci.IsEnabled = true; // Siyah oyuncunun süresini başlatır.
             }
+
             if (oyunDurumu.Tahta.ParcaSayisi().ToplamSayi > 2 && oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
+            // Tahtada 2'den fazla taş varsa ve sıra beyaz oyuncu daysa...
             {
-                beyazSureSayaci.IsEnabled = true;
+                beyazSureSayaci.IsEnabled = true; // Beyaz oyuncunun süresini başlatır.
             }
-            if (tasDuzenlemeModu)
+
+            if (tasDuzenlemeModu) // Taş düzenleme modunda ise...
             {
-                beyazSureSayaci.Stop();
-                siyahSureSayaci.Stop();
+                beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
+                siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
             }
-            DevamEtButonu.Visibility = Visibility.Collapsed;
-            // Taş düzenleme modundan çık
-            tasDuzenlemeModu = false;
-            // Düzenleme modundan çıkarken yapılması gereken diğer ayarlamaları buraya ekleyin
+
+            DevamEtButonu.Visibility = Visibility.Collapsed; // "Devam Et" butonunu gizler.
+            tasDuzenlemeModu = false; // Taş düzenleme modunu kapatır.
         }
+        #endregion
 
-        #region Görüntü_Kontrolleri
-        //Burada her biri için tüm konumların üzerinden geçeceğiz
-        private void TahtayiBaslat()
+        #region Satranç tahtasını başlatan metod
+        private void TahtayiBaslat() // Satranç tahtasını başlatan metod.
         {
-            for (int r = 0; r < 8; r++)
+            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
             {
-                for (int c = 0; c < 8; c++)
+                for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
                 {
-                    //Burada parçalar için tüm görüntü kontrollerini oluşturuyoruz ve bunları hem parça ızgarasına hem de taslarınResimleri dizinimize ekliyoruz
+                    Image image = new(); // Yeni bir Image nesnesi oluşturur.
+                    TaslarinResimleri[r, c] = image; // Image nesnesini diziye ekler.
+                    TasIzgarasi.Children.Add(image); // Image nesnesini tahta ızgarasına ekler.
 
-                    Image image = new();  //Yeni bir görüntü nesnesi oluşturuyoruz
-                    TaslarinResimleri[r, c] = image;  //Bunu iki boyutlu dizide saklıyoruz
-                    TasIzgarasi.Children.Add(image);  //Children.Add: Grafik olarak eklmeye yarar
-
-                    Rectangle vurgu = new Rectangle();//Burada oluşturduğumuz her konum için aynı seyi vurgularımız için yapacağız
-                    Vurgular[r, c] = vurgu;//Vurgular dizisinde saklıyoruz
-                    VurguIzgarasi.Children.Add(vurgu);//Ve burada bir grafik olarak vurguızgarasina ekliyoruz.
+                    Rectangle vurgu = new Rectangle(); // Yeni bir Rectangle nesnesi oluşturur (vurgu için).
+                    Vurgular[r, c] = vurgu; // Rectangle nesnesini diziye ekler.
+                    VurguIzgarasi.Children.Add(vurgu); // Rectangle nesnesini vurgu ızgarasına ekler.
                 }
             }
         }
         #endregion
 
-        #region Resimleri_Tahtaya_Ekle(Son_aşama)
-        private void TahtaCiz(Tahta tahta)
+        #region Tahtayı çizen metod
+        private void TahtaCiz(Tahta tahta) // Tahtayı çizen metod.
         {
-            for (int r = 0; r < 8; r++)
+            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
             {
-                for (int c = 0; c < 8; c++)
+                for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
                 {
-                    Tas tas = tahta[r, c];
+                    Tas tas = tahta[r, c]; // Pozisyondaki taşı alır.
 
                     if (tas != null && tas.Tur == TasTuru.Sah && oyunDurumu.Tahta.TehditAltinda(tas.Renk))
+                    // Taş şah ise ve tehdit altında ise...
                     {
-                        if (tas.Renk == Oyuncu.Beyaz)
+                        if (tas.Renk == Oyuncu.Beyaz) // Şah beyaz ise...
                         {
-                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/BeyazSahTehditAltinda.png");
+                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/BeyazSahTehditAltinda.png"); // Tehdit altındaki beyaz şah görüntüsünü ayarlar.
                         }
-                        else
+                        else // Şah siyah ise...
                         {
-                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/SiyahSahTehditAltinda.png");
+                            TaslarinResimleri[r, c].Source = Resimler.ResimYukle("Assets/SiyahSahTehditAltinda.png"); // Tehdit altındaki siyah şah görüntüsünü ayarlar.
                         }
                     }
-                    else
+                    else // Taş şah değilse veya tehdit altında değilse...
                     {
-                        TaslarinResimleri[r, c].Source = Resimler.ResimAl(tas);
+                        TaslarinResimleri[r, c].Source = Resimler.ResimAl(tas); // Taşın normal görüntüsünü ayarlar.
                     }
-                    // LayoutUpdated olayını kullanarak tahta ve taşları döndür
-                    TahtaIzgarasi.LayoutUpdated += (sender, e) =>
+
+                    TahtaIzgarasi.LayoutUpdated += (sender, e) => // Tahta ızgarasının düzeni güncellendiğinde çalışacak olay işleyicisi.
                     {
-                        if (!yapayZekaModu) // Yapay zeka modunda dönmeyi engelle
-                        {                            // Taşları döndür (siyah oyuncu sırası ise)
-                            if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+                        if (!yapayZekaModu) // Yapay zeka modu aktif değilse...
+                        {
+                            if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // Sıra siyah oyuncu daysa...
                             {
-                                for (int r = 0; r < 8; r++)
+                                for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
                                 {
-                                    for (int c = 0; c < 8; c++)
+                                    for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
                                     {
                                         TaslarinResimleri[r, c].RenderTransform = new RotateTransform(180, TaslarinResimleri[r, c].ActualWidth / 2, TaslarinResimleri[r, c].ActualHeight / 2);
+                                        // Taş görüntülerini 180 derece döndürür.
                                     }
                                 }
 
                                 TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
+                                // Tahta ızgarasını 180 derece döndürür.
                             }
-                            else
+                            else // Sıra beyaz oyuncu daysa...
                             {
-                                // Döndürmeyi sıfırla (beyaz oyuncu sırası ise)
-                                for (int r = 0; r < 8; r++)
+                                for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
                                 {
-                                    for (int c = 0; c < 8; c++)
+                                    for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
                                     {
-                                        TaslarinResimleri[r, c].RenderTransform = null;
+                                        TaslarinResimleri[r, c].RenderTransform = null; // Taş görüntülerinin döndürme efektini kaldırır.
                                     }
                                 }
 
-                                TahtaIzgarasi.RenderTransform = null;
+                                TahtaIzgarasi.RenderTransform = null; // Tahta ızgarasının döndürme efektini kaldırır.
                             }
                         }
                     };
-                    // Arkaplan resmini ayarla
-                    if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+
+                    if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // Yapay zeka modu aktif değilse ve sıra siyah oyuncu daysa...
                     {
                         TahtaIzgarasi.Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Assets/Tahta_180.png")));
+                        // Tahta arkaplanını 180 derece döndürülmüş olarak ayarlar.
                     }
-                    else
+                    else // Yapay zeka modu aktifse veya sıra beyaz oyuncu daysa...
                     {
                         TahtaIzgarasi.Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/Assets/Tahta.png")));
+                        // Tahta arkaplanını normal olarak ayarlar.
                     }
                 }
             }
         }
         #endregion
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        #region Taş düzenleme modunu başlatan metod
+        private void TasDuzenlemeModuBaslat() // Taş düzenleme modunu başlatan metod.
         {
-            if (tasDuzenlemeModu && e.Key == Key.Delete && SecilmisPoz != null)
-            {
-                oyunDurumu.Tahta[SecilmisPoz] = null;
-                TaslarinResimleri[SecilmisPoz.Satir, SecilmisPoz.Sutun].Source = null;
-                SecilmisPoz = null; // Silindikten sonra seçimi kaldırın
-                VurgulariGizle(); // Vurgulamayı temizle
-                for (int r = 0; r < 8; r++)
-                {
-                    for (int c = 0; c < 8; c++)
-                    {
-                        Vurgular[r, c].Fill = Brushes.Transparent;
-                    }
-                }
-            }
-            if (e.Key == Key.Escape)
-            {
-                if (MenuEkrandaMi() && MenuContainer.Content is DurdurmaMenusu) // Durdurma menüsü açıksa
-                {
-                    MenuContainer.Content = null; // Durdurma menüsünü kapat
+            siyahSureSayaci.IsEnabled = false; // Siyah oyuncunun süresini durdurur.
+            beyazSureSayaci.IsEnabled = false; // Beyaz oyuncunun süresini durdurur.
 
-                    // Süre sayaçlarını tekrar başlat (eğer taş düzenleme modunda değilse)
-                    if (!tasDuzenlemeModu)
-                    {
-                        if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
-                        {
-                            beyazSureSayaci.Start();
-                        }
-                        else
-                        {
-                            siyahSureSayaci.Start();
-                        }
-                    }
-                }
-                else if (!MenuEkrandaMi()) // Durdurma menüsü açık değilse
-                {
-                    DurdurmaMenusunuGoster(); // Durdurma menüsünü aç
-                }
-            }
-        }
-        private void DurdurmaMenusunuGoster()
-        {
-            // Süre sayaçlarını durdur
-            siyahSureSayaci.Stop();
-            beyazSureSayaci.Stop();
-
-            DurdurmaMenusu durdurmaMenusu = new DurdurmaMenusu(this);
-            durdurmaMenusu.mainWindow = this;
-            MenuContainer.Content = durdurmaMenusu;
-
-            durdurmaMenusu.SecilenSecenek += (secenek, mw) =>
-            {
-                MenuContainer.Content = null;
-
-                if (secenek == Secenek.AnaMenu)
-                {
-                    mw.AnaMenuyeDon();
-                }
-                else if (secenek == Secenek.Cikis)
-                {
-                    Application.Current.Shutdown();
-                }
-                else if (secenek == Secenek.DevamEt && !tasDuzenlemeModu)
-                {
-                    // Süre sayaçlarını tekrar başlat
-                    if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
-                    {
-                        beyazSureSayaci.Start();
-                    }
-                    else
-                    {
-                        siyahSureSayaci.Start();
-                    }
-                }
-            };
-        }
-        public void AnaMenuyeDon()
-        {
-            // Ana menüyü aç
-            AnaMenu anaMenu = new AnaMenu();
-            anaMenu.Show();
-
-            this.Close();
-        }
-
-        #region Tahtaya_Tıklama
-        //Bu metod oyuncu tahtada bir yere tıkladığında çağrılır. 
-        private void TahtaIzgarasi_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            // Menü açıkken tahtaya müdahaleyi engelle
-            if (MenuEkrandaMi())
-            {
-                if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)
-                {
-                    return; // Menü açıksa sol veya sağ tıklama işlemlerini engelle
-                }
-            }
-
-            Point point = e.GetPosition(TasIzgarasi);
-            Pozisyon poz = KarePozisyona(point);
-
-            if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
-            {
-                return; // Yapay zekanın taşına tıklandıysa hiçbir işlem yapma
-            }
-            // Sadece sol tıklama için işlem yap
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                if (tasDuzenlemeModu)
-                {
-                    // Taş düzenleme modunda taşları seçme:
-                    SecilmisPoz = poz; // Tıklanan kareyi seçilen pozisyon olarak ayarla
-                    VurgulariGizle(); // Önceki vurguları temizle
-                    Vurgular[SecilmisPoz.Satir, SecilmisPoz.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 0)); // Sarı vurgu
-
-                    // (Ekstra) Hamleleri önbelleğe al (isteğe bağlı)
-                    // OnbellekHamleleri(oyunDurumu.TaslarIcinYasalHamleler(poz, tasDuzenlemeModu)); 
-                }
-                else
-                {
-                    // Normal oyun modunda taşları seçme:
-                    SecilenPozisyondanItibaren(poz);
-                }
-            }
-            // Sağ tıklama ile taş düzenleme menüsünü aç
-            // Sağ tıklama ile taş düzenleme menüsünü aç
-            if (tasDuzenlemeModu && e.RightButton == MouseButtonState.Pressed)
-            {
-                Oyuncu oyuncu = !oyunDurumu.Tahta.BosMu(poz) ? oyunDurumu.Tahta[poz].Renk : oyunDurumu.MevcutOyuncu;
-
-                // Açık olan TasSecmeMenusu'nu kapat
-                TasSecmeMenusunuKapat();
-
-                // Taş seçme menüsünü popup olarak aç
-                TasSecmeMenusu tasSecmeMenusu = new TasSecmeMenusu(oyuncu, this);
-                tasSecmeMenusu.TıklananPozisyon = poz;
-                Popup popup = new Popup
-                {
-                    Child = tasSecmeMenusu,
-                    IsOpen = true,
-                    PlacementTarget = TasIzgarasi,
-                    Placement = PlacementMode.MousePoint,
-                    StaysOpen = false // StaysOpen özelliğini false yap
-                };
-
-                // Açık olan menüyü takip et
-                acikTasSecmeMenusu = tasSecmeMenusu;
-
-                popup.Closed += TasSecmeMenusu_Closed;
-
-                tasSecmeMenusu.SecilenTas += tur =>
-                {
-                    popup.IsOpen = false;
-                    secilenTasTuru = tur;
-                    KareyeTasEkle(poz, oyuncu, tur);
-
-                    // Menü kapandığında takip değişkenini sıfırla
-                    acikTasSecmeMenusu = null;
-                };
-            }
-        }
-        private Pozisyon KarePozisyona(Point point)
-        {
-            double squareSize = TahtaIzgarasi.ActualWidth / 8;
-            int satir = (int)(point.Y / squareSize);
-            int sutun = (int)(point.X / squareSize);
-            return new Pozisyon(satir, sutun);
-        }
-
-        //Metod bir kareye tıklandığında ve seçilen bir tas olmadığında çağrılır. Konum paremetresi tıklanan karedir. 
-        private void SecilenPozisyondanItibaren(Pozisyon poz)
-        {
-            // Eğer tıklanan konum zaten seçili konumsa seçimi kaldır
-            if (poz == SecilmisPoz)
-            {
-                SecilmisPoz = null;
-                VurgulariGizle();
-                return; // Metodu sonlandır
-            }
-
-            // Önceki vurguları temizleriz (kırmızı vurgular dahil)
-            VurgulariGizle();
-
-            // İlk önce bu karedeki taş için yasal hamleleri çağırırız
-            IEnumerable<Hamle> hamleler = oyunDurumu.TaslarIcinYasalHamleler(poz, tasDuzenlemeModu);
-
-            if (hamleler.Any())
-            {
-                // Seçilen konumu göz önünde bulundururuz.
-                SecilmisPoz = poz;
-
-                // Hamleleri önbelleğe alırız.
-                OnbellekHamleleri(hamleler);
-
-                if (!tasDuzenlemeModu)
-                {
-                    VurgulamayiGoster();
-                }
-                // İmleci ayarlarız.
-                ImlecAyarla(oyunDurumu.MevcutOyuncu);
-
-                // Seçilen kareyi vurgularız.
-                Vurgular[SecilmisPoz.Satir, SecilmisPoz.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 0)); // Sarı vurgu
-            }
-            else
-            {
-                // Yasal hamle yoksa SecilenKonuma metodunu çağır
-                SecilenKonuma(poz);
-            }
-        }
-
-        private void SecilenKonuma(Pozisyon poz)
-        {
-            // Önceki vurguları temizleriz (kırmızı vurgular dahil)
-            VurgulariGizle();
-
-            // Tıklanan konum, seçili konumla aynıysa seçimi kaldır
-            if (poz == SecilmisPoz)
-            {
-                SecilmisPoz = null;
-                return; // Metodu sonlandır
-            }
-
-            if (SecilmisPoz != null && hamleBellegi.TryGetValue(poz, out Hamle hamle))
-            {
-                if (hamle != null && hamle.FromPos == SecilmisPoz) // hamle null değilse ve FromPos seçili pozisyona eşitse işlemleri yap
-                {
-                    if (hamle.Tur == HamleTuru.PiyonTerfi)
-                    {
-                        TerfiTasima(hamle.FromPos, hamle.ToPos);
-                    }
-                    else
-                    {
-                        TasimaHamlesi(hamle);
-                    }
-                }
-            }
-            // Seçili kareyi kaldırırız
-            SecilmisPoz = null;
+            DevamEtButonu.Visibility = Visibility.Visible; // "Devam Et" butonunu görünür yapar.
         }
         #endregion
 
-        #region Terfi_Taşıma
-        private void TerfiTasima(Pozisyon from, Pozisyon to)
+        #region Verilen pozisyona verilen renkte ve türde bir taş ekleyen metod
+        public void KareyeTasEkle(Pozisyon poz, Oyuncu oyuncu, TasTuru tur) // Verilen pozisyona verilen renkte ve türde bir taş ekleyen metod.
         {
-            TaslarinResimleri[to.Satir, to.Sutun].Source = Resimler.ResimAl(oyunDurumu.MevcutOyuncu, TasTuru.Piyon);
-            TaslarinResimleri[to.Satir, to.Sutun].Source = null;
+            oyunDurumu.Tahta[poz] = TasOlustur(oyuncu, tur); // Taşı oluşturur ve tahtaya yerleştirir.
+            TaslarinResimleri[poz.Satir, poz.Sutun].Source = Resimler.ResimAl(oyunDurumu.Tahta[poz]); // Taşın görüntüsünü ayarlar.
+        }
+        #endregion
 
-            TerfiMenusu trfMenusu = new TerfiMenusu(oyunDurumu.MevcutOyuncu);
-            MenuContainer.Content = trfMenusu;
-
-            trfMenusu.SecilenTas += tur =>
+        #region Verilen renkte ve türde bir taş oluşturan metod
+        private Tas TasOlustur(Oyuncu renk, TasTuru tur) // Verilen renkte ve türde bir taş oluşturan metod.
+        {
+            return tur switch // Taş türüne göre taş nesnesi oluşturur.
             {
-                MenuContainer.Content = null;
-                Hamle trfHamlesi = new PiyonTerfi(from, to, tur);
-                TasimaHamlesi(trfHamlesi);
+                TasTuru.Piyon => new Piyon(renk), // Piyon
+                TasTuru.At => new At(renk), // At
+                TasTuru.Kale => new Kale(renk), // Kale
+                TasTuru.Fil => new Fil(renk), // Fil
+                TasTuru.Vezir => new Vezir(renk), // Vezir
+                TasTuru.Sah => new Sah(renk), // Şah
+                _ => null // Diğer durumlarda null
             };
         }
         #endregion
 
-        #region Hamleyi_Gerçekleştir_Ve_Tahtaya_Kaydet
-
-        //Bu metod oyun durumuna şunu söyler: Verilen hamleyi gerçekleştirin.
-        private async void TasimaHamlesi(Hamle hamle)
+        #region Fare imlecinin konumunu satranç tahtası koordinatlarına dönüştüren metod
+        private Pozisyon KarePozisyona(Point point) // Fare imlecinin konumunu satranç tahtası koordinatlarına dönüştüren metod.
         {
-            // Süre sayaçlarını değiştir (Yapay Zeka Modu)
-            if (yapayZekaModu)
+            double squareSize = TahtaIzgarasi.ActualWidth / 8; // Karenin boyutunu hesaplar.
+            int satir = (int)(point.Y / squareSize); // Satır numarasını hesaplar.
+            int sutun = (int)(point.X / squareSize); // Sütun numarasını hesaplar.
+            return new Pozisyon(satir, sutun); // Pozisyon nesnesi oluşturur ve döndürür.
+        }
+        #endregion
+
+        #region Seçili kareye göre hamleleri hesaplar ve vurgular
+        private void SecilenPozisyondanItibaren(Pozisyon poz) // Seçili kareye göre hamleleri hesaplar ve vurgular.
+        {
+            if (poz == SecilmisPoz) // Tıklanan kare zaten seçili kare ise...
             {
-                if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+                SecilmisPoz = null; // Seçili kareyi sıfırlar.
+                VurgulariGizle(); // Vurguları gizler.
+                return; // Metodu sonlandırır.
+            }
+
+            VurgulariGizle(); // Vurguları gizler.
+
+            IEnumerable<Hamle> hamleler = oyunDurumu.TaslarIcinYasalHamleler(poz, tasDuzenlemeModu); // Seçili karedeki taş için yasal hamleleri alır.
+
+            if (hamleler.Any()) // Yasal hamle varsa...
+            {
+                SecilmisPoz = poz; // Tıklanan kareyi seçili kare olarak ayarlar.
+                OnbellekHamleleri(hamleler); // Hamleleri önbelleğe alır.
+
+                if (!tasDuzenlemeModu) // Taş düzenleme modunda değilse...
                 {
-                    siyahSureSayaci.Stop();
-                    beyazSureSayaci.Start();
+                    VurgulamayiGoster(); // Olası hamleleri vurgular.
                 }
-                else
+
+                ImlecAyarla(oyunDurumu.MevcutOyuncu); // Fare imlecini mevcut oyuncunun rengine göre ayarlar.
+                Vurgular[SecilmisPoz.Satir, SecilmisPoz.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 0)); // Seçili kareyi sarı renkle vurgular.
+            }
+            else // Yasal hamle yoksa...
+            {
+                SecilenKonuma(poz); // Tıklanan kareyi seçili kare olarak ayarlar (taş yoksa).
+            }
+        }
+        #endregion
+
+        #region Tıklanan kareyi seçili kare olarak ayarlar (taş yoksa)
+        private void SecilenKonuma(Pozisyon poz) // Tıklanan kareyi seçili kare olarak ayarlar (taş yoksa).
+        {
+            VurgulariGizle(); // Vurguları gizler.
+
+            if (poz == SecilmisPoz) // Tıklanan kare zaten seçili kare ise...
+            {
+                SecilmisPoz = null; // Seçili kareyi sıfırlar.
+                return; // Metodu sonlandırır.
+            }
+
+            if (SecilmisPoz != null && hamleBellegi.TryGetValue(poz, out Hamle hamle)) // Seçili bir kare varsa ve tıklanan kare bir hamle hedefi ise...
+            {
+                if (hamle != null && hamle.FromPos == SecilmisPoz) // Hamle null değilse ve başlangıç karesi seçili kareye eşitse...
                 {
-                    beyazSureSayaci.Stop();
-                    siyahSureSayaci.Start();
+                    if (hamle.Tur == HamleTuru.PiyonTerfi) // Hamle piyon terfi ise...
+                    {
+                        TerfiTasima(hamle.FromPos, hamle.ToPos); // Piyon terfi işlemini başlatır.
+                    }
+                    else // Hamle piyon terfi değilse...
+                    {
+                        TasimaHamlesi(hamle); // Hamleyi gerçekleştirir.
+                    }
                 }
             }
 
-            if (hamle != null)
-            {
-                // Düzenleme modunda hamle yapma
-                if (tasDuzenlemeModu)
-                {
-                    // Taşı kaldırma
-                    if (oyunDurumu.Tahta[hamle.FromPos] != null)
-                    {
-                        TaslarinResimleri[hamle.FromPos.Satir, hamle.FromPos.Sutun].Source = null;
-                        oyunDurumu.Tahta[hamle.FromPos] = null;
-                    }
-                    // Taşı yerleştirme (eğer boş değilse)
-                    if (oyunDurumu.Tahta[hamle.ToPos] != null)
-                    {
-                        TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = null;
-                        oyunDurumu.Tahta[hamle.ToPos] = null;
-                    }
-                    // Taşı yeni konuma yerleştir
-                    oyunDurumu.Tahta[hamle.ToPos] = oyunDurumu.Tahta[hamle.FromPos]; // Taşı yeni konuma yerleştir
-                    oyunDurumu.Tahta[hamle.FromPos] = null; // Taşı eski konumdan kaldır
+            SecilmisPoz = null; // Seçili kareyi sıfırlar.
+        }
+        #endregion
 
-                    if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+        #region Piyon terfi işlemini başlatan metod
+        private void TerfiTasima(Pozisyon from, Pozisyon to) // Piyon terfi işlemini başlatan metod.
+        {
+            TaslarinResimleri[to.Satir, to.Sutun].Source = Resimler.ResimAl(oyunDurumu.MevcutOyuncu, TasTuru.Piyon); // Hedef kareye piyon görüntüsünü yerleştirir (geçici).
+            TaslarinResimleri[to.Satir, to.Sutun].Source = null; // Hedef karedeki görüntüyü temizler.
+
+            TerfiMenusu trfMenusu = new TerfiMenusu(oyunDurumu.MevcutOyuncu); // Yeni bir piyon terfi menüsü oluşturur.
+            MenuContainer.Content = trfMenusu; // Piyon terfi menüsünü içerik alanına yerleştirir.
+
+            trfMenusu.SecilenTas += tur => // Piyon terfi menüsünden bir taş seçildiğinde çalışacak olay işleyicisi.
+            {
+                MenuContainer.Content = null; // Piyon terfi menüsünü kapatır.
+                Hamle trfHamlesi = new PiyonTerfi(from, to, tur); // Seçilen taş türüne göre piyon terfi hamlesi oluşturur.
+                TasimaHamlesi(trfHamlesi); // Piyon terfi hamlesini gerçekleştirir.
+            };
+        }
+        #endregion
+
+
+        private readonly Dictionary<Pozisyon, Hamle> hamleBellegi = new Dictionary<Pozisyon, Hamle>(); // Olası hamleleri önbelleğe almak için kullanılır.
+
+        #region Hamleyi gerçekleştiren metod
+        private async void TasimaHamlesi(Hamle hamle) // Hamleyi gerçekleştiren metod.
+        {
+            if (yapayZekaModu) // Yapay zeka modu aktifse...
+            {
+                if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // Sıra siyah oyuncu daysa...
+                {
+                    siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
+                    beyazSureSayaci.Start(); // Beyaz oyuncunun süresini başlatır.
+                }
+                else // Sıra beyaz oyuncu daysa...
+                {
+                    beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
+                    siyahSureSayaci.Start(); // Siyah oyuncunun süresini başlatır.
+                }
+            }
+
+            if (hamle != null) // Hamle null değilse...
+            {
+                if (tasDuzenlemeModu) // Taş düzenleme modunda ise...
+                {
+                    if (oyunDurumu.Tahta[hamle.FromPos] != null) // Başlangıç karesinde taş varsa...
+                    {
+                        TaslarinResimleri[hamle.FromPos.Satir, hamle.FromPos.Sutun].Source = null; // Taşın görüntüsünü temizler.
+                        oyunDurumu.Tahta[hamle.FromPos] = null; // Taşı tahtadan kaldırır.
+                    }
+
+                    if (oyunDurumu.Tahta[hamle.ToPos] != null) // Hedef karede taş varsa...
+                    {
+                        TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = null; // Taşın görüntüsünü temizler.
+                        oyunDurumu.Tahta[hamle.ToPos] = null; // Taşı tahtadan kaldırır.
+                    }
+
+                    oyunDurumu.Tahta[hamle.ToPos] = oyunDurumu.Tahta[hamle.FromPos]; // Taşı hedef kareye taşır.
+                    oyunDurumu.Tahta[hamle.FromPos] = null; // Taşı başlangıç karesinden kaldırır.
+
+                    if (!yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // Yapay zeka modu aktif değilse ve sıra siyah oyuncu daysa...
                     {
                         TahtaIzgarasi.RenderTransform = new RotateTransform(180, TahtaIzgarasi.ActualWidth / 2, TahtaIzgarasi.ActualHeight / 2);
+                        // Tahta ızgarasını 180 derece döndürür.
                     }
-                    else
+                    else // Yapay zeka modu aktifse veya sıra beyaz oyuncu daysa...
                     {
-                        TahtaIzgarasi.RenderTransform = null;
+                        TahtaIzgarasi.RenderTransform = null; // Tahta ızgarasının döndürme efektini kaldırır.
                     }
 
-                    // TahtaIzgarasi'nin layoutunu güncelle, bu da TahtaCiz metodunu tetikleyecek
-                    TahtaIzgarasi.UpdateLayout();
+                    TahtaIzgarasi.UpdateLayout(); // Tahta ızgarasının düzenini günceller.
+                    TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = Resimler.ResimAl(oyunDurumu.Tahta[hamle.ToPos]); // Taşın görüntüsünü ayarlar.
 
-                    TaslarinResimleri[hamle.ToPos.Satir, hamle.ToPos.Sutun].Source = Resimler.ResimAl(oyunDurumu.Tahta[hamle.ToPos]);
-
-                    // Hamle yapıldıktan sonra seçimi kaldır
-                    SecilmisPoz = null;
-                    VurgulariGizle(); // Vurgulamayı temizle
-
-                    return;
+                    SecilmisPoz = null; // Seçili kareyi sıfırlar.
+                    VurgulariGizle(); // Vurguları gizler.
+                    return; // Metodu sonlandırır.
                 }
-                oyunDurumu.HareketEt(hamle);
-                VurgulariGizle();
 
-                if (!tasDuzenlemeModu)
+                oyunDurumu.HareketEt(hamle); // Hamleyi gerçekleştirir ve oyun durumunu günceller.
+                VurgulariGizle(); // Vurguları gizler.
+
+                if (!tasDuzenlemeModu) // Taş düzenleme modunda değilse...
                 {
-                    Vurgular[hamle.FromPos.Satir, hamle.FromPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
-                    Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
+                    Vurgular[hamle.FromPos.Satir, hamle.FromPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0)); // Başlangıç karesini yeşil renkle vurgular.
+                    Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0)); // Hedef kareyi yeşil renkle vurgular.
                 }
-                //Ve değişiklikleri yansıtacak şekilde tahtayı güncelle.
-                TahtaCiz(oyunDurumu.Tahta);
-                ImlecAyarla(oyunDurumu.MevcutOyuncu);
 
-                oyunDurumu.HamleyiKaydet(hamle);
+                TahtaCiz(oyunDurumu.Tahta); // Tahtayı çizer.
+                ImlecAyarla(oyunDurumu.MevcutOyuncu); // Fare imlecini mevcut oyuncunun rengine göre ayarlar.
+                oyunDurumu.HamleyiKaydet(hamle); // Hamleyi txt dosyasına kaydeder.
+                OnbellekHamleleri(oyunDurumu.TaslarIcinYasalHamleler(hamle.ToPos)); // Yeni yasal hamleleri önbelleğe alır.
 
-                // Yasal hamleleri yeniden hesapla ve önbelleğe al
-                OnbellekHamleleri(oyunDurumu.TaslarIcinYasalHamleler(hamle.ToPos));
-
-                if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
+                if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // Yapay zeka modu aktifse ve sıra siyah oyuncu daysa...
                 {
-                    Hamle yapayZekaHamlesi = await Task.Run(() => YapayZekaHamlesiHesapla());
+                    Hamle yapayZekaHamlesi = await Task.Run(() => YapayZekaHamlesiHesapla()); // Yapay zekanın hamlesini hesaplar.
 
-                    // Yapay zeka hamlesi null değilse gerçekleştir
-                    if (yapayZekaHamlesi != null)
+                    if (yapayZekaHamlesi != null) // Yapay zeka bir hamle bulduysa...
                     {
-                        TasimaHamlesi(yapayZekaHamlesi);
+                        TasimaHamlesi(yapayZekaHamlesi); // Yapay zekanın hamlesini gerçekleştirir.
                     }
                 }
-                // Süre sayaclarını değiştir
-                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
+
+                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz) // Sıra beyaz oyuncu daysa...
                 {
-                    siyahSureSayaci.Stop();
-                    beyazSureSayaci.Start();
+                    siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
+                    beyazSureSayaci.Start(); // Beyaz oyuncunun süresini başlatır.
                 }
-                else
+                else // Sıra siyah oyuncu daysa...
                 {
-                    beyazSureSayaci.Stop();
-                    siyahSureSayaci.Start();
-                }
-                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz && !yapayZekaModu) // Sıra beyaza geçtiyse
-                {
-                    SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
-                    BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
-                    SiyahSureText.VerticalAlignment = VerticalAlignment.Bottom;
-                    SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Top;
-                    BeyazSureText.VerticalAlignment = VerticalAlignment.Top;
-                    BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Bottom;
-                    Grid.SetRow(SiyahSureText, 0);
-                    Grid.SetRow(SiyahOyuncuText, 1);
-                    Grid.SetRow(BeyazSureText, 6);
-                    Grid.SetRow(BeyazOyuncuText, 5);
-                }
-                else if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah && !yapayZekaModu) // Sıra siyaha geçtiyse
-                {
-                    SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
-                    BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
-                    SiyahSureText.VerticalAlignment = VerticalAlignment.Top;
-                    SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Bottom;
-                    BeyazSureText.VerticalAlignment = VerticalAlignment.Bottom;
-                    BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Top;
-                    Grid.SetRow(BeyazSureText, 0);
-                    Grid.SetRow(BeyazOyuncuText, 1);
-                    Grid.SetRow(SiyahSureText, 6);
-                    Grid.SetRow(SiyahOyuncuText, 5);
+                    beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
+                    siyahSureSayaci.Start(); // Siyah oyuncunun süresini başlatır.
                 }
 
-                if (yapayZekaModu && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah) // varsayalım ki yapay zeka siyah taşlarla oynuyor
+                if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz && !yapayZekaModu) // Sıra beyaz oyuncu daysa ve yapay zeka modu aktif değilse...
                 {
-                    // Yapay zeka hamlesini hesapla
-                    Hamle yapayZekaHamlesi = YapayZekaHamlesiHesapla(); // Bu metodu daha sonra yazacağız
-
-                    // Yapay zeka hamlesini gerçekleştir
-                    TasimaHamlesi(yapayZekaHamlesi);
+                    SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // Siyah oyuncunun kalan süresini ekrana yazar.
+                    BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // Beyaz oyuncunun kalan süresini ekrana yazar.
+                    SiyahSureText.VerticalAlignment = VerticalAlignment.Bottom; // Siyah oyuncunun süresini alt tarafa hizalar.
+                    SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Top; // Siyah oyuncu etiketini üst tarafa hizalar.
+                    BeyazSureText.VerticalAlignment = VerticalAlignment.Top; // Beyaz oyuncunun süresini üst tarafa hizalar.
+                    BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Bottom; // Beyaz oyuncu etiketini alt tarafa hizalar.
+                    Grid.SetRow(SiyahSureText, 0); // Siyah oyuncunun süresini 0. satıra yerleştirir.
+                    Grid.SetRow(SiyahOyuncuText, 1); // Siyah oyuncu etiketini 1. satıra yerleştirir.
+                    Grid.SetRow(BeyazSureText, 6); // Beyaz oyuncunun süresini 6. satıra yerleştirir.
+                    Grid.SetRow(BeyazOyuncuText, 5); // Beyaz oyuncu etiketini 5. satıra yerleştirir.
                 }
-                //Her hamle oynandığında oyun bittimi diye kontrol ediyoruz
-                if (oyunDurumu.OyunBittiMi())
+                else if (oyunDurumu.MevcutOyuncu == Oyuncu.Siyah && !yapayZekaModu) // Sıra siyah oyuncu daysa ve yapay zeka modu aktif değilse...
                 {
-                    OyunBitisiGoster();
+                    SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // Siyah oyuncunun kalan süresini ekrana yazar.
+                    BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // Beyaz oyuncunun kalan süresini ekrana yazar.
+                    SiyahSureText.VerticalAlignment = VerticalAlignment.Top; // Siyah oyuncunun süresini üst tarafa hizalar.
+                    SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Bottom; // Siyah oyuncu etiketini alt tarafa hizalar.
+                    BeyazSureText.VerticalAlignment = VerticalAlignment.Bottom; // Beyaz oyuncunun süresini alt tarafa hizalar.
+                    BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Top; // Beyaz oyuncu etiketini üst tarafa hizalar.
+                    Grid.SetRow(BeyazSureText, 0); // Beyaz oyuncunun süresini 0. satıra yerleştirir.
+                    Grid.SetRow(BeyazOyuncuText, 1); // Beyaz oyuncu etiketini 1. satıra yerleştirir.
+                    Grid.SetRow(SiyahSureText, 6); // Siyah oyuncunun süresini 6. satıra yerleştirir.
+                    Grid.SetRow(SiyahOyuncuText, 5); // Siyah oyuncu etiketini 5. satıra yerleştirir.
+                }
+
+                if (oyunDurumu.OyunBittiMi()) // Oyun bittiyse...
+                {
+                    OyunBitisiGoster(); // Oyun bitiş ekranını gösterir.
                 }
             }
         }
-        private Hamle YapayZekaHamlesiHesapla()
-        {
-            var yasalHamleler = oyunDurumu.ButunYasalHamlelerIcin(Oyuncu.Siyah).ToList();
+        #endregion
 
-            if (yasalHamleler.Count == 0)
+        #region Yapay zekanın hamlesini hesaplayan metod
+        private Hamle YapayZekaHamlesiHesapla() // Yapay zekanın hamlesini hesaplayan metod.
+        {
+            var yasalHamleler = oyunDurumu.ButunYasalHamlelerIcin(Oyuncu.Siyah).ToList(); // Siyah oyuncunun yasal hamlelerini alır.
+
+            if (yasalHamleler.Count == 0) // Yasal hamle yoksa...
             {
-                return null;
+                return null; // Null döndürür.
             }
 
-            int derinlik = 4;
-            int enIyiDeger = int.MinValue;
-            Hamle enIyiHamle = null;
+            int derinlik = 5; // Minimax algoritmasının derinliği.
+            int enIyiDeger = int.MinValue; // En iyi hamle değerini tutar.
+            Hamle enIyiHamle = null; // En iyi hamleyi tutar.
 
             // Hamleleri sırala
             yasalHamleler = yasalHamleler.OrderByDescending(h =>
@@ -781,41 +690,46 @@ namespace SatrancUI
                 }
             }).ToList();
 
-            foreach (Hamle hamle in yasalHamleler)
+            foreach (Hamle hamle in yasalHamleler) // Yasal hamleler üzerinde döngü yapar.
             {
-                Tahta yeniTahta = oyunDurumu.Tahta.Kopya();
-                hamle.Execute(yeniTahta);
-                int deger = Minimax(yeniTahta, derinlik - 1, false, int.MinValue, int.MaxValue);
-                if (deger > enIyiDeger)
+                Tahta yeniTahta = oyunDurumu.Tahta.Kopya(); // Oyun tahtasının bir kopyasını oluşturur.
+                hamle.Execute(yeniTahta); // Hamleyi kopya tahta üzerinde uygular.
+                int deger = Minimax(yeniTahta, derinlik - 1, false, int.MinValue, int.MaxValue); // Minimax algoritmasını çalıştırır.
+                if (deger > enIyiDeger) // Hesaplanan değer daha önceki en iyi değerden büyükse...
                 {
-                    enIyiDeger = deger;
-                    enIyiHamle = hamle;
+                    enIyiDeger = deger; // En iyi değeri günceller.
+                    enIyiHamle = hamle; // En iyi hamleyi günceller.
                 }
             }
 
-            return enIyiHamle;
+            return enIyiHamle; // En iyi hamleyi döndürür.
         }
-        private int VezirErkenHareketCezasi(Tahta tahta, Oyuncu oyuncu)
+        #endregion
+
+        #region Vezirin erken hareketini cezalandıran değerlendirme fonksiyonu
+        private int VezirErkenHareketCezasi(Tahta tahta, Oyuncu oyuncu) // Vezirin erken hareketini cezalandıran değerlendirme fonksiyonu.
         {
             if (oyuncu == Oyuncu.Beyaz)
             {
                 if (tahta[7, 3] == null || tahta[7, 3].Tasindi)
                 {
-                    return 1; // Beyaz vezir hareket etmişse ceza
+                    return 1; // Beyaz vezir hareket etmişse ceza puanı verir.
                 }
             }
             else // oyuncu == Oyuncu.Siyah
             {
                 if (tahta[0, 3] == null || tahta[0, 3].Tasindi)
                 {
-                    return 1; // Siyah vezir hareket etmişse ceza
+                    return 1; // Siyah vezir hareket etmişse ceza puanı verir.
                 }
             }
 
-            return 0; // Vezir hareket etmemişse ceza verme
+            return 0; // Vezir hareket etmemişse ceza verme.
         }
+        #endregion
 
-        private int VezirGuvenligi(Tahta tahta, Oyuncu oyuncu)
+        #region Vezirin güvenliğini değerlendiren değerlendirme fonksiyonu
+        private int VezirGuvenligi(Tahta tahta, Oyuncu oyuncu) // Vezirin güvenliğini değerlendiren değerlendirme fonksiyonu.
         {
             Pozisyon vezirPozisyonu = tahta.TasBul(oyuncu, TasTuru.Vezir);
 
@@ -827,28 +741,32 @@ namespace SatrancUI
 
             return 1; // Vezir güvende ise puan ver
         }
+        #endregion
 
-        private int SahErkenHareketCezasi(Tahta tahta, Oyuncu oyuncu)
+        #region Şahın erken hareketini cezalandıran değerlendirme fonksiyonu
+        private int SahErkenHareketCezasi(Tahta tahta, Oyuncu oyuncu) // Şahın erken hareketini cezalandıran değerlendirme fonksiyonu.
         {
             if (oyuncu == Oyuncu.Beyaz)
             {
                 if (tahta[7, 4] == null || tahta[7, 4].Tasindi)
                 {
-                    return 1; // Beyaz şah hareket etmişse ceza
+                    return 1; // Beyaz şah hareket etmişse ceza puanı verir.
                 }
             }
             else // oyuncu == Oyuncu.Siyah
             {
                 if (tahta[0, 4] == null || tahta[0, 4].Tasindi)
                 {
-                    return 1; // Siyah şah hareket etmişse ceza
+                    return 1; // Siyah şah hareket etmişse ceza puanı verir.
                 }
             }
 
-            return 0; // Şah hareket etmemişse ceza verme
+            return 0; // Şah hareket etmemişse ceza verme.
         }
+        #endregion
 
-        private int RokAvantajı(Tahta tahta, Oyuncu oyuncu)
+        #region Rok yapılıp yapılmadığını değerlendiren değerlendirme fonksiyonu
+        private int RokAvantajı(Tahta tahta, Oyuncu oyuncu) // Rok yapılıp yapılmadığını değerlendiren değerlendirme fonksiyonu.
         {
             if (oyuncu == Oyuncu.Beyaz)
             {
@@ -881,8 +799,10 @@ namespace SatrancUI
 
             return 0; // Rok durumu yoksa puan verme
         }
+        #endregion
 
-        private int DegerlendirmeFonksiyonu(Tahta tahta)
+        #region Tahtanın değerini hesaplayan değerlendirme fonksiyonu
+        private int DegerlendirmeFonksiyonu(Tahta tahta) // Tahtanın değerini hesaplayan değerlendirme fonksiyonu.
         {
             int puan = 0;
 
@@ -954,7 +874,9 @@ namespace SatrancUI
 
             return puan;
         }
+        #endregion
 
+        #region Merkez kontrolü
         private int MerkezKontrolu(Tahta tahta, Oyuncu oyuncu)
         {
             int puan = 0;
@@ -971,7 +893,9 @@ namespace SatrancUI
             }
             return puan;
         }
+        #endregion
 
+        #region Geliştirme
         private int Gelistirme(Tahta tahta, Oyuncu oyuncu)
         {
             int puan = 0;
@@ -995,7 +919,9 @@ namespace SatrancUI
             }
             return puan;
         }
+        #endregion
 
+        #region Şah güvenliği
         private int SahGuvenligi(Tahta tahta, Oyuncu oyuncu)
         {
             int puan = 0;
@@ -1027,8 +953,11 @@ namespace SatrancUI
 
             return puan;
         }
+        #endregion
+
         private Dictionary<string, int> transpositionTable = new Dictionary<string, int>();
 
+        #region Minimax
         private int Minimax(Tahta tahta, int derinlik, bool maximizingPlayer, int alfa, int beta)
         {
             string tahtaKonumu = TahtaKonumunuAl(tahta);
@@ -1101,7 +1030,9 @@ namespace SatrancUI
                 return minEval;
             }
         }
+        #endregion
 
+        #region Tahta konumunu temsil eden bir string döndüren fonksiyon
         // Tahta konumunu temsil eden bir string döndüren fonksiyon
         private string TahtaKonumunuAl(Tahta tahta)
         {
@@ -1123,7 +1054,9 @@ namespace SatrancUI
             }
             return sb.ToString();
         }
+        #endregion
 
+        #region Stringe karakter döndürme
         private static char TasKarakteri(Tas tas)
         {
             return tas.Tur switch
@@ -1139,129 +1072,170 @@ namespace SatrancUI
         }
         #endregion
 
-        #region Seçilen_Parça_İçin_Yasal_Hamlelerin_Toplanması_Ve_Saklanması
-
-        //Seçilen parça için yasal hamlelerin tolanması ve bunları önbellekte saklamak burada yapılır.
-        private void OnbellekHamleleri(IEnumerable<Hamle> hamleler)
+        #region Hamleleri önbelleğe alan metod
+        private void OnbellekHamleleri(IEnumerable<Hamle> hamleler) // Hamleleri önbelleğe alan metod.
         {
-            // Önbellekteki her şeyi boşaltıyoruz boşaltıyoruz.
-            hamleBellegi.Clear();
+            hamleBellegi.Clear(); // Hamle belleğini temizler.
 
-            // Ardından verilen hamleler üzerinden döngü yapıyoruz
-            foreach (Hamle hamle in hamleler)
+            foreach (Hamle hamle in hamleler) // Hamleler üzerinde döngü yapar.
             {
-                // Hedef konumu (ToPos) ve başlangıç konumunu (FromPos) önbelleğe ekle
-                hamleBellegi[hamle.ToPos] = hamle;
-                hamleBellegi[hamle.FromPos] = hamle;
+                hamleBellegi[hamle.ToPos] = hamle; // Hedef kareyi anahtar, hamleyi değer olarak önbelleğe ekler.
+                hamleBellegi[hamle.FromPos] = hamle; // Başlangıç kareyi anahtar, hamleyi değer olarak önbelleğe ekler.
             }
         }
-
         #endregion
 
-        #region Vurgulama_Yöntemini_Göster
-        private void VurgulamayiGoster()
+        #region Olası hamleleri vurgular
+        private void VurgulamayiGoster() // Olası hamleleri vurgular.
         {
-            //FromArgb(Alfa(şeffaflık),kırmızı, yeşil, mavi)
-            Color color = Color.FromArgb(150, 255, 125, 125);
-            //150,125,255,125
+            Color color = Color.FromArgb(150, 255, 125, 125); // Vurgu rengi (açık kırmızı).
 
-            //Tüm konumlar için rengi döndürüyoruz.
-            foreach (var hamle in hamleBellegi.Values)
+            foreach (var hamle in hamleBellegi.Values) // Önbelleğe alınmış hamleler üzerinde döngü yapar.
             {
-                Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(color);
+                Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(color); // Hedef kareleri vurgular.
             }
         }
-
         #endregion
 
-        #region Vurguluma_Yöntemini_Gizle
-        private void VurgulariGizle()
+        #region Tüm vurguları gizler
+        private void VurgulariGizle() // Tüm vurguları gizler.
         {
-            // Tüm vurguları temizle
-            for (int r = 0; r < 8; r++)
+            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
             {
-                for (int c = 0; c < 8; c++)
+                for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
                 {
-                    Vurgular[r, c].Fill = Brushes.Transparent;
+                    Vurgular[r, c].Fill = Brushes.Transparent; // Karelerin dolgu rengini şeffaf yapar.
                 }
             }
         }
         #endregion
 
-        #region İmleç_Oluşturma
-        private void ImlecAyarla(Oyuncu oyuncu)
+        #region Fare imlecini oyuncunun rengine göre ayarlar
+        private void ImlecAyarla(Oyuncu oyuncu) // Fare imlecini oyuncunun rengine göre ayarlar.
         {
-            if (oyuncu == Oyuncu.Beyaz)
+            if (oyuncu == Oyuncu.Beyaz) // Oyuncu beyaz ise...
             {
-                Cursor = SatrancImlecleri.BeyazImlec;
+                Cursor = SatrancImlecleri.BeyazImlec; // Beyaz imleci ayarlar.
             }
-            else
+            else // Oyuncu siyah ise...
             {
-                Cursor = SatrancImlecleri.SiyahImlec;
+                Cursor = SatrancImlecleri.SiyahImlec; // Siyah imleci ayarlar.
             }
         }
         #endregion
 
-        #region Menü_Ekranda_Mı?
-        //Oyun sonlarında çıkacağı için varsayılan olarak sıfır değerini alır
-        private bool MenuEkrandaMi()
+        #region Menü ekranında olup olmadığını kontrol eden metod
+        private bool MenuEkrandaMi() // Menü ekranında olup olmadığını kontrol eden metod.
         {
-            return MenuContainer.Content != null;
+            return MenuContainer.Content != null; // İçerik alanında bir içerik varsa true döner.
         }
         #endregion
 
-        #region Oyun_Bitiş_Menüsünü_Göster
-        private void OyunBitisiGoster()
+        #region Durdurma menüsünü gösteren metod
+        private void DurdurmaMenusunuGoster() // Durdurma menüsünü gösteren metod.
         {
-            //Bir nesne oluşturarak menüyü çağırıyoruz
-            OyunBitisMenusu oyunBitisMenusu = new OyunBitisMenusu(oyunDurumu);
-            MenuContainer.Content = oyunBitisMenusu;
+            siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
+            beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
 
+            DurdurmaMenusu durdurmaMenusu = new DurdurmaMenusu(this); // Yeni bir DurdurmaMenusu nesnesi oluşturur.
+            durdurmaMenusu.mainWindow = this; // Ana oyun penceresi referansını ayarlar.
+            MenuContainer.Content = durdurmaMenusu; // Durdurma menüsünü içerik alanına yerleştirir.
 
-            oyunBitisMenusu.SeciliSecenek += secenek =>
+            durdurmaMenusu.SecilenSecenek += (secenek, mw) => // Menüden bir seçenek seçildiğinde çalışacak olay işleyicisi.
             {
-                if (secenek == Secenek.YenidenBaslat)
+                MenuContainer.Content = null; // Durdurma menüsünü kapatır.
+
+                if (secenek == Secenek.AnaMenu) // Seçilen seçenek "Ana Menü" ise...
                 {
-                    //Eğer oyuncu yeniden başlat komutunu seçerse menü ekrandan kaldırır ve oyun yeniden başlatılır
-                    MenuContainer.Content = null;
-                    OyunuYenidenBaslat();
+                    mw.AnaMenuyeDon(); // Ana menüye döner.
                 }
-                else
+                else if (secenek == Secenek.Cikis) // Seçilen seçenek "Çıkış" ise...
                 {
-                    //Eğer oyuncu yeniden başlay yerine çıkışa basarsa Application.Current.Shutdown() metodu ile oyun kapatılır
-                    Application.Current.Shutdown();
+                    Application.Current.Shutdown(); // Uygulamayı kapatır.
+                }
+                else if (secenek == Secenek.DevamEt && !tasDuzenlemeModu) // Seçilen seçenek "Devam Et" ise ve taş düzenleme modunda değilse...
+                {
+                    if (oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz) // Sıra beyaz oyuncu daysa...
+                    {
+                        beyazSureSayaci.Start(); // Beyaz oyuncunun süresini başlatır.
+                    }
+                    else // Sıra siyah oyuncu daysa...
+                    {
+                        siyahSureSayaci.Start(); // Siyah oyuncunun süresini başlatır.
+                    }
                 }
             };
-            // Zamanlayıcıları durdur
-            siyahSureSayaci.Stop();
-            beyazSureSayaci.Stop();
         }
         #endregion
 
-        #region Yeniden_Başlat_Metodu
-        private void OyunuYenidenBaslat()
+        #region Ana menüye dönen metod
+        public void AnaMenuyeDon() // Ana menüye dönen metod.
         {
-            SecilmisPoz = null;
-            //Öncelikle tüm vurguları gizliyoruz gizleme metodu ile
-            VurgulariGizle();
-            //Hamle belleğini temizliyoruz
-            hamleBellegi.Clear();
-            //İlk tahta kurulumuyla yeni bir oyun durumu yaratıyoruz
-            oyunDurumu = new OyunDurumu(Oyuncu.Beyaz, Tahta.Baslangic());
-            //Tahtayı çiziyoruz
-            TahtaCiz(oyunDurumu.Tahta);
-            //Ve imlecin doğru renge sahip olduğundan emin oluyoruz
-            ImlecAyarla(oyunDurumu.MevcutOyuncu);
+            AnaMenu anaMenu = new AnaMenu(); // Yeni bir AnaMenu penceresi oluşturur.
+            anaMenu.Show(); // Ana menü penceresini gösterir.
 
-            beyazSureSayaci.Stop();
-            siyahSureSayaci.Stop();
-
-            beyazKalanSure = TimeSpan.FromMinutes(10);
-            siyahKalanSure = TimeSpan.FromMinutes(10);
-            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss");
-            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss");
+            this.Close(); // Ana oyun penceresini kapatır.
         }
         #endregion
 
+        #region Oyun bitiş ekranını gösteren metod
+        private void OyunBitisiGoster() // Oyun bitiş ekranını gösteren metod.
+        {
+            OyunBitisMenusu oyunBitisMenusu = new OyunBitisMenusu(oyunDurumu); // Yeni bir oyun bitiş menüsü oluşturur.
+            MenuContainer.Content = oyunBitisMenusu; // Oyun bitiş menüsünü içerik alanına yerleştirir.
+
+            oyunBitisMenusu.SeciliSecenek += secenek => // Menüden bir seçenek seçildiğinde çalışacak olay işleyicisi.
+            {
+                if (secenek == Secenek.YenidenBaslat) // Seçilen seçenek "Yeniden Başlat" ise...
+                {
+                    MenuContainer.Content = null; // Oyun bitiş menüsünü kapatır.
+                    OyunuYenidenBaslat(); // Oyunu yeniden başlatır.
+                }
+                else // Seçilen seçenek "Çıkış" ise...
+                {
+                    Application.Current.Shutdown(); // Uygulamayı kapatır.
+                }
+            };
+
+            siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
+            beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
+        }
+        #endregion
+
+        #region Oyunu yeniden başlatan metod
+        private void OyunuYenidenBaslat() // Oyunu yeniden başlatan metod.
+        {
+            SecilmisPoz = null; // Seçili kareyi sıfırlar.
+            VurgulariGizle(); // Vurguları gizler.
+            hamleBellegi.Clear(); // Hamle belleğini temizler.
+            oyunDurumu = new OyunDurumu(Oyuncu.Beyaz, Tahta.Baslangic()); // Yeni bir oyun durumu oluşturur.
+            TahtaCiz(oyunDurumu.Tahta); // Tahtayı çizer.
+            ImlecAyarla(oyunDurumu.MevcutOyuncu); // Fare imlecini mevcut oyuncunun rengine göre ayarlar.
+
+            beyazSureSayaci.Stop(); // Beyaz oyuncunun süresini durdurur.
+            siyahSureSayaci.Stop(); // Siyah oyuncunun süresini durdurur.
+
+            beyazKalanSure = TimeSpan.FromMinutes(10); // Beyaz oyuncunun süresini sıfırlar (10 dakika).
+            siyahKalanSure = TimeSpan.FromMinutes(10); // Siyah oyuncunun süresini sıfırlar (10 dakika).
+            BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // Beyaz oyuncunun kalan süresini ekrana yazar.
+            SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // Siyah oyuncunun kalan süresini ekrana yazar.
+        }
+        #endregion
+
+        #region Açık olan taş seçme menüsünü kapatan metod
+        private void TasSecmeMenusunuKapat() // Açık olan taş seçme menüsünü kapatan metod.
+        {
+            if (acikTasSecmeMenusu != null) // Açık bir taş seçme menüsü varsa...
+            {
+                if (acikTasSecmeMenusu.Parent is Popup popup) // Taş seçme menüsü bir Popup içindeyse...
+                {
+                    popup.Closed -= TasSecmeMenusu_Closed; // Closed olay işleyicisini kaldırır.
+                    popup.IsOpen = false; // Popup'ı kapatır.
+                    acikTasSecmeMenusu = null; // Açık taş seçme menüsü referansını null olarak ayarlar.
+                }
+                acikTasSecmeMenusu = null; // Açık taş seçme menüsü referansını null olarak ayarlar.
+            }
+        }
+        #endregion
     }
 }

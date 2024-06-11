@@ -1,64 +1,63 @@
 ﻿namespace SatrancMantigi
 {
+    // Tüm satranç taşları için temel sınıf (abstract). 
     public abstract class Tas
     {
-        #region Taş_Sınıfının_Temel_Özellikleri
-        //Abstract kullanmamamızın sebebi belli bir parçayı temsil etmemesinden mütevellit. Bu sadece tüm somut taşların burdan miras alacağı bir temel sınıftır.
-        public abstract TasTuru Tur { get; }
-        public abstract Oyuncu Renk { get; }
-        public bool Tasindi { get; set; } = false;
-        public abstract Tas Kopya();
-        public abstract IEnumerable<Hamle> HamleYapmak(Pozisyon from,Tahta tahta);
+        #region Özellikler
+        public abstract TasTuru Tur { get; } // Taşın türünü belirten özellik (abstract).
+        public abstract Oyuncu Renk { get; } // Taşın rengini belirten özellik (abstract).
+        public bool Tasindi { get; set; } = false; // Taşın hareket edip etmediğini belirten özellik. Başlangıçta false olarak ayarlanır.
         #endregion
 
-        #region Fil_Kale_Vezir_İçin_Hamleler
-        //Fil,Kale ve Vezir belirli bir yönde istedikleri kadar hareket ettikleri için bunu tanımlıyoruz çünkü bunu kolaylaştırmaız gerekiyor.
-        protected IEnumerable<Pozisyon> BelirliBirYondeUlasilabilirTumKonumlar(Pozisyon from, Tahta tahta, Yon yon)
-        {
-            for (Pozisyon poz = from + yon; Tahta.IcerideMi(poz); poz += yon)
-            {
-                //Verilen doğrultuda hareket eder;Konum tahtanın içindedir;Her yinelmeden sonra başka bir adım alır.
-                if(tahta.BosMu(poz))//Burada mevcut konumun boşluğunu kontrol ettik
-                {
-                    yield return poz;
-                    continue;
-                }
-                //Aksi halde pozisyonda bir taş vardır:
-                Tas tas =tahta[poz];
-
-                //Ve eğer bu denk gelinen taş rakibe aitse
-                if (tas.Renk != Renk)
-                {
-                    yield return poz;
-                    //Ulaşılabilir(ele geçirilebilir)
-                }
-                yield break;
-                //Renkler aynı ise ulaşılamaz
-            }
-        }
-        //Yield: Normal return gibi değil her sonucu yukarı gönderiyor
-
-        //Ulaşılabilir tüm konumları içeren bir koleksiyon verir.
-        protected IEnumerable<Pozisyon> BelirliBirYondeUlasilabilirTumKonumlar(Pozisyon from, Tahta tahta, Yon[] yonler)
-        {
-            return yonler.SelectMany(yon => BelirliBirYondeUlasilabilirTumKonumlar(from, tahta, yon));
-        }
+        #region Taşın bir kopyasını oluşturan soyut metod
+        public abstract Tas Kopya(); // Taşın bir kopyasını oluşturan metod (abstract).
+        public abstract IEnumerable<Hamle> HamleYapmak(Pozisyon from, Tahta tahta); // Taşın yapabileceği hamleleri döndüren metod (abstract).
         #endregion
 
-        #region Rakip_Şahı_Ele_Geçirilebilir_Mi_VİRTUAL
-        //Ancak ve ancak rakip şah ele geçirilebilecek durumdaysa true döndürür. Ancak bu gerçek oyunda asla gerçekleşmez çünkü gerçek oyunda şah yenilebilen değil sıkıştıralarak yani hamlesiz bırakılarak(mat edilir). Ama bunu sahne arkasında şahı kontrol etmek için kullancağız
-
-        //Sanal yapmamızın sebebi asla gerçekleşmeycek bir durum olması ama bunu şah çekme işlemleri için kullancağız
+        #region Taşın, verilen pozisyondan rakip şahı ele geçirip geçiremeyeceğini kontrol eden metod (virtual)
         public virtual bool RakipSahiEleGecirilebilir(Pozisyon from, Tahta tahta)
+        // Taşın, verilen pozisyondan rakip şahı ele geçirip geçiremeyeceğini kontrol eden metod (virtual).
         {
-            //Bu kısımda yapılan herhangi bir hamlenin rakip şahını ele geçirip geçiremediğini kontrol ederiz.
-            return HamleYapmak(from, tahta).Any(hamle =>
+            return HamleYapmak(from, tahta).Any(hamle => // Taşın yapabileceği hamleler arasında rakip şahı ele geçiren bir hamle olup olmadığını kontrol eder.
             {
-                Tas tas = tahta[hamle.ToPos];
-                //Konumdaki taşı alırız ve bunu şah olup olmadğını kontrol ederiz. Şahın rakibe ait olup olmadığını kontrol etmeye gerek yoktur. Çünkü asla şahı ele geçiren bir hamle üretilemeyecek.
-                return tas != null && tas.Tur == TasTuru.Sah;
+                Tas tas = tahta[hamle.ToPos]; // Hedef pozisyondaki taşı alır.
+                return tas != null && tas.Tur == TasTuru.Sah; // Taş şah ise true döner.
             });
         }
         #endregion
+
+        #region Belirli bir yönde ulaşılabilen tüm konumları döndüren metod. Fil, Kale ve Vezir sınıfları tarafından kullanılır
+        protected IEnumerable<Pozisyon> BelirliBirYondeUlasilabilirTumKonumlar(Pozisyon from, Tahta tahta, Yon yon)
+        // Belirli bir yönde ulaşılabilen tüm konumları döndüren metod. Fil, Kale ve Vezir sınıfları tarafından kullanılır.
+        {
+            for (Pozisyon poz = from + yon; Tahta.IcerideMi(poz); poz += yon)
+            // Başlangıç pozisyonundan başlayarak belirli bir yönde ilerler ve tahtanın içinde olan her pozisyonu kontrol eder.
+            {
+                if (tahta.BosMu(poz)) // Pozisyon boşsa...
+                {
+                    yield return poz; // Pozisyonu döndürür.
+                    continue; // Döngünün bir sonraki adımına geçer.
+                }
+
+                Tas tas = tahta[poz]; // Pozisyondaki taşı alır.
+
+                if (tas.Renk != Renk) // Taşın rengi farklıysa (rakip taş)...
+                {
+                    yield return poz; // Pozisyonu döndürür (yakalanabilir).
+                }
+                yield break; // Döngüyü sonlandırır (kendi taşı veya tahtanın sonu).
+            }
+        }
+        #endregion
+
+        #region Belirli yönlerde ulaşılabilen tüm konumları döndüren metod
+        protected IEnumerable<Pozisyon> BelirliBirYondeUlasilabilirTumKonumlar(Pozisyon from, Tahta tahta, Yon[] yonler)
+        // Belirli yönlerde ulaşılabilen tüm konumları döndüren metod. 
+        {
+            return yonler.SelectMany(yon => BelirliBirYondeUlasilabilirTumKonumlar(from, tahta, yon));
+            // Verilen yönlerin her biri için ulaşılabilen konumları hesaplar ve birleştirir.
+        }
+        #endregion
+
     }
 }

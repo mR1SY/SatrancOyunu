@@ -1,165 +1,143 @@
 ﻿namespace SatrancMantigi
 {
+    // Şah taşını temsil eden sınıf.
     public class Sah : Tas
     {
-        #region Şah_Özellikleri
-        //Şahın tür özelliği
-        public override TasTuru Tur => TasTuru.Sah;
-        //Şahın renk özelliği
-        public override Oyuncu Renk { get; }
+        #region Özellikler
+        public override TasTuru Tur => TasTuru.Sah; // Taş türünü Şah olarak tanımlar.
+        public override Oyuncu Renk { get; } // Şahın rengini tutar.
         #endregion
 
-        #region Şah_Kök_Yön_Tayini
-        private static readonly Yon[] yonler = new Yon[]
+        #region Şahın hareket edebileceği yönleri tanımlar
+        private static readonly Yon[] yonler = new Yon[] // Şahın hareket edebileceği yönleri tanımlar.
         {
-           Yon.Kuzey,
-           Yon.Guney,
-           Yon.Dogu,
-           Yon.Bati,
-           Yon.KuzeyBati,
-           Yon.KuzeyDogu,
-           Yon.GuneyBati,
-           Yon.GuneyDogu
+           Yon.Kuzey, // Kuzey yönü.
+           Yon.Guney, // Güney yönü.
+           Yon.Dogu, // Doğu yönü.
+           Yon.Bati, // Batı yönü.
+           Yon.KuzeyBati, // Kuzeybatı yönü.
+           Yon.KuzeyDogu, // Kuzeydoğu yönü.
+           Yon.GuneyBati, // Güneybatı yönü.
+           Yon.GuneyDogu // Güneydoğu yönü.
         };
         #endregion
 
-        #region Şah_Renk_Tanımlaması
-        public Sah(Oyuncu renk)
+        #region Yapıcı metod
+        public Sah(Oyuncu renk) // Şah nesnesini renk parametresiyle oluşturan yapıcı metod.
         {
-            Renk = renk;
+            Renk = renk; // Şahın rengini renk parametresinden alır.
         }
         #endregion
 
-        #region Rok_Şatları
-        
-        //Burada rok'un ana kurallarından birisi olan kalenin hareket edip etmediğini kontrol ediyoruz zira kale hareket etmişse rok gerçekleşmeyecektir
-        private static bool KaleHareketEttiMi(Pozisyon poz, Tahta tahta)
+        #region Şah nesnesinin bir kopyasını oluşturan metod
+        public override Tas Kopya() // Şah nesnesinin bir kopyasını oluşturan metod.
         {
-            //Kale hareket ettiyse false yani kural bozulmuş olacaktır
-            if (tahta.BosMu(poz))
+            Sah kopya = new Sah(Renk); // Yeni bir Şah nesnesi oluşturur ve rengini kopyalar.
+            kopya.Tasindi = Tasindi; // Taşın hareket edip etmediği bilgisini kopyalar.
+            return kopya; // Kopya Şah nesnesini döndürür.
+        }
+        #endregion
+
+        #region Rok için kalenin hareket edip etmediğini kontrol eden metod
+        private static bool KaleHareketEttiMi(Pozisyon poz, Tahta tahta) // Rok için kalenin hareket edip etmediğini kontrol eden metod.
+        {
+            if (tahta.BosMu(poz)) // Verilen pozisyon boş ise...
             {
-                return false;
+                return false; // Kale hareket etmemiştir, false döner.
             }
-            
-            //Aksi halde taşı o konumdan alırız
-            Tas tas = tahta[poz];
 
-            //Ve eğer bu bir kaleyse istenmeyen hareketleri gerçekleştirmemişse true değerini döndürür
-            return tas.Tur == TasTuru.Kale && !tas.Tasindi;
-        }
-        //Burada kale ve şah rasındaki konumların boşluğunu kontrol ediyoruz
-        private static bool HepsiBos(IEnumerable<Pozisyon> pozisyonlar, Tahta tahta)
-        {
-            return pozisyonlar.All(poz => tahta.BosMu(poz));
+            Tas tas = tahta[poz]; // Verilen pozisyondaki taşı alır.
+
+            return tas.Tur == TasTuru.Kale && !tas.Tasindi; // Taş bir kale ise ve hareket etmemişse true döner.
         }
         #endregion
 
-        #region Şah_Kanadı_Rok
-        private bool SahKanadiRokOlurMu(Pozisyon from, Tahta tahta)
+        #region Verilen pozisyonların hepsinin boş olup olmadığını kontrol eden metod
+        private static bool HepsiBos(IEnumerable<Pozisyon> pozisyonlar, Tahta tahta) // Verilen pozisyonların hepsinin boş olup olmadığını kontrol eden metod.
         {
-            //Şah eğer daha önce hareket etmişse rok gerçekleşmez
-            if (Tasindi)
+            return pozisyonlar.All(poz => tahta.BosMu(poz)); // Tüm pozisyonlar boş ise true döner.
+        }
+        #endregion
+
+        #region Şah kanadı rok yapılabilir mi kontrol eden metod
+        private bool SahKanadiRokOlurMu(Pozisyon from, Tahta tahta) // Şah kanadı rok yapılabilir mi kontrol eden metod.
+        {
+            if (Tasindi) // Şah daha önce hareket etmişse...
             {
-                return false;
+                return false; // Rok yapılamaz, false döner.
             }
-            //Aksi halde rok gerçekleşir eğer diğer kuralları da karşılamışsa
 
-            //Kale mevcut satırın 7. sütununda olmalıdır
-            Pozisyon kalePoz = new Pozisyon(from.Satir, 7);
+            Pozisyon kalePoz = new Pozisyon(from.Satir, 7); // Şah kanadı rok için kalenin olması gereken pozisyon.
 
-            //Ve bu iki konum kale arasındadır
-            Pozisyon[] pozisyonlarArasinda = new Pozisyon[] { new(from.Satir, 5), new(from.Satir, 6) };
+            Pozisyon[] pozisyonlarArasinda = new Pozisyon[] { new(from.Satir, 5), new(from.Satir, 6) }; // Şah ve kale arasındaki pozisyonlar.
 
-            //Kale hareket etmediyse ve konumlar boşsa roku döndür
-            return KaleHareketEttiMi(kalePoz, tahta) && HepsiBos(pozisyonlarArasinda, tahta);
+            return KaleHareketEttiMi(kalePoz, tahta) && HepsiBos(pozisyonlarArasinda, tahta); // Kale hareket etmemişse ve aradaki pozisyonlar boşsa true döner.
         }
         #endregion
 
-        #region Vezir_Kanadı_Rok
-        private bool VezirKanadiRokOlurMu(Pozisyon from, Tahta tahta)
+        #region Vezir kanadı rok yapılabilir mi kontrol eden metod
+        private bool VezirKanadiRokOlurMu(Pozisyon from, Tahta tahta) // Vezir kanadı rok yapılabilir mi kontrol eden metod.
         {
-            //Şah eğer daha önce hareket etmişse rok gerçekleşmez
-            if (Tasindi)
+            if (Tasindi) // Şah daha önce hareket etmişse...
             {
-                return false;
+                return false; // Rok yapılamaz, false döner.
             }
-            //Aksi halde rok gerçekleşir eğer diğer kuralları da karşılamışsa
 
-            //Kale mevcut satırın 0. sütununda olmalıdır
-            Pozisyon kalePoz = new Pozisyon(from.Satir, 0);
+            Pozisyon kalePoz = new Pozisyon(from.Satir, 0); // Vezir kanadı rok için kalenin olması gereken pozisyon.
 
-            //Ve bu üç konum kale arasındadır
-            Pozisyon[] pozisyonlarArasinda = new Pozisyon[] { new(from.Satir, 1), new(from.Satir, 2), new(from.Satir, 3) };
-            
-            //Kale hareket etmediyse ve konumlar boşsa roku döndür
-            return KaleHareketEttiMi(kalePoz, tahta) && HepsiBos(pozisyonlarArasinda, tahta);
+            Pozisyon[] pozisyonlarArasinda = new Pozisyon[] { new(from.Satir, 1), new(from.Satir, 2), new(from.Satir, 3) }; // Şah ve kale arasındaki pozisyonlar.
+
+            return KaleHareketEttiMi(kalePoz, tahta) && HepsiBos(pozisyonlarArasinda, tahta); // Kale hareket etmemişse ve aradaki pozisyonlar boşsa true döner.
         }
         #endregion
 
-        #region Şah_Kopyalama
-        public override Tas Kopya()
+        #region Şahın geçerli hamle yapabileceği pozisyonları hesaplayan metod
+        private IEnumerable<Pozisyon> HamlePozisyonlari(Pozisyon from, Tahta tahta) // Şahın geçerli hamle yapabileceği pozisyonları hesaplayan metod.
         {
-            Sah kopya = new Sah(Renk);
-            kopya.Tasindi = Tasindi;
-            return kopya;
-        }
-        #endregion
-
-        #region Şah_Gövde_Yön_Tayini
-        private IEnumerable<Pozisyon> HamlePozisyonlari(Pozisyon from, Tahta tahta)
-        {
-            foreach (Yon yon in yonler)
+            foreach (Yon yon in yonler) // Şahın hareket edebileceği yönler üzerinde döngü yapar.
             {
-                //Burada tek bir adım atıyoruz
-                Pozisyon to = from + yon;
-                
-                //Hamle tahtanın içerisinde mi
-                if (!Tahta.IcerideMi(to))
+                Pozisyon to = from + yon; // Hedef pozisyonu hesaplar.
+
+                if (!Tahta.IcerideMi(to)) // Hedef pozisyon tahtanın içinde değilse...
                 {
-                    //Hamle içerde değilse hemen bir sonrakine geç
-                    continue;
+                    continue; // Döngünün bir sonraki adımına geçer.
                 }
-                
-                //Gideceği kare boşsa veya rakip taşı varsa oraya hareket edebilir
-                if (tahta.BosMu(to) || tahta[to].Renk != Renk)
+
+                if (tahta.BosMu(to) || tahta[to].Renk != Renk) // Hedef pozisyon boş veya rakip taş içeriyorsa...
                 {
-                    yield return to;
+                    yield return to; // Hedef pozisyonu döndürür.
                 }
             }
         }
         #endregion
 
-        #region Şah_Hamle_Uygulama_Koleksiyonu
-        public override IEnumerable<Hamle> HamleYapmak(Pozisyon from, Tahta tahta)
+        #region Şahın yapabileceği tüm hamleleri döndüren metod
+        public override IEnumerable<Hamle> HamleYapmak(Pozisyon from, Tahta tahta) // Şahın yapabileceği tüm hamleleri döndüren metod.
         {
-            //Sadece yasal hareket pozisyonları arasında döngü yapar
-            foreach (Pozisyon to in HamlePozisyonlari(from, tahta))
+            foreach (Pozisyon to in HamlePozisyonlari(from, tahta)) // Şahın geçerli hamle pozisyonları üzerinde döngü yapar.
             {
-                //Her biri için normal hamle döndürür
-                yield return new NormalHamle(from, to);
+                yield return new NormalHamle(from, to); // Normal hamle nesnesi oluşturur ve döndürür.
             }
 
-            //Burada şah kanadında rok yapmanın mümkün olup olmadığını koleksiyon dahilinde kontrol ediyoruz
-            if (SahKanadiRokOlurMu(from, tahta))
+            if (SahKanadiRokOlurMu(from, tahta)) // Şah kanadı rok yapılabilirse...
             {
-                yield return new Rok(HamleTuru.KaleSahKanadi, from);
+                yield return new Rok(HamleTuru.RokSahKanadi, from); // Şah kanadı rok hamlesi nesnesi oluşturur ve döndürür.
             }
-            //Burada vezir kanadında rok yapmanın mümkün olup olmadığını koleksiyon dahilinde kontrol ediyoruz
-            if (VezirKanadiRokOlurMu(from, tahta))
+
+            if (VezirKanadiRokOlurMu(from, tahta)) // Vezir kanadı rok yapılabilirse...
             {
-                yield return new Rok(HamleTuru.KaleVezirKanadi, from);
+                yield return new Rok(HamleTuru.RokVezirKanadi, from); // Vezir kanadı rok hamlesi nesnesi oluşturur ve döndürür.
             }
         }
         #endregion
 
-        #region Rakip_Şahı_Ele_Geçirilebilir_Mi_OVERRİDE
-
-        public override bool RakipSahiEleGecirilebilir(Pozisyon from, Tahta tahta)
+        #region Şahın rakip şahı ele geçirip geçiremeyeceğini kontrol eden metod
+        public override bool RakipSahiEleGecirilebilir(Pozisyon from, Tahta tahta) // Şahın rakip şahı ele geçirip geçiremeyeceğini kontrol eden metod.
         {
-            return HamlePozisyonlari(from, tahta).Any(to =>
+            return HamlePozisyonlari(from, tahta).Any(to => // Şahın geçerli hamle pozisyonları arasında rakip şahın pozisyonu var mı kontrol eder.
             {
-                Tas tas = tahta[to];
-                return tas != null && tas.Tur == TasTuru.Sah;
+                Tas tas = tahta[to]; // Hedef pozisyondaki taşı alır.
+                return tas != null && tas.Tur == TasTuru.Sah; // Taş şah ise true döner.
             });
         }
         #endregion

@@ -6,146 +6,162 @@ using System.Threading.Tasks;
 
 namespace SatrancMantigi
 {
-    #region Tahta_İçin_Özel_Konumsal_Yapılanma
+    // Satranç tahtasının durumunu temsil eden bir dize oluşturur (FEN notasyonu).
     public class DurumStringi
     {
-        private readonly StringBuilder sb = new StringBuilder();
 
-        public DurumStringi(Oyuncu mevcutOyuncu, Tahta tahta)
+        private readonly StringBuilder sb = new StringBuilder(); // Dize oluşturmak için StringBuilder nesnesi.
+
+        #region Yapıcı metod
+        public DurumStringi(Oyuncu mevcutOyuncu, Tahta tahta) // DurumStringi nesnesini mevcut oyuncu ve tahta bilgileriyle oluşturan yapıcı metod.
         {
-            ParcaKonumuEkle(tahta);
-            sb.Append(' ');
-            MevcutOyuncuyuEkle(mevcutOyuncu);
-            sb.Append(' ');
-            RokHaklariEkle(tahta);
-            sb.Append(' ');
-            EnPassantEkle(tahta, mevcutOyuncu);
-            sb.Append(' ');
+            ParcaKonumuEkle(tahta); // Taşların konumlarını dizeye ekler.
+            sb.Append(' '); // Boşluk ekler.
+            MevcutOyuncuyuEkle(mevcutOyuncu); // Mevcut oyuncuyu dizeye ekler.
+            sb.Append(' '); // Boşluk ekler.
+            RokHaklariEkle(tahta); // Rok haklarını dizeye ekler.
+            sb.Append(' '); // Boşluk ekler.
+            EnPassantEkle(tahta, mevcutOyuncu); // En passant bilgilerini dizeye ekler.
+            sb.Append(' '); // Boşluk ekler.
         }
+        #endregion
 
-        public override string ToString()
+        #region Durum dizesini döndürür
+        public override string ToString() // Durum dizesini döndürür.
         {
-            return sb.ToString();
+            return sb.ToString(); // StringBuilder nesnesindeki dizeyi döndürür.
         }
+        #endregion
 
-        private static char TasKarakteri(Tas tas)
+        #region Taşların konumlarını dizeye ekler
+        private void ParcaKonumuEkle(Tahta tahta) // Taşların konumlarını dizeye ekler.
         {
-            char c = tas.Tur switch
+            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
             {
-                TasTuru.Piyon => 'p',
-                TasTuru.At => 'a',
-                TasTuru.Kale => 'k',
-                TasTuru.Fil => 'f',
-                TasTuru.Vezir => 'v',
-                TasTuru.Sah => 's',
-                _ => ' '
+                if (r != 0) // İlk satır değilse...
+                {
+                    sb.Append('/'); // Satırları ayırmak için "/" karakterini ekler.
+                }
+
+                SatirVerisiEkle(tahta, r); // Satırın taş bilgilerini dizeye ekler.
+            }
+        }
+        #endregion
+
+        #region Verilen satırın taş bilgilerini dizeye ekler
+        private void SatirVerisiEkle(Tahta tahta, int satir) // Verilen satırın taş bilgilerini dizeye ekler.
+        {
+            int bos = 0; // Boş kare sayacı.
+
+            for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
+            {
+                if (tahta[satir, c] == null) // Kare boşsa...
+                {
+                    bos++; // Boş kare sayacını artırır.
+                    continue; // Döngünün bir sonraki adımına geçer.
+                }
+
+                if (bos > 0) // Boş kare varsa...
+                {
+                    sb.Append(bos); // Boş kare sayısını dizeye ekler.
+                    bos = 0; // Boş kare sayacını sıfırlar.
+                }
+
+                sb.Append(TasKarakteri(tahta[satir, c])); // Taşın karakterini dizeye ekler.
+            }
+
+            if (bos > 0) // Boş kare varsa...
+            {
+                sb.Append(bos); // Boş kare sayısını dizeye ekler.
+            }
+        }
+        #endregion
+
+        #region Taş türüne karşılık gelen karakteri döndürür
+        private static char TasKarakteri(Tas tas) // Taş türüne karşılık gelen karakteri döndürür.
+        {
+            char c = tas.Tur switch // Taş türüne göre karakter seçer.
+            {
+                TasTuru.Piyon => 'p', // Piyon
+                TasTuru.At => 'a', // At
+                TasTuru.Kale => 'k', // Kale
+                TasTuru.Fil => 'f', // Fil
+                TasTuru.Vezir => 'v', // Vezir
+                TasTuru.Sah => 's', // Şah
+                _ => ' ' // Boş kare
             };
 
-            if (tas.Renk == Oyuncu.Beyaz)
+            if (tas.Renk == Oyuncu.Beyaz) // Taş beyaz ise...
             {
-                return char.ToUpper(c);
+                return char.ToUpper(c); // Karakteri büyük harfe dönüştürür.
             }
 
-            return c;
+            return c; // Karakteri küçük harf olarak döndürür.
         }
+        #endregion
 
-        private void SatirVerisiEkle(Tahta tahta, int satir)
+        #region Mevcut oyuncuyu dizeye ekler
+        private void MevcutOyuncuyuEkle(Oyuncu mevcutOyuncu) // Mevcut oyuncuyu dizeye ekler.
         {
-            int bos = 0;
-
-            for (int c = 0; c < 8; c++)
+            if (mevcutOyuncu == Oyuncu.Beyaz) // Mevcut oyuncu beyaz ise...
             {
-                if (tahta[satir, c] == null)
-                {
-                    bos++;
-                    continue;
-                }
-
-                if (bos > 0)
-                {
-                    sb.Append(bos);
-                    bos = 0;
-                }
-
-                sb.Append(TasKarakteri(tahta[satir, c]));
+                sb.Append('b'); // "b" karakterini ekler.
             }
-
-            if (bos > 0)
+            else // Mevcut oyuncu siyah ise...
             {
-                sb.Append(bos);
+                sb.Append('s'); // "s" karakterini ekler.
             }
         }
+        #endregion
 
-        private void ParcaKonumuEkle(Tahta tahta)
+        #region Rok haklarını dizeye ekler
+        private void RokHaklariEkle(Tahta tahta) // Rok haklarını dizeye ekler.
         {
-            for (int r = 0; r < 8; r++)
-            {
-                if (r != 0)
-                {
-                    sb.Append('/');
-                }
+            bool rokBeyazSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Beyaz); // Beyazın şah kanadı rok hakkı.
+            bool rokBeyazVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Beyaz); // Beyazın vezir kanadı rok hakkı.
+            bool rokSiyahSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Siyah); // Siyahın şah kanadı rok hakkı.
+            bool rokSiyahVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Siyah); // Siyahın vezir kanadı rok hakkı.
 
-                SatirVerisiEkle(tahta, r);
+            if (!(rokBeyazSahKanadi || rokBeyazVezirKanadi || rokSiyahSahKanadi || rokSiyahVezirKanadi)) // Hiçbir rok hakkı yoksa...
+            {
+                sb.Append('-'); // "-" karakterini ekler.
+                return; // Metodu sonlandırır.
+            }
+
+            if (rokBeyazSahKanadi) // Beyazın şah kanadı rok hakkı varsa...
+            {
+                sb.Append('S'); // "S" karakterini ekler.
+            }
+            if (rokBeyazVezirKanadi) // Beyazın vezir kanadı rok hakkı varsa...
+            {
+                sb.Append('V'); // "V" karakterini ekler.
+            }
+            if (rokSiyahSahKanadi) // Siyahın şah kanadı rok hakkı varsa...
+            {
+                sb.Append('s'); // "s" karakterini ekler.
+            }
+            if (rokSiyahVezirKanadi) // Siyahın vezir kanadı rok hakkı varsa...
+            {
+                sb.Append('v'); // "v" karakterini ekler.
             }
         }
+        #endregion
 
-        private void MevcutOyuncuyuEkle(Oyuncu mevcutOyuncu)
+        #region En passant bilgilerini dizeye ekler
+        private void EnPassantEkle(Tahta tahta, Oyuncu mevcutOyuncu) // En passant bilgilerini dizeye ekler.
         {
-            if (mevcutOyuncu == Oyuncu.Beyaz)
+            if (!tahta.EnPassantYakalayabilirMi(mevcutOyuncu)) // En passant yakalama mümkün değilse...
             {
-                sb.Append('b');
+                sb.Append('-'); // "-" karakterini ekler.
+                return; // Metodu sonlandırır.
             }
-            else
-            {
-                sb.Append('s');
-            }
+
+            Pozisyon poz = tahta.PiyonAtlamaPozisyonunuAl(mevcutOyuncu.Rakip()); // En passant yakalama pozisyonunu alır.
+            char dosya = (char)('a' + poz.Sutun); // Sütun bilgisini karaktere dönüştürür.
+            int siralama = 8 - poz.Satir; // Satır bilgisini sayısal sıraya dönüştürür.
+            sb.Append(dosya); // Sütun karakterini dizeye ekler.
+            sb.Append(siralama); // Satır numarasını dizeye ekler.
         }
-
-        private void RokHaklariEkle(Tahta tahta)
-        {
-            bool rokBeyazSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Beyaz);
-            bool rokBeyazVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Beyaz);
-            bool rokSiyahSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Siyah);
-            bool rokSiyahVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Siyah);
-
-            if (!(rokBeyazSahKanadi || rokBeyazVezirKanadi || rokSiyahSahKanadi || rokSiyahVezirKanadi))
-            {
-                sb.Append('-');
-                return;
-            }
-
-            if (rokBeyazSahKanadi)
-            {
-                sb.Append('S');
-            }
-            if (rokBeyazVezirKanadi)
-            {
-                sb.Append('V');
-            }
-            if (rokSiyahSahKanadi)
-            {
-                sb.Append('s');
-            }
-            if (rokSiyahVezirKanadi)
-            {
-                sb.Append('v');
-            }
-        }
-
-        private void EnPassantEkle(Tahta tahta, Oyuncu mevcutOyuncu)
-        {
-            if (!tahta.EnPassantYakalayabilirMi(mevcutOyuncu))
-            {
-                sb.Append('-');
-                return;
-            }
-
-            Pozisyon poz = tahta.PiyonAtlamaPozisyonunuAl(mevcutOyuncu.Rakip());
-            char dosya = (char)('a' + poz.Sutun);
-            int siralama = 8 - poz.Satir;
-            sb.Append(dosya);
-            sb.Append(siralama);
-        }
+        #endregion
     }
-    #endregion
 }

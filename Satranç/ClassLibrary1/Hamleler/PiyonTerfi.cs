@@ -7,58 +7,53 @@ using System.Threading.Tasks;
 
 namespace SatrancMantigi
 {
-    public class PiyonTerfi : Hamle
+    public class PiyonTerfi : Hamle // Piyonun terfi etmesini sağlayan hamle sınıfı.
     {
-        #region Piyon_Terfi_Özellik_Kalıpları
+        #region Özellikler
+        public override HamleTuru Tur => HamleTuru.PiyonTerfi; // Hamle türünü PiyonTerfi olarak tanımlar.
+        public override Pozisyon FromPos { get; } // Hamlenin başlangıç pozisyonunu tutar.
+        public override Pozisyon ToPos { get; } // Hamlenin bitiş pozisyonunu tutar.
 
-        public override HamleTuru Tur => HamleTuru.PiyonTerfi;
-        public override Pozisyon FromPos { get; }
-        public override Pozisyon ToPos { get; }
+        private readonly TasTuru yeniTur;//Piyonun terfi ettileceği taş türü // Piyonun terfi edeceği taş türünü tutar.
+        #endregion
 
-        private readonly TasTuru yeniTur;//Piyonun terfi ettileceği taş türü
-
-        public PiyonTerfi(Pozisyon fromPos, Pozisyon to, TasTuru yeniTur)
+        #region Yapıcı Metod
+        public PiyonTerfi(Pozisyon fromPos, Pozisyon to, TasTuru yeniTur) // PiyonTerfi nesnesini başlangıç pozisyonu, bitiş pozisyonu ve yeni taş türüyle oluşturan yapıcı metod.
 
         {
-            FromPos = fromPos;
-            ToPos = to;
-            this.yeniTur = yeniTur;
+            FromPos = fromPos; // Başlangıç pozisyonunu fromPos parametresinden alır.
+            ToPos = to; // Bitiş pozisyonunu to parametresinden alır.
+            this.yeniTur = yeniTur; // Yeni taş türünü yeniTur parametresinden alır.
         }
         #endregion
 
-        #region Terfi_Taşı_Oluşturma
-        //Terfi taşını bu kısımda oluşturuyoruz ve oyuncu rengiyle aynı girdiyi alıyoruz
-        private Tas TerfiTasiOlusturma(Oyuncu renk)
+        #region Terfi Edilecek Taşı Oluşturan Metod
+        private Tas TerfiTasiOlusturma(Oyuncu renk) // Terfi edilecek taşı oluşturan metod.
         {
-            //Saklanan yeni türle yeni bir parça döndürür ve gövdede verilen renkle
-            return yeniTur switch
+            return yeniTur switch // Yeni taş türüne göre yeni bir taş nesnesi oluşturur ve döndürür.
             {
-                TasTuru.At => new At(renk),
-                TasTuru.Fil => new Fil(renk),
-                TasTuru.Kale => new Kale(renk),
-                _ => new Vezir(renk)
+                TasTuru.At => new At(renk), // At
+                TasTuru.Fil => new Fil(renk), // Fil
+                TasTuru.Kale => new Kale(renk), // Kale
+                _ => new Vezir(renk) // Varsayılan olarak Vezir
             };
         }
         #endregion
 
-        #region Terfi_Taşı_Ana_Çalıştırma_Aşaması
-        public override bool Execute(Tahta tahta)
+        #region Piyon Terfi Yürütme Metodu
+        public override bool Execute(Tahta tahta) // PiyonTerfi hamlesini tahta üzerinde uygulayan metod.
         {
-            //Önce hareketli piyonu kaydediyoruz
-            Tas piyon = tahta[FromPos];
-            //Ön pozisyonu boşaltıyoruz
-            tahta[FromPos] = null;
+            Tas piyon = tahta[FromPos]; // Başlangıç pozisyonundaki piyonu alır.
+            tahta[FromPos] = null; // Piyonu başlangıç pozisyonundan kaldırır.
 
-            //Terfi taşını oluşturuyoruz ve hareketli piyonla aynı renkte olmalı
-            Tas terfiTasi = TerfiTasiOlusturma(piyon.Renk);
-            terfiTasi.Tasindi = true;
+            Tas terfiTasi = TerfiTasiOlusturma(piyon.Renk); // Yeni taş türüne göre terfi taşını oluşturur.
+            terfiTasi.Tasindi = true; // Terfi taşının hareket ettiğini işaretler.
 
-            TasSilindi = !tahta.BosMu(ToPos);
+            TasSilindi = !tahta.BosMu(ToPos); // Bitiş pozisyonunda taş varsa TasSilindi özelliğini true olarak ayarlar.
 
-            //Son olarak mevcut pozisyonda seçilen taş görüntülenir
-            tahta[ToPos] = terfiTasi;
+            tahta[ToPos] = terfiTasi; // Terfi taşını bitiş pozisyonuna yerleştirir.
 
-            return true;
+            return true; // Hamlenin başarılı olduğunu belirtir.
         }
         #endregion
     }

@@ -1,30 +1,40 @@
-﻿namespace SatrancMantigi
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SatrancMantigi
 {
-    #region Tüm_Hamlelerin_Özellik_Kalıpları
-    //Tüm somut hamleler için temel sınıf olduğundan ana özellik kalıplarını burda tanımlayacağız
-    public abstract class Hamle
+    
+    public abstract class Hamle // Tüm somut hamle sınıflarının temel sınıfı.
     {
-        public abstract HamleTuru Tur { get; }
-        public abstract Pozisyon FromPos {  get; }
-        public abstract Pozisyon ToPos { get; }
-        //Bu parçanın hareket ettiği yerdir ve her hareketin de bir yürütmesi olacaktır
-        public abstract bool Execute(Tahta tahta);
+        #region Özellikler
+        public abstract HamleTuru Tur { get; } // Hamlenin türünü belirten özellik (abstract).
+        public abstract Pozisyon FromPos { get; } // Hamlenin başlangıç pozisyonunu belirten özellik (abstract).
+        public abstract Pozisyon ToPos { get; } // Hamlenin bitiş pozisyonunu belirten özellik (abstract).
+        #endregion
 
-        //Ancak ve ancak bu hamleyi gerçekleştirmek mevcut oyuncunun şahını tehdit altında bırakmazsa true dönmelidir. Yani bir oyuncu karşı hamle oynayacaksa bunun yasal olması için kendi şahının tehdit altında olmaması gerekir
+        #region Yürütme Metodu Soyut Ana Kısım
+        public abstract bool Execute(Tahta tahta); // Hamleyi tahta üzerinde uygulayan metod (abstract).
 
-        public virtual bool Yasal(Tahta tahta)
+        #endregion
+
+        #region Yasal Hamleleri Kontrol Eden Ana Metod
+        public virtual bool Yasal(Tahta tahta) // Hamlenin yasal olup olmadığını kontrol eden metod.
         {
-            //İlk önce hareket edecek taşın rengini kontrol ederek hareket eden oyuncuyu elde edeceğiz
-            Oyuncu oyuncu = tahta[FromPos].Renk;
-            //Sonra tahtayı kopyalarız
-            Tahta tahtaKopya = tahta.Kopya();
-            //Ve kopya üzerinde hamleyi gerçekleştiririz
-            Execute(tahtaKopya);
-            //Ve eğer oyuncunun şahı hamleden sonra şahta değilse true değerini döndürürüz
-            return !tahtaKopya.TehditAltinda(oyuncu);
-        }
-        public bool TasSilindi { get; protected set; } = false;
+            Oyuncu oyuncu = tahta[FromPos].Renk; // Hamleyi yapan oyuncunun rengini alır.
 
+            Tahta tahtaKopya = tahta.Kopya(); // Tahtanın bir kopyasını oluşturur.
+
+            Execute(tahtaKopya); // Hamleyi kopya tahta üzerinde uygular.
+
+            return !tahtaKopya.TehditAltinda(oyuncu); // Kopya tahtada oyuncunun şahı tehdit altında değilse true döner.
+        }
+        #endregion
+
+        #region Txt'ye Aktarılırken Alınan Taşın X'e Aktarılma Ana Kısmı
+        public bool TasSilindi { get; protected set; } = false; // Hamle sonucunda bir taşın silinip silinmediğini belirten özellik.
+        #endregion
     }
-    #endregion
 }

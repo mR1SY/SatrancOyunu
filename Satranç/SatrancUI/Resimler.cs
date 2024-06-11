@@ -5,74 +5,51 @@ using System.Windows.Media.Imaging;
 
 namespace SatrancUI
 {
+    // Satranç taşlarının resimlerini yüklemek ve almak için yardımcı sınıf.
     public static class Resimler
     {
-        #region Resim_Yükleme_Kök
-
-        //Gövdede parametre olarak bir görüntünün göreceli yolunu alır yeni bir bitmap görüntüsü döndürürüz.
-        public static ImageSource ResimYukle(string DosyaYolu)
+        private static readonly Dictionary<TasTuru, ImageSource> BeyazKaynaklar = new() // Beyaz taşların resim kaynaklarını tutan sözlük.
         {
-            return new BitmapImage(new Uri(DosyaYolu, UriKind.Relative));
+            { TasTuru.Piyon, ResimYukle("Assets/BeyazPiyon.png") }, // Beyaz piyon resmi.
+            { TasTuru.Fil, ResimYukle("Assets/BeyazFil.png") }, // Beyaz fil resmi.
+            { TasTuru.At, ResimYukle("Assets/BeyazAt.png") }, // Beyaz at resmi.
+            { TasTuru.Kale, ResimYukle("Assets/BeyazKale.png") }, // Beyaz kale resmi.
+            { TasTuru.Vezir, ResimYukle("Assets/BeyazVezir.png") }, // Beyaz vezir resmi.
+            { TasTuru.Sah, ResimYukle("Assets/BeyazSah.png") } // Beyaz şah resmi.
+        };
+
+        private static readonly Dictionary<TasTuru, ImageSource> SiyahKaynaklar = new() // Siyah taşların resim kaynaklarını tutan sözlük.
+        {
+            { TasTuru.Piyon, ResimYukle("Assets/SiyahPiyon.png") }, // Siyah piyon resmi.
+            { TasTuru.Fil, ResimYukle("Assets/SiyahFil.png") }, // Siyah fil resmi.
+            { TasTuru.At, ResimYukle("Assets/SiyahAt.png") }, // Siyah at resmi.
+            { TasTuru.Kale, ResimYukle("Assets/SiyahKale.png") }, // Siyah kale resmi.
+            { TasTuru.Vezir, ResimYukle("Assets/SiyahVezir.png") }, // Siyah vezir resmi.
+            { TasTuru.Sah, ResimYukle("Assets/SiyahSah.png") } // Siyah şah resmi.
+        };
+
+        public static ImageSource ResimYukle(string DosyaYolu) // Verilen dosya yolundan bir ImageSource nesnesi oluşturur.
+        {
+            return new BitmapImage(new Uri(DosyaYolu, UriKind.Relative)); // BitmapImage nesnesi oluşturur ve döndürür.
         }
-        // Bitmap: (WPF) tarafından sağlanan ve bitmap resimleri yüklemek için kullanılan bir sınıftır.
-        //Uri: bir dosyanın veya bir web kaynağının konumunu tanımlamak için kullanılan bir sınıftır.
-        //UriKind.Relative: Uri'nin bir dosya yoluna göre yorumlanması gerektiğini belirtir.
-        //ImageSource: WPF'de, bir görüntüyü temsil etmek için kullanılan bir sınıftır.
-        #endregion
 
-
-        #region Resim_Yükleme_Gövde
-
-        //Görüntüleri sözlüğe yüklediğimiz kısım
-
-        private static readonly Dictionary<TasTuru, ImageSource> BeyazKaynaklar = new()
+        public static ImageSource ResimAl(Oyuncu renk, TasTuru tur) // Verilen renkte ve türdeki taşın resmini döndürür.
         {
-            { TasTuru.Piyon, ResimYukle("Assets/BeyazPiyon.png") },
-            { TasTuru.Fil, ResimYukle("Assets/BeyazFil.png") },
-            { TasTuru.At, ResimYukle("Assets/BeyazAt.png") },
-            { TasTuru.Kale, ResimYukle("Assets/BeyazKale.png") },
-            { TasTuru.Vezir, ResimYukle("Assets/BeyazVezir.png") },
-            { TasTuru.Sah, ResimYukle("Assets/BeyazSah.png") }
-        };
-
-        private static readonly Dictionary<TasTuru, ImageSource> SiyahKaynaklar = new()
-        {
-            { TasTuru.Piyon, ResimYukle("Assets/SiyahPiyon.png") },
-            { TasTuru.Fil, ResimYukle("Assets/SiyahFil.png") },
-            { TasTuru.At, ResimYukle("Assets/SiyahAt.png") },
-            { TasTuru.Kale, ResimYukle("Assets/SiyahKale.png") },
-            { TasTuru.Vezir, ResimYukle("Assets/SiyahVezir.png") },
-            { TasTuru.Sah, ResimYukle("Assets/SiyahSah.png") }
-        };
-        //Dictionary: Anahtar-değer çiftleri dediğimiz veri koleksiyonlarını saklamak için kullanılan güçlü bir veri yapıdır.
-
-        #endregion
-
-
-        #region Resimleri_Kütüphaneden_Çekme
-
-        //Oyuncu beyazsa beyaz kaynakları, siyahsa siyah kaynakları çıkarırız
-        public static ImageSource ResimAl(Oyuncu renk, TasTuru tur)
-        {
-            return renk switch
+            return renk switch // Renk bilgisine göre uygun resim kaynağını döndürür.
             {
-                Oyuncu.Beyaz => BeyazKaynaklar[tur],
-                Oyuncu.Siyah => SiyahKaynaklar[tur],
-                _ => null
+                Oyuncu.Beyaz => BeyazKaynaklar[tur], // Beyaz taşlar için.
+                Oyuncu.Siyah => SiyahKaynaklar[tur], // Siyah taşlar için.
+                _ => null // Diğer durumlarda null.
             };
         }
-        
-        //Bu duruma asla ulaşmayız ama bunu koymazsak VisualStudio şikayet eder :)
-        public static ImageSource ResimAl(Tas tas)
-        {
-            if (tas == null)
-            {
-                return null;
-            }
-            return ResimAl(tas.Renk, tas.Tur); 
-        }
-        //Olası bir hata durumunda konum boşsa boştur boş değilse uygun renkteki ve türdeki görüntüyü al
 
-        #endregion
+        public static ImageSource ResimAl(Tas tas) // Verilen taşın resmini döndürür.
+        {
+            if (tas == null) // Taş null ise...
+            {
+                return null; // Null döndürür.
+            }
+            return ResimAl(tas.Renk, tas.Tur); // Taşın rengine ve türüne göre resmini alır ve döndürür.
+        }
     }
 }

@@ -1,30 +1,25 @@
 ﻿namespace SatrancMantigi
 {
-    //Enum: bir grup sabit değeri temsil eden bir veri türüdür. Genellikle birbiriyle ilişkili olan ve birbiriyle değiştirilebilen değerleri tanımlamak için kullanılır. Oyuncu numaralandırılması yapacağımız için bunu kullanıyoruz. (Örneğin: Beyaz:1 Siyah:2 Boş:0)
-
-    // Bunu hangi oyuncuları temsil ettiğini ve oyunu kimin kazandığını saklamak için kullanacağız ama ek olarak bunu satranç taşlarının rengini temsil etmek için de kullanacağız.
-
-    //Boş koymamızın bize sağladığı kolaylık şudur: Beraberlik durumunda sıfıra endeksleyebiliriz.
+    // Oyuncuları (Beyaz, Siyah veya Boş) temsil eden enum.
     public enum Oyuncu
     {
-        Bos,     
-        Beyaz,   
-        Siyah 
+        Bos, // Boş oyuncu (oyun tahtasındaki boş kareleri temsil etmek için kullanılır).
+        Beyaz, // Beyaz oyuncu.
+        Siyah // Siyah oyuncu.
     }
 
-    #region Sıra_Değişimi(Ana_kısım)
-    //Bu kısımda mevcut oyuncu oynadıktan sonra sıranın bir diğer oyuncuya geçtiğini belirtiyoruz.
-    public static class OyuncuUzantıları
+    public static class OyuncuUzantıları // Oyuncu enum'ı için yardımcı metodları içeren statik sınıf.
     {
-        public static Oyuncu Rakip(this Oyuncu oyuncu)
+        #region Verilen oyuncunun rakibini döndüren metod
+        public static Oyuncu Rakip(this Oyuncu oyuncu) // Verilen oyuncunun rakibini döndüren metod.
         {
-            return oyuncu switch
+            return oyuncu switch // Oyuncuya göre rakibi döndürür.
             {
-                Oyuncu.Beyaz => Oyuncu.Siyah,
-                Oyuncu.Siyah => Oyuncu.Beyaz,
-                _ => Oyuncu.Bos,
+                Oyuncu.Beyaz => Oyuncu.Siyah, // Beyaz oyuncunun rakibi siyah oyuncudur.
+                Oyuncu.Siyah => Oyuncu.Beyaz, // Siyah oyuncunun rakibi beyaz oyuncudur.
+                _ => Oyuncu.Bos // Diğer durumlarda (Boş oyuncu) boş oyuncu döndürür.
             };
         }
+        #endregion
     }
-    #endregion
 }

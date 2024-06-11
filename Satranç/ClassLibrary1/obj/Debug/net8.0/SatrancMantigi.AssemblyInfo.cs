@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SatrancMantigi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3183c54e5e19c303b3e9abbd14bd3dfd561be35b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+baff72e92e2b7603b1a81be1c452079002cf7de1")]
 [assembly: System.Reflection.AssemblyProductAttribute("SatrancMantigi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SatrancMantigi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

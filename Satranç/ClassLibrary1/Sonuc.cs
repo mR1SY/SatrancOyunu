@@ -1,40 +1,33 @@
 ﻿namespace SatrancMantigi
 {
+    // Oyunun sonucunu (kazanan ve bitiş sebebi) temsil eden sınıf.
     public class Sonuc
     {
-        #region Sonuç_Özellikleri
-
-        //Oyunun kazananını belli eden özellik
-        public Oyuncu Kazanan { get; }
-
-        //Oyunun bitiş sebebini söyleyen özellik
-        public BitisSebebi Sebep { get; }
-
-        public Sonuc(Oyuncu kazanan, BitisSebebi sebep)
-        {
-            Kazanan = kazanan;
-            Sebep = sebep;
-        }
-
+        #region Özelllikler
+        public Oyuncu Kazanan { get; } // Oyunun kazananını tutar (Beyaz, Siyah veya Boş).
+        public BitisSebebi Sebep { get; } // Oyunun bitiş sebebini tutar.
         #endregion
 
-        #region Şah_Mat
-        //Kazanan oyuncuyu alır ve şahmat nedenini içeren yeni bir sonuç döndürür
-        public static Sonuc Kazanmak(Oyuncu kazanan)
+        #region Yapıcı Metod
+        public Sonuc(Oyuncu kazanan, BitisSebebi sebep) // Sonuc nesnesini kazanan ve bitiş sebebi ile oluşturan yapıcı metod.
         {
-            return new Sonuc(kazanan, BitisSebebi.SahMat);
+            Kazanan = kazanan; // Kazananı ayarlar.
+            Sebep = sebep; // Bitiş sebebini ayarlar.
         }
         #endregion
 
-        #region Berabere
-
-        //Bir nedenden dolayı berabere sonuçlanma kızmı
-        public static Sonuc Beraberlik(BitisSebebi sebep)
+        #region Şah mat ile oyun bitiş sonucunu oluşturan metod
+        public static Sonuc Kazanmak(Oyuncu kazanan) // Şah mat ile oyun bitiş sonucunu oluşturan metod.
         {
-            //Kazanan oyuncuya ayarlanmadığı için sonuç döndürüyoruz
-            return new Sonuc(Oyuncu.Bos, sebep);
+            return new Sonuc(kazanan, BitisSebebi.SahMat); // Kazananı ve bitiş sebebini (ŞahMat) ayarlar ve yeni bir Sonuc nesnesi döndürür.
         }
+        #endregion
 
+        #region Beraberlik ile oyun bitiş sonucunu oluşturan metod
+        public static Sonuc Beraberlik(BitisSebebi sebep) // Beraberlik ile oyun bitiş sonucunu oluşturan metod.
+        {
+            return new Sonuc(Oyuncu.Bos, sebep); // Kazananı Boş olarak ve bitiş sebebini ayarlar ve yeni bir Sonuc nesnesi döndürür.
+        }
         #endregion
     }
 }

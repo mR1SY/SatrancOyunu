@@ -1,15 +1,13 @@
 ﻿namespace SatrancMantigi
 {
-    #region Taş_Türleri
-    //Burası taş türlerini tanımladığımız kısım
+    // Satranç taşlarının türlerini temsil eden enum.
     public enum TasTuru
     {
-        Piyon,
-        Fil,
-        At,
-        Kale,
-        Vezir,
-        Sah
+        Piyon, // Piyon taşı.
+        Fil, // Fil taşı.
+        At, // At taşı.
+        Kale, // Kale taşı.
+        Vezir, // Vezir taşı.
+        Sah // Şah taşı.
     }
-    #endregion
 }

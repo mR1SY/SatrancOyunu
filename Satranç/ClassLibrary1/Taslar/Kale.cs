@@ -1,47 +1,44 @@
 ﻿namespace SatrancMantigi
 {
+    // Kale taşını temsil eden sınıf.
     public class Kale : Tas
     {
-        #region Kale_Özellikleri
-        //Kalenin tür özelliği
-        public override TasTuru Tur => TasTuru.Kale;
-        
-        //Kalenin renk özelliği
-        public override Oyuncu Renk { get; }
+        #region Özellikler
+        public override TasTuru Tur => TasTuru.Kale; // Taş türünü Kale olarak tanımlar.
+        public override Oyuncu Renk { get; } // Kalenin rengini tutar.
         #endregion
 
-        #region Kale_YönTayini
-        //Tüm dikey ve yatay yönleri içeren bir yön dizisi tanımlıyoruz
-        private static readonly Yon[] yonler = new Yon[]
+        #region Kalenin hareket edebileceği yönleri tanımlar
+        private static readonly Yon[] yonler = new Yon[] // Kalenin hareket edebileceği yönleri tanımlar.
         {
-            Yon.Kuzey,
-            Yon.Guney,
-            Yon.Dogu,
-            Yon.Bati
+            Yon.Kuzey, // Kuzey yönü.
+            Yon.Guney, // Güney yönü.
+            Yon.Dogu, // Doğu yönü.
+            Yon.Bati  // Batı yönü.
         };
         #endregion
 
-        #region Kale_Renk_Tanımlaması
-        public Kale(Oyuncu renk)
+        #region Yapıcı metod
+        public Kale(Oyuncu renk) // Kale nesnesini renk parametresiyle oluşturan yapıcı metod.
         {
-            Renk = renk;
+            Renk = renk; // Kalenin rengini renk parametresinden alır.
         }
         #endregion
 
-        #region Kale_Kopyalama
-        public override Tas Kopya()
+        #region Kale nesnesinin bir kopyasını oluşturan metod
+        public override Tas Kopya() // Kale nesnesinin bir kopyasını oluşturan metod.
         {
-            Kale kopya = new Kale(Renk);
-            kopya.Tasindi = Tasindi;
-            return kopya;
+            Kale kopya = new Kale(Renk); // Yeni bir Kale nesnesi oluşturur ve rengini kopyalar.
+            kopya.Tasindi = Tasindi; // Taşın hareket edip etmediği bilgisini kopyalar.
+            return kopya; // Kopya Kale nesnesini döndürür.
         }
         #endregion
 
-        #region Kale_Hamle_Uygulama_Koleksiyonu
-        public override IEnumerable<Hamle> HamleYapmak(Pozisyon from, Tahta tahta)
+        #region Kalenin yapabileceği tüm hamleleri döndüren metod
+        public override IEnumerable<Hamle> HamleYapmak(Pozisyon from, Tahta tahta) // Kalenin yapabileceği tüm hamleleri döndüren metod.
         {
             return BelirliBirYondeUlasilabilirTumKonumlar(from, tahta, yonler).Select(to => new NormalHamle(from, to));
-            //From, tahta ve yonler şartları sağlandığında parçayı oraya hareket ettiren normal bir hareket yaratmalıyız bunu da Select ile yapıyoruz.
+            // Kalenin dikey ve yatay yönlerde gidebileceği tüm pozisyonları hesaplar ve bu pozisyonlara NormalHamle nesneleri oluşturur.
         }
         #endregion
     }

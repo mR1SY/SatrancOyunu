@@ -296,3 +296,14 @@ C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\ClassLibrary1
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\ClassLibrary1\obj\Debug\net8.0\refint\SatrancMantigi.dll
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\ClassLibrary1\obj\Debug\net8.0\SatrancMantigi.pdb
 C:\Users\mR_1SY\Desktop\I wanna Make Model\Satranç Offline Deneme\ClassLibrary1\obj\Debug\net8.0\ref\SatrancMantigi.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\bin\Debug\net8.0\SatrancMantigi.deps.json
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\bin\Debug\net8.0\SatrancMantigi.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\bin\Debug\net8.0\SatrancMantigi.pdb
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\SatrancMantigi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\SatrancMantigi.AssemblyInfoInputs.cache
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\SatrancMantigi.AssemblyInfo.cs
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\SatrancMantigi.csproj.CoreCompileInputs.cache
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\SatrancMantigi.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\refint\SatrancMantigi.dll
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\SatrancMantigi.pdb
+C:\Users\ozant\Desktop\Sistem Analizi\Satranç\ClassLibrary1\obj\Debug\net8.0\ref\SatrancMantigi.dll

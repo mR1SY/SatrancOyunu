@@ -9,17 +9,16 @@ using System.Windows;
 
 namespace SatrancUI
 {
+    // Satranç oyununda kullanılacak imleçleri tanımlar.
     public static class SatrancImlecleri
     {
-        #region İmleç_Tanımlamaları
+        public static readonly Cursor BeyazImlec = ImlecYukle("Assets/BeyazIsaretci.cur"); // Beyaz oyuncu için imleç.
+        public static readonly Cursor SiyahImlec = ImlecYukle("Assets/SiyahIsaretci.cur"); // Siyah oyuncu için imleç.
 
-        public static readonly Cursor BeyazImlec = ImlecYukle("Assets/BeyazIsaretci.cur");
-        public static readonly Cursor SiyahImlec = ImlecYukle("Assets/SiyahIsaretci.cur");
-        private static Cursor ImlecYukle(string dosyaYolu)
+        private static Cursor ImlecYukle(string dosyaYolu) // Verilen dosya yolundan bir Cursor nesnesi oluşturur.
         {
-            Stream stream = Application.GetResourceStream(new Uri(dosyaYolu, UriKind.Relative)).Stream;
-            return new Cursor(stream, true);
+            Stream stream = Application.GetResourceStream(new Uri(dosyaYolu, UriKind.Relative)).Stream; // Dosyayı açar.
+            return new Cursor(stream, true); // Cursor nesnesi oluşturur ve döndürür.
         }
-        #endregion
     }
 }

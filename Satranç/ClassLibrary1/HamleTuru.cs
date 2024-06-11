@@ -1,14 +1,13 @@
 ﻿namespace SatrancMantigi
 {
-    #region Hamle_Türleri
+    // Olası hamle türlerini tanımlar.
     public enum HamleTuru
     {
-        Normal,
-        KaleSahKanadi,
-        KaleVezirKanadi,
-        CiftPiyon,
-        EnPassant,
-        PiyonTerfi
+        Normal, // Normal taş hareketi.
+        RokSahKanadi, // Şah kanadı rok.
+        RokVezirKanadi, // Vezir kanadı rok.
+        CiftPiyon, // Piyonun iki kare ilerlemesi.
+        EnPassant, // Geçerken alma hamlesi.
+        PiyonTerfi // Piyonun başka bir taşa terfi etmesi.
     }
-    #endregion
 }

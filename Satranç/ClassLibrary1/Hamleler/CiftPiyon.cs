@@ -8,40 +8,36 @@ namespace SatrancMantigi
 {
     public class CiftPiyon : Hamle
     {
+        #region Özellikler
         //Bu hamleyi(çift piyon) piyonun iki karesinde ilerlemek için kullancağız
-        #region Çift_Piyon_Özellikleri
-        public override HamleTuru Tur => HamleTuru.CiftPiyon;
-        public override Pozisyon FromPos { get; }
-        public override Pozisyon ToPos { get; }
+        public override HamleTuru Tur => HamleTuru.CiftPiyon; // Hamle türünü CiftPiyon olarak tanımlar.
+        public override Pozisyon FromPos { get; } // Hamlenin başlangıç pozisyonunu tutar.
+        public override Pozisyon ToPos { get; } // Hamlenin bitiş pozisyonunu tutar.
 
-        //En passant için bir değişken ekliyoruz
-        private readonly Pozisyon atlanmisPoz;
-
+        private readonly Pozisyon atlanmisPoz; // Piyonun çift hamlede atladığı pozisyonu tutar (en passant için).
         #endregion
 
-        #region Çift_Piyon_Konum_İlerlemesi
-        //Bu hareketi oluşturduğumuzda, başlangıç ve bitiş kanumlarını saklayan bir yapıcı ekliyoruz
-        public CiftPiyon(Pozisyon from, Pozisyon to)
+        #region Yapıcı Metod
+        public CiftPiyon(Pozisyon from, Pozisyon to) // ÇiftPiyon hamlesini başlangıç ve bitiş pozisyonlarıyla oluşturan yapıcı metod.
         {
-            FromPos = from;
-            ToPos = to;
-            
-            //Bu hareketi oluşturduğumuzda iki konum her zaman ön konum + iki adım ileriye eşit olacaktır bu nedenle atlama konumu arasındaki satırda olmalıdır
-            atlanmisPoz = new Pozisyon((from.Satir + to.Satir) / 2, from.Sutun);
+            FromPos = from; // Başlangıç pozisyonunu from parametresinden alır.
+            ToPos = to; // Bitiş pozisyonunu to parametresinden alır.
+
+            atlanmisPoz = new Pozisyon((from.Satir + to.Satir) / 2, from.Sutun); // Atlanan pozisyonu hesaplar (başlangıç ve bitiş pozisyonlarının satırlarının ortalaması).
         }
         #endregion
 
-        #region Çift_Piyon_Yürütme_Metodu
-        public override bool Execute(Tahta tahta)
+        #region Çift Hamle Piyon Yürütme Metodu
+        public override bool Execute(Tahta tahta) // ÇiftPiyon hamlesini tahta üzerinde uygulayan metod.
         {
-            //Önce oyuncuyu alıyoruz 
-            Oyuncu oyuncu = tahta[FromPos].Renk;
-            //ve ardından atlama pozisyonunun panosunda saklıyoruz
-            tahta.PiyonAtlamaPozisyonunuAyarla(oyuncu, atlanmisPoz);
-            //Son olarak piyonu kullanarak hareket ettiriyoruz normal bir hamle olarak
-            new NormalHamle(FromPos, ToPos).Execute(tahta);
 
-            return true;
+            Oyuncu oyuncu = tahta[FromPos].Renk; // Hamleyi yapan oyuncunun rengini alır.
+
+            tahta.PiyonAtlamaPozisyonunuAyarla(oyuncu, atlanmisPoz); // Atlama pozisyonunu tahtaya kaydeder (en passant için).
+
+            new NormalHamle(FromPos, ToPos).Execute(tahta); // Piyonu normal bir hamle gibi hareket ettirir.
+
+            return true; // Hamlenin başarılı olduğunu belirtir.
         }
         #endregion
     }

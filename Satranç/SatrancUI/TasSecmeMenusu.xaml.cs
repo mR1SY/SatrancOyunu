@@ -1,61 +1,71 @@
 ﻿using SatrancMantigi;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace SatrancUI
 {
+    // Taş düzenleme modunda, kullanıcı tarafından seçilebilecek taşları gösteren bir menü.
     public partial class TasSecmeMenusu : UserControl
     {
-        public event Action<TasTuru> SecilenTas;
+        public event Action<TasTuru> SecilenTas; // Menüden bir taş seçildiğinde tetiklenen olay.
 
-        private Oyuncu oyuncu; // Oyuncu alanını ekleyin
-        private MainWindow mainWindow; // MainWindow referansını ekleyin
-        public Pozisyon TıklananPozisyon { get; set; } // Yeni özellik
+        private Oyuncu oyuncu; // Menüye ait oyuncunun rengini saklar.
+        private MainWindow mainWindow; // Ana oyun penceresine referans.
+        public Pozisyon TıklananPozisyon { get; set; } // Tıklanan karenin pozisyonunu saklar.
 
-        public TasSecmeMenusu(Oyuncu oyuncu, MainWindow mainWindow)
+        public TasSecmeMenusu(Oyuncu oyuncu, MainWindow mainWindow) // TasSecmeMenusu nesnesini oyuncu ve ana oyun penceresi referansıyla oluşturan yapıcı metod.
         {
-            InitializeComponent();
-            this.oyuncu = oyuncu; // Gelen oyuncuyu kaydedin
-            this.mainWindow = mainWindow; // Gelen mainWindow referansını kaydedin
+            InitializeComponent(); // UserControl bileşenlerini başlatır.
+            this.oyuncu = oyuncu; // Oyuncu rengini kaydeder.
+            this.mainWindow = mainWindow; // Ana oyun penceresi referansını kaydeder.
 
-            // Siyah taş resimlerini ayarla
-            SiyahPiyonResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Piyon);
-            SiyahAtResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.At);
-            SiyahFilResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Fil);
-            SiyahKaleResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Kale);
-            SiyahVezirResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Vezir);
-            SiyahSahResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Sah);
+            SiyahPiyonResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Piyon); // Siyah piyon resmi ayarlanır.
+            SiyahAtResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.At); // Siyah at resmi ayarlanır.
+            SiyahFilResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Fil); // Siyah fil resmi ayarlanır.
+            SiyahKaleResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Kale); // Siyah kale resmi ayarlanır.
+            SiyahVezirResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Vezir); // Siyah vezir resmi ayarlanır.
+            SiyahSahResmi.Source = Resimler.ResimAl(Oyuncu.Siyah, TasTuru.Sah); // Siyah şah resmi ayarlanır.
 
-            // Beyaz taş resimlerini ayarla
-            BeyazPiyonResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Piyon);
-            BeyazAtResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.At);
-            BeyazFilResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Fil);
-            BeyazKaleResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Kale);
-            BeyazVezirResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Vezir);
-            BeyazSahResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Sah);
+            BeyazPiyonResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Piyon); // Beyaz piyon resmi ayarlanır.
+            BeyazAtResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.At); // Beyaz at resmi ayarlanır.
+            BeyazFilResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Fil); // Beyaz fil resmi ayarlanır.
+            BeyazKaleResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Kale); // Beyaz kale resmi ayarlanır.
+            BeyazVezirResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Vezir); // Beyaz vezir resmi ayarlanır.
+            BeyazSahResmi.Source = Resimler.ResimAl(Oyuncu.Beyaz, TasTuru.Sah); // Beyaz şah resmi ayarlanır.
 
         }
-        public void PopupKapat()
+
+        public void PopupKapat() // Popup'ı kapatan metod.
         {
-            if (Parent is Popup popup)
+            if (Parent is Popup popup) // Parent bir Popup ise...
             {
-                popup.IsOpen = false;
+                popup.IsOpen = false; // Popup'ı kapatır.
             }
         }
 
-        private void TasResmi_MouseDown(object sender, MouseButtonEventArgs e)
+        private void TasResmi_MouseDown(object sender, MouseButtonEventArgs e) // Taş resmine tıklandığında çalışacak metod.
         {
-            Image image = (Image)sender;
-            string imageName = image.Name; // Image kontrolünün adını alın
-            string tag = image.Tag.ToString();
-            Pozisyon poz = TıklananPozisyon;
+            Image image = (Image)sender; // Tıklanan Image nesnesini alır.
+            string imageName = image.Name; // Image nesnesinin adını alır.
+            string tag = image.Tag.ToString(); // Image nesnesinin Tag değerini alır.
+            Pozisyon poz = TıklananPozisyon; // Tıklanan karenin pozisyonunu alır.
 
-            // Image adında "Siyah" geçiyorsa siyah, aksi halde beyaz
-            Oyuncu renk = imageName.Contains("Siyah") ? Oyuncu.Siyah : Oyuncu.Beyaz;
+            Oyuncu renk = imageName.Contains("Siyah") ? Oyuncu.Siyah : Oyuncu.Beyaz; // Image adında "Siyah" geçiyorsa siyah, aksi halde beyaz oyuncuyu belirler.
 
-            TasTuru tur = tag switch
+            TasTuru tur = tag switch // Tag değerine göre taş türünü belirler.
             {
                 "Piyon" => TasTuru.Piyon,
                 "At" => TasTuru.At,
@@ -66,39 +76,38 @@ namespace SatrancUI
                 _ => throw new ArgumentException("Geçersiz taş türü.")
             };
 
-            // KareyeTasEkle metoduna renk parametresini de gönderin
-            mainWindow.KareyeTasEkle(poz, renk, tur);
-            PopupKapat();
+            mainWindow.KareyeTasEkle(poz, renk, tur); // Seçilen taşı tahtaya ekler.
+            PopupKapat(); // Popup'ı kapatır.
         }
 
-        private void PiyonResmi_MouseDown(object sender, MouseButtonEventArgs e)
+        private void PiyonResmi_MouseDown(object sender, MouseButtonEventArgs e) // "Piyon" resmine tıklandığında çalışacak metod.
         {
-            SecilenTas?.Invoke(TasTuru.Piyon);
+            SecilenTas?.Invoke(TasTuru.Piyon); // SecilenTas olayını tetikler ve TasTuru.Piyon'u parametre olarak gönderir.
         }
 
-        private void AtResmi_MouseDown(object sender, MouseButtonEventArgs e)
+        private void AtResmi_MouseDown(object sender, MouseButtonEventArgs e) // "At" resmine tıklandığında çalışacak metod.
         {
-            SecilenTas?.Invoke(TasTuru.At);
+            SecilenTas?.Invoke(TasTuru.At); // SecilenTas olayını tetikler ve TasTuru.At'ı parametre olarak gönderir.
         }
 
-        private void FilResmi_MouseDown(object sender, MouseButtonEventArgs e)
+        private void FilResmi_MouseDown(object sender, MouseButtonEventArgs e) // "Fil" resmine tıklandığında çalışacak metod.
         {
-            SecilenTas?.Invoke(TasTuru.Fil);
+            SecilenTas?.Invoke(TasTuru.Fil); // SecilenTas olayını tetikler ve TasTuru.Fil'i parametre olarak gönderir.
         }
 
-        private void KaleResmi_MouseDown(object sender, MouseButtonEventArgs e)
+        private void KaleResmi_MouseDown(object sender, MouseButtonEventArgs e) // "Kale" resmine tıklandığında çalışacak metod.
         {
-            SecilenTas?.Invoke(TasTuru.Kale);
+            SecilenTas?.Invoke(TasTuru.Kale); // SecilenTas olayını tetikler ve TasTuru.Kale'yi parametre olarak gönderir.
         }
 
-        private void VezirResmi_MouseDown(object sender, MouseButtonEventArgs e)
+        private void VezirResmi_MouseDown(object sender, MouseButtonEventArgs e) // "Vezir" resmine tıklandığında çalışacak metod.
         {
-            SecilenTas?.Invoke(TasTuru.Vezir);
+            SecilenTas?.Invoke(TasTuru.Vezir); // SecilenTas olayını tetikler ve TasTuru.Vezir'i parametre olarak gönderir.
         }
 
-        private void SahResmi_MouseDown(object sender, MouseButtonEventArgs e)
+        private void SahResmi_MouseDown(object sender, MouseButtonEventArgs e) // "Şah" resmine tıklandığında çalışacak metod.
         {
-            SecilenTas?.Invoke(TasTuru.Sah);
+            SecilenTas?.Invoke(TasTuru.Sah); // SecilenTas olayını tetikler ve TasTuru.Sah'i parametre olarak gönderir.
         }
     }
 }

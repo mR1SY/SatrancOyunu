@@ -1,34 +1,36 @@
 ﻿namespace SatrancMantigi
 {
     //Bu sınıfı bir taşı başka bir konuma basitçe(temel) hareket ettirmek için oluşturduk.
-    public class NormalHamle : Hamle
+    public class NormalHamle : Hamle // Taşı normal bir şekilde hareket ettiren hamle sınıfı.
     {
-        #region Normal_Hamle_Özellikleri
-        public override HamleTuru Tur => HamleTuru.Normal;
-        public override Pozisyon FromPos { get; }
-        public override Pozisyon ToPos { get; }
-        public NormalHamle(Pozisyon from, Pozisyon to)
+        #region Özellikler
+        public override HamleTuru Tur => HamleTuru.Normal; // Hamle türünü Normal olarak tanımlar.
+        public override Pozisyon FromPos { get; } // Hamlenin başlangıç pozisyonunu tutar.
+        public override Pozisyon ToPos { get; } // Hamlenin bitiş pozisyonunu tutar.
+        #endregion
+
+        #region Yapıcı Metod
+        public NormalHamle(Pozisyon from, Pozisyon to) // NormalHamle nesnesini başlangıç ve bitiş pozisyonlarıyla oluşturan yapıcı metod.
         {
-            FromPos = from;
-            ToPos = to;
+            FromPos = from; // Başlangıç pozisyonunu from parametresinden alır.
+            ToPos = to; // Bitiş pozisyonunu to parametresinden alır.
         }
         #endregion
 
-        #region Taş_Hareket
-        //Hareketi yapan asıl aşama burası
-        public override bool Execute(Tahta tahta)
+        #region Yürütme Metodu Genel Somut Kısım
+        public override bool Execute(Tahta tahta) // NormalHamle'yi tahta üzerinde uygulayan metod.
         {
-            Tas tas = tahta[FromPos];  //Önce hareket ettiriyoruz.
-            
-            bool yakala = !tahta.BosMu(ToPos);//Burada hamlenin bir taş yakalayıp yakalaymaadığını kontrol ediyoruz
+            Tas tas = tahta[FromPos];  // Başlangıç pozisyonundaki taşı alır.
 
-            tahta[ToPos] = tas;  //Sonra gittiği yere kopyalıyoruz
-            tahta[FromPos] = null;  //Eski yerinden taşı kaldırıyoruz
-            tas.Tasindi = true;  //Hareket ettiğini doğruluyoruz
+            bool yakala = !tahta.BosMu(ToPos);// Bitiş pozisyonunda taş olup olmadığını kontrol eder (yakalama durumu).
 
-            TasSilindi = yakala;
+            tahta[ToPos] = tas;   // Taşı bitiş pozisyonuna taşır.
+            tahta[FromPos] = null;   // Taşı başlangıç pozisyonundan kaldırır.
+            tas.Tasindi = true;   // Taşın hareket ettiğini işaretler.
 
-            return yakala || tas.Tur == TasTuru.Piyon;//Eğer bir yakalama varsa ve piyon üzerindeyse
+            TasSilindi = yakala; // Taş yakalandıysa TasSilindi özelliğini true olarak ayarlar.
+
+            return yakala || tas.Tur == TasTuru.Piyon; // Eğer taş yakalandıysa veya taş bir piyonsa true döner (oyun durumunu etkileyen durumlar).
         }
         #endregion
     }

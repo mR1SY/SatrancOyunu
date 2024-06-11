@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace SatrancUI
 {
-    //Oyuncuların seçebileceği menü seçeneklerini içerecektir
+    // Oyuncuların menüde yapabileceği seçenekleri tanımlar.
     public enum Secenek
     {
-        YenidenBaslat,
-        Cikis,
-        DevamEt,
-        AnaMenu
+        YenidenBaslat, // Oyunu yeniden başlatma seçeneği.
+        Cikis, // Oyundan çıkış seçeneği.
+        DevamEt, // Oyunu devam ettirme seçeneği.
+        AnaMenu // Ana menüye dönme seçeneği.
     }
 }

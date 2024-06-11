@@ -1,46 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SatrancUI
 {
-    /// <summary>
-    /// DurdurmaMenusu.xaml etkileşim mantığı
-    /// </summary>
+    // Oyun sırasında durdurma menüsünü temsil eden UserControl sınıfı.
     public partial class DurdurmaMenusu : UserControl
     {
-        public event Action<Secenek, MainWindow> SecilenSecenek; // MainWindow parametresi eklendi
-        public MainWindow mainWindow;
+        public event Action<Secenek, MainWindow> SecilenSecenek; // Menüden bir seçenek seçildiğinde tetiklenen olay.
 
-        public DurdurmaMenusu(MainWindow mainWindow) // Kurucuya MainWindow parametresi eklendi
+        public MainWindow mainWindow; // Ana oyun penceresine referans.
+
+        public DurdurmaMenusu(MainWindow mainWindow) // DurdurmaMenusu nesnesini ana oyun penceresi referansıyla oluşturan yapıcı metod.
         {
-            InitializeComponent();
-            this.mainWindow = mainWindow;
+            InitializeComponent(); // UserControl bileşenlerini başlatır.
+            this.mainWindow = mainWindow; // Ana oyun penceresi referansını kaydeder.
         }
 
-        private void AnaMenu_Click(object sender, RoutedEventArgs e)
+        private void AnaMenu_Click(object sender, RoutedEventArgs e) // "Ana Menü" butonuna tıklandığında çalışacak metod.
         {
-            SecilenSecenek?.Invoke(Secenek.AnaMenu, mainWindow);
-        }
-        private void DevamEtMenu_Click(object sender, RoutedEventArgs e)
-        {
-            SecilenSecenek?.Invoke(Secenek.DevamEt, mainWindow);
+            SecilenSecenek?.Invoke(Secenek.AnaMenu, mainWindow); // SecilenSecenek olayını tetikler ve Secenek.AnaMenu'yü parametre olarak gönderir.
         }
 
-        private void CikisMenu_Click(object sender, RoutedEventArgs e)
+        private void DevamEtMenu_Click(object sender, RoutedEventArgs e) // "Devam Et" butonuna tıklandığında çalışacak metod.
         {
-            SecilenSecenek?.Invoke(Secenek.Cikis, mainWindow);
+            SecilenSecenek?.Invoke(Secenek.DevamEt, mainWindow); // SecilenSecenek olayını tetikler ve Secenek.DevamEt'i parametre olarak gönderir.
+        }
+
+        private void CikisMenu_Click(object sender, RoutedEventArgs e) // "Çıkış" butonuna tıklandığında çalışacak metod.
+        {
+            SecilenSecenek?.Invoke(Secenek.Cikis, mainWindow); // SecilenSecenek olayını tetikler ve Secenek.Cikis'i parametre olarak gönderir.
         }
     }
 }
