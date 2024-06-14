@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SatrancUI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba3bb0ae0c8d3d4880d17377f4d621cb480e1ac4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b4e71a0291b190dbae01049a125ac0f19a32f8ef")]
 [assembly: System.Reflection.AssemblyProductAttribute("SatrancUI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SatrancUI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
