@@ -8,6 +8,6 @@
         ElliHamleKurali, // 50 hamle kuralı ile oyun bitişi.
         YetersizTas, // Yetersiz taş ile oyun bitişi.
         UcKatliTekrar, // Üç katlı tekrar ile oyun bitişi.
-        SureDoldu // Süre dolması ile oyun bitişi.
+        SureDoldu // Süre dolması ile oyun bitişi
     }
 }

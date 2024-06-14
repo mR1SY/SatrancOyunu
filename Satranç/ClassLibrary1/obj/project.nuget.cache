@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "TwkQ4ah1SQQ=",
+  "dgSpecHash": "WjMjrJXim5M=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mR_1SY\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\ozant\\Documents\\GitHub\\SatrancOyunu\\Satranç\\ClassLibrary1\\SatrancMantigi.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ozant\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.2\\microsoft.windowsdesktop.app.ref.8.0.2.nupkg.sha512",
+    "C:\\Users\\ozant\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.2\\microsoft.netcore.app.ref.8.0.2.nupkg.sha512",
+    "C:\\Users\\ozant\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.2\\microsoft.aspnetcore.app.ref.8.0.2.nupkg.sha512"
+  ],
   "logs": []
 }
