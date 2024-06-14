@@ -20,7 +20,7 @@ namespace SatrancUI
                 oyunPenceresi.yapayZekaModu = yapayZekaModu; // Oyun modunu ayarlar.
                 oyunPenceresi.Show(); // Ana oyun penceresini gösterir.
                 oyunPenceresi.DevamEtButonu.Visibility = Visibility.Collapsed; // "Devam Et" butonunu gizler.
-                this.Close(); // Ana menü penceresini kapatır.
+                this.Close(); // Ana menü penceresini kapatır
             };
 
             MenuContainer.Content = oyunModuMenusu; // Ana menüdeki içerik alanına oyun modu seçme menüsünü yerleştirir.
