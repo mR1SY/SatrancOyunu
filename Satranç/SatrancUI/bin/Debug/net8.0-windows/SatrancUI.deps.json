@@ -16,7 +16,10 @@
       },
       "SatrancMantigi/1.0.0": {
         "runtime": {
-          "SatrancMantigi.dll": {}
+          "SatrancMantigi.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }

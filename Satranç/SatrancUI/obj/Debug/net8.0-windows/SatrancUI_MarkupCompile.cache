@@ -1,20 +1,20 @@
 ﻿SatrancUI
-1.0.0.0
+
 
 winexe
 C#
 .cs
-C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\obj\Debug\net8.0-windows\
+C:\Users\mR_1SY\Documents\GitHub\SatrancOyunu\Satranç\SatrancUI\obj\Debug\net8.0-windows\
 SatrancUI
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\ozant\Desktop\Sistem Analizi\Satranç\SatrancUI\App.xaml
+C:\Users\mR_1SY\Documents\GitHub\SatrancOyunu\Satranç\SatrancUI\App.xaml
 72091967784
 
-15-2145361557
-199988809042
+13-487326680
+19919357290
 AnaMenu.xaml;DurdurmaMenusu.xaml;MainWindow.xaml;OyunBittiMenu.xaml;OyunModu.xaml;TasSecmeMenusu.xaml;TerfiMenusu.xaml;
 
-True
+False
 
