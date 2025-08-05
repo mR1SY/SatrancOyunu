@@ -1,0 +1,8 @@
+C:\Users\mR_1SY\Desktop\strnc_exe\SatrancUI.pdb
+C:\Users\mR_1SY\Desktop\strnc_exe\D3DCompiler_47_cor3.dll
+C:\Users\mR_1SY\Desktop\strnc_exe\PenImc_cor3.dll
+C:\Users\mR_1SY\Desktop\strnc_exe\PresentationNative_cor3.dll
+C:\Users\mR_1SY\Desktop\strnc_exe\vcruntime140_cor3.dll
+C:\Users\mR_1SY\Desktop\strnc_exe\wpfgfx_cor3.dll
+C:\Users\mR_1SY\Desktop\strnc_exe\SatrancMantigi.pdb
+C:\Users\mR_1SY\Desktop\strnc_exe\SatrancUI.exe
