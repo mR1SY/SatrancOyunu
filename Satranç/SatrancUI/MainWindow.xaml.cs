@@ -1217,6 +1217,10 @@ namespace SatrancUI
 
             beyazKalanSure = TimeSpan.FromMinutes(10); // Beyaz oyuncunun süresini sıfırlar (10 dakika).
             siyahKalanSure = TimeSpan.FromMinutes(10); // Siyah oyuncunun süresini sıfırlar (10 dakika).
+            SiyahOyuncuText.VerticalAlignment = VerticalAlignment.Top; // Siyah oyuncu etiketini üst tarafa hizalar.
+            BeyazOyuncuText.VerticalAlignment = VerticalAlignment.Bottom; // Beyaz oyuncu etiketini alt tarafa hizalar.
+            Grid.SetRow(SiyahOyuncuText, 1); // Siyah oyuncu etiketini 1. satıra yerleştirir.
+            Grid.SetRow(BeyazOyuncuText, 5); // Beyaz oyuncu etiketini 5. satıra yerleştirir.
             BeyazSureText.Text = beyazKalanSure.ToString(@"mm\:ss"); // Beyaz oyuncunun kalan süresini ekrana yazar.
             SiyahSureText.Text = siyahKalanSure.ToString(@"mm\:ss"); // Siyah oyuncunun kalan süresini ekrana yazar.
         }
