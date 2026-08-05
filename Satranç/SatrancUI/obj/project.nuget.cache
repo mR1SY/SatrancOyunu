@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "aw49NCE3wJ0=",
+  "dgSpecHash": "OJv2IfQ57Sw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mR_1SY\\Desktop\\C# Game Project\\SatrancOyunu-23_14.10.24.001\\Satranç\\SatrancUI\\SatrancUI.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\mR_1SY\\Desktop\\Satranç\\SatrancOyunu\\Satranç\\SatrancUI\\SatrancUI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mR_1SY\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.29\\microsoft.netcore.app.ref.8.0.29.nupkg.sha512",
+    "C:\\Users\\mR_1SY\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.29\\microsoft.windowsdesktop.app.ref.8.0.29.nupkg.sha512",
+    "C:\\Users\\mR_1SY\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.29\\microsoft.aspnetcore.app.ref.8.0.29.nupkg.sha512",
+    "C:\\Users\\mR_1SY\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.29\\microsoft.netcore.app.host.win-x64.8.0.29.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -6,6 +6,7 @@ namespace SatrancUI
     // Oyunun ana menüsünü temsil eden pencere sınıfı.
     public partial class AnaMenu : Window
     {
+        public static string AktifStockfishYolu = "";
         public AnaMenu() // AnaMenu penceresini oluşturan yapıcı metod.
         {
             InitializeComponent(); // Pencere bileşenlerini başlatır.
@@ -37,6 +38,28 @@ namespace SatrancUI
         private void CikisButon_Click(object sender, RoutedEventArgs e) // "Çıkış" butonuna tıklandığında çalışacak metod.
         {
             Application.Current.Shutdown(); // Uygulamayı kapatır.
+        }
+
+        private void Stockfish_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog diyalog = new Microsoft.Win32.OpenFileDialog();
+    
+            // Arama penceresinde sadece .exe uzantılı dosyaların görünmesini sağlar
+            diyalog.Filter = "Uygulama Dosyaları (*.exe)|*.exe"; 
+            diyalog.Title = "Stockfish.exe Dosyasını Seçin";
+
+            if (diyalog.ShowDialog() == true)
+            {
+                // Kullanıcının rastgele bir .exe seçmesini engellemek için isim doğrulaması
+                if (diyalog.SafeFileName.ToLower().Contains("stockfish"))
+                {
+                    AktifStockfishYolu = diyalog.FileName;     // Arka plan işlemleri için değişkene atar
+                }
+                else
+                {
+                    MessageBox.Show("Lütfen geçerli bir Stockfish.exe dosyasını seçin.", "Hatalı Dosya Seçimi", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

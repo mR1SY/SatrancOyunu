@@ -43,6 +43,7 @@ namespace SatrancUI
         private TasSecmeMenusu acikTasSecmeMenusu = null; // Açık olan taş seçme menüsü nesnesine referans (açık menü yoksa null).
 
         public bool yapayZekaModu = false; // Yapay zeka modunun aktif olup olmadığını belirten bool değişkeni (varsayılan: false).
+        //public static string AktifStockfishYolu = "";
         #endregion
 
         #region Yapıcı metod
@@ -671,37 +672,32 @@ namespace SatrancUI
             {
                 return null; // Null döndürür.
             }
-
-            int derinlik = 5; // Minimax algoritmasının derinliği.
-            int enIyiDeger = int.MinValue; // En iyi hamle değerini tutar.
-            Hamle enIyiHamle = null; // En iyi hamleyi tutar.
-
-            // Hamleleri sırala
-            yasalHamleler = yasalHamleler.OrderByDescending(h =>
+            string stockfishYolu=AnaMenu.AktifStockfishYolu;
+            string enIyiHamleMetni = "";
+            using (System.Diagnostics.Process motor = new System.Diagnostics.Process())
             {
-                // Önce taş yakalayan hamleleri sırala
-                if (h.TasSilindi)
+                motor.StartInfo.FileName = stockfishYolu;
+                motor.StartInfo.UseShellExecute = false;
+                motor.StartInfo.RedirectStandardInput = true;
+                motor.StartInfo.RedirectStandardOutput = true;
+                motor.StartInfo.CreateNoWindow = true;
+                motor.Start();
+                string fen = oyunDurumu.TahtaDurumunuFenYap();
+                motor.StandardInput.WriteLine($"position fen {fen}");
+                motor.StandardInput.WriteLine("go movetime 1000");
+                while (true)
                 {
-                    return 1;
+                    string cikti = motor.StandardOutput.ReadLine();
+                    if (cikti != null && cikti.StartsWith("bestmove"))
+                    {
+                        enIyiHamleMetni = cikti.Split(' ')[1];
+                        break;
+                    }
                 }
-                else
-                {
-                    return 0;
-                }
-            }).ToList();
-
-            foreach (Hamle hamle in yasalHamleler) // Yasal hamleler üzerinde döngü yapar.
-            {
-                Tahta yeniTahta = oyunDurumu.Tahta.Kopya(); // Oyun tahtasının bir kopyasını oluşturur.
-                hamle.Execute(yeniTahta); // Hamleyi kopya tahta üzerinde uygular.
-                int deger = Minimax(yeniTahta, derinlik - 1, false, int.MinValue, int.MaxValue); // Minimax algoritmasını çalıştırır.
-                if (deger > enIyiDeger) // Hesaplanan değer daha önceki en iyi değerden büyükse...
-                {
-                    enIyiDeger = deger; // En iyi değeri günceller.
-                    enIyiHamle = hamle; // En iyi hamleyi günceller.
-                }
+                motor.StandardInput.WriteLine("quit");
+                motor.WaitForExit();
             }
-
+            Hamle enIyiHamle = yasalHamleler.FirstOrDefault(h => h.UciFormatinaCevir() == enIyiHamleMetni);
             return enIyiHamle; // En iyi hamleyi döndürür.
         }
         #endregion
@@ -956,81 +952,6 @@ namespace SatrancUI
         #endregion
 
         private Dictionary<string, int> transpositionTable = new Dictionary<string, int>();
-
-        #region Minimax
-        private int Minimax(Tahta tahta, int derinlik, bool maximizingPlayer, int alfa, int beta)
-        {
-            string tahtaKonumu = TahtaKonumunuAl(tahta);
-
-            // Konum daha önce değerlendirildiyse, değeri transposition table'dan al
-            if (transpositionTable.ContainsKey(tahtaKonumu))
-            {
-                return transpositionTable[tahtaKonumu];
-            }
-
-            OyunDurumu geçiciOyunDurumu = new OyunDurumu(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz, tahta);
-
-            if (derinlik == 0 || geçiciOyunDurumu.OyunBittiMi())
-            {
-                return DegerlendirmeFonksiyonu(tahta);
-            }
-
-            var yasalHamleler = geçiciOyunDurumu.ButunYasalHamlelerIcin(maximizingPlayer ? Oyuncu.Siyah : Oyuncu.Beyaz).ToList();
-
-            if (yasalHamleler.Count == 0)
-            {
-                return DegerlendirmeFonksiyonu(tahta);
-            }
-
-            // Hamleleri sırala (maximizingPlayer için azalan, minimizingPlayer için artan sırada)
-            yasalHamleler = maximizingPlayer
-                ? yasalHamleler.OrderByDescending(h => h.TasSilindi ? 1 : 0).ToList()
-                : yasalHamleler.OrderBy(h => h.TasSilindi ? 1 : 0).ToList();
-
-            if (maximizingPlayer)
-            {
-                int maxEval = int.MinValue;
-                foreach (Hamle hamle in yasalHamleler)
-                {
-                    Tahta yeniTahta = tahta.Kopya();
-                    hamle.Execute(yeniTahta);
-                    int eval = Minimax(yeniTahta, derinlik - 1, false, alfa, beta);
-                    maxEval = Math.Max(maxEval, eval);
-                    alfa = Math.Max(alfa, eval);
-                    if (beta <= alfa)
-                    {
-                        break; // Beta budaması
-                    }
-                }
-
-                // Hesaplanan değeri transposition table'a kaydet
-                transpositionTable[tahtaKonumu] = maxEval;
-
-                return maxEval;
-            }
-            else
-            {
-                int minEval = int.MaxValue;
-                foreach (Hamle hamle in yasalHamleler)
-                {
-                    Tahta yeniTahta = tahta.Kopya();
-                    hamle.Execute(yeniTahta);
-                    int eval = Minimax(yeniTahta, derinlik - 1, true, alfa, beta);
-                    minEval = Math.Min(minEval, eval);
-                    beta = Math.Min(beta, eval);
-                    if (beta <= alfa)
-                    {
-                        break; // Alfa budaması
-                    }
-                }
-
-                // Hesaplanan değeri transposition table'a kaydet
-                transpositionTable[tahtaKonumu] = minEval;
-
-                return minEval;
-            }
-        }
-        #endregion
 
         #region Tahta konumunu temsil eden bir string döndüren fonksiyon
         // Tahta konumunu temsil eden bir string döndüren fonksiyon

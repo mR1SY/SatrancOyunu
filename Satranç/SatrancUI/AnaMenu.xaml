@@ -51,13 +51,23 @@
                             Style="{StaticResource ButtonStyle}"
                             Click="TahtaDuzenleButon_Click"/>
 
-                <Button x:Name="CikisButon" 
-                            Content="Çıkış" 
+                <Button x:Name="Stockfish" 
+                            Content="StockFish'in Konumu" 
                             HorizontalAlignment="Center"
                             Width="200"
                             Height="50"
                             Margin="10"
                             Grid.Row="3"
+                            FontSize="22"
+                            Style="{StaticResource ButtonStyle}"
+                            Click="Stockfish_Click"/>
+                <Button x:Name="CikisButon"
+                            Content="Çıkış"
+                            HorizontalAlignment="Center"
+                            Width="200"
+                            Height="50"
+                            Margin="10"
+                            Grid.Row="4"
                             FontSize="25"
                             Style="{StaticResource ButtonStyle}"
                             Click="CikisButon_Click"/>

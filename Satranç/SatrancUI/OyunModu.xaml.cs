@@ -21,6 +21,15 @@ namespace SatrancUI
 
         private void YapayZekaButon_Click(object sender, RoutedEventArgs e) // "Yapay Zeka" butonuna tıklandığında çalışacak metod.
         {
+            // Stockfish .exe yolunun seçilip seçilmediğini denetler.
+            if (string.IsNullOrEmpty(AnaMenu.AktifStockfishYolu))
+            {
+                // Yol boşsa ekrana uyarı mesajı çıkarır.
+                MessageBox.Show("Lütfen Stockfish motoru seçiniz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                this.Visibility = Visibility.Collapsed; //StockFish seçilmediği için oyun modu penceresini gizler
+                // return komutu, aşağıdaki kodların çalışmasını durdurur ve oyuna geçişi engeller.
+                return; 
+            }
             ModSecildi?.Invoke(true); // ModSecildi olayını tetikler ve yapay zeka modu olarak true değerini gönderir.
         }
     }
