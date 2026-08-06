@@ -56,5 +56,24 @@ namespace SatrancMantigi
             return true; // Hamlenin başarılı olduğunu belirtir.
         }
         #endregion
+
+        #region Piyon Terfisini UCI Formatına Çeviren Metod (Override)
+        public override string UciFormatinaCevir()
+        {
+            string baslangic = $"{(char)('a' + FromPos.Sutun)}{8 - FromPos.Satir}";
+            string bitis = $"{(char)('a' + ToPos.Sutun)}{8 - ToPos.Satir}";
+
+            // Terfi edilecek taşı Stockfish'in anladığı ingilizce karakterlere çevirir
+            char terfiKarakteri = yeniTur switch
+            {
+                TasTuru.At => 'n', // At(knight)
+                TasTuru.Fil => 'b', // Fil(bishop)
+                TasTuru.Kale => 'r', // Rook
+                _ => 'q' // Vezir(Queen)
+            };
+
+            return baslangic + bitis + terfiKarakteri; // Örn: "e7e8q"
+        }
+        #endregion
     }
 }

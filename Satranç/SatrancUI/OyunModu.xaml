@@ -1,44 +1,46 @@
 ﻿<UserControl x:Class="SatrancUI.OyunModuMenusu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SatrancUI"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Border Width="275"
-            Height="125"
-            Style="{StaticResource BorderStyle}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+             HorizontalAlignment="Center" VerticalAlignment="Center">
 
-            <TextBlock Grid.ColumnSpan="2"
-                       Text="OYUN MODU"
-                       Style="{StaticResource TextStyle}"
-                       FontSize="28"/>
+    <UserControl.Resources>
+        <Style x:Key="ButonStili" TargetType="Button">
+            <Setter Property="Background" Value="#EAEAEA"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="10,15"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#D4D4D4"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#C0C0C0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
 
-            <Button Grid.Row="1"
-                    Content="NORMAL OYUN"
-                    Style="{StaticResource ButtonStyle}"
-                    Width="100"
-                    FontSize="13"
-                    Height="30"
-                    Click="NormalOyunButon_Click"/>
+    <!-- Kutu sadece kendi içeriği kadar büyüyecek -->
+    <Border Background="#2B2B2B" CornerRadius="10" Padding="25" Width="380">
+        <StackPanel>
+            <TextBlock Text="Oyun Modu Seçin" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-            <Button Grid.Row="1"
-                    Grid.Column="1"
-                    Content="YAPAY ZEKA"
-                    Style="{StaticResource ButtonStyle}"
-                    Width="100"
-                    Height="30"
-                    Click="YapayZekaButon_Click"/>
-        </Grid>
+            <!-- Parantez içindeki açıklamalar silindi, daha sade bir görünüm elde edildi -->
+            <Button Content="Normal Oyun" Click="NormalOyunButon_Click" Style="{StaticResource ButonStili}" Margin="0,0,0,10"/>
+            <Button Content="Yapay Zekaya Karşı" Click="YapayZekaButon_Click" Style="{StaticResource ButonStili}"/>
+        </StackPanel>
     </Border>
 </UserControl>

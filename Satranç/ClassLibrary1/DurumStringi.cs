@@ -1,166 +1,161 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace SatrancMantigi
 {
-    // Satranç tahtasının durumunu temsil eden bir dize oluşturur (FEN notasyonu).
+    // Satranç tahtasının durumunu Stockfish'in anladığı uluslararası FEN formatında oluşturur.
     public class DurumStringi
     {
-
-        private readonly StringBuilder sb = new StringBuilder(); // Dize oluşturmak için StringBuilder nesnesi.
+        private readonly StringBuilder sb = new StringBuilder();
 
         #region Yapıcı metod
-        public DurumStringi(Oyuncu mevcutOyuncu, Tahta tahta) // DurumStringi nesnesini mevcut oyuncu ve tahta bilgileriyle oluşturan yapıcı metod.
+        public DurumStringi(Oyuncu mevcutOyuncu, Tahta tahta)
         {
-            ParcaKonumuEkle(tahta); // Taşların konumlarını dizeye ekler.
-            sb.Append(' '); // Boşluk ekler.
-            MevcutOyuncuyuEkle(mevcutOyuncu); // Mevcut oyuncuyu dizeye ekler.
-            sb.Append(' '); // Boşluk ekler.
-            RokHaklariEkle(tahta); // Rok haklarını dizeye ekler.
-            sb.Append(' '); // Boşluk ekler.
-            EnPassantEkle(tahta, mevcutOyuncu); // En passant bilgilerini dizeye ekler.
-            sb.Append(' '); // Boşluk ekler.
+            ParcaKonumuEkle(tahta);
+            sb.Append(' ');
+            MevcutOyuncuyuEkle(mevcutOyuncu);
+            sb.Append(' ');
+            RokHaklariEkle(tahta);
+            sb.Append(' ');
+            EnPassantEkle(tahta, mevcutOyuncu);
         }
         #endregion
 
         #region Durum dizesini döndürür
-        public override string ToString() // Durum dizesini döndürür.
+        public override string ToString()
         {
-            return sb.ToString(); // StringBuilder nesnesindeki dizeyi döndürür.
+            return sb.ToString();
         }
         #endregion
 
         #region Taşların konumlarını dizeye ekler
-        private void ParcaKonumuEkle(Tahta tahta) // Taşların konumlarını dizeye ekler.
+        private void ParcaKonumuEkle(Tahta tahta)
         {
-            for (int r = 0; r < 8; r++) // Satırlar üzerinde döngü yapar.
+            for (int r = 0; r < 8; r++)
             {
-                if (r != 0) // İlk satır değilse...
+                if (r != 0)
                 {
-                    sb.Append('/'); // Satırları ayırmak için "/" karakterini ekler.
+                    sb.Append('/');
                 }
 
-                SatirVerisiEkle(tahta, r); // Satırın taş bilgilerini dizeye ekler.
+                SatirVerisiEkle(tahta, r);
             }
         }
         #endregion
 
         #region Verilen satırın taş bilgilerini dizeye ekler
-        private void SatirVerisiEkle(Tahta tahta, int satir) // Verilen satırın taş bilgilerini dizeye ekler.
+        private void SatirVerisiEkle(Tahta tahta, int satir)
         {
-            int bos = 0; // Boş kare sayacı.
+            int bos = 0;
 
-            for (int c = 0; c < 8; c++) // Sütunlar üzerinde döngü yapar.
+            for (int c = 0; c < 8; c++)
             {
-                if (tahta[satir, c] == null) // Kare boşsa...
+                if (tahta[satir, c] == null)
                 {
-                    bos++; // Boş kare sayacını artırır.
-                    continue; // Döngünün bir sonraki adımına geçer.
+                    bos++;
+                    continue;
                 }
 
-                if (bos > 0) // Boş kare varsa...
+                if (bos > 0)
                 {
-                    sb.Append(bos); // Boş kare sayısını dizeye ekler.
-                    bos = 0; // Boş kare sayacını sıfırlar.
+                    sb.Append(bos);
+                    bos = 0;
                 }
 
-                sb.Append(TasKarakteri(tahta[satir, c])); // Taşın karakterini dizeye ekler.
+                sb.Append(TasKarakteri(tahta[satir, c]));
             }
 
-            if (bos > 0) // Boş kare varsa...
+            if (bos > 0)
             {
-                sb.Append(bos); // Boş kare sayısını dizeye ekler.
+                sb.Append(bos);
             }
         }
         #endregion
 
-        #region Taş türüne karşılık gelen karakteri döndürür
-        private static char TasKarakteri(Tas tas) // Taş türüne karşılık gelen karakteri döndürür.
+        #region Taş türüne karşılık gelen FEN karakterini döndürür (Uluslararası Standart)
+        private static char TasKarakteri(Tas tas)
         {
-            char c = tas.Tur switch // Taş türüne göre karakter seçer.
+            // Stockfish standartları: p=piyon, n=at(knight), r=kale(rook), b=fil(bishop), q=vezir(queen), k=şah(king)
+            char c = tas.Tur switch
             {
-                TasTuru.Piyon => 'p', // Piyon
-                TasTuru.At => 'a', // At
-                TasTuru.Kale => 'k', // Kale
-                TasTuru.Fil => 'f', // Fil
-                TasTuru.Vezir => 'v', // Vezir
-                TasTuru.Sah => 's', // Şah
-                _ => ' ' // Boş kare
+                TasTuru.Piyon => 'p',
+                TasTuru.At => 'n',
+                TasTuru.Kale => 'r',
+                TasTuru.Fil => 'b',
+                TasTuru.Vezir => 'q',
+                TasTuru.Sah => 'k',
+                _ => ' '
             };
 
-            if (tas.Renk == Oyuncu.Beyaz) // Taş beyaz ise...
+            if (tas.Renk == Oyuncu.Beyaz)
             {
-                return char.ToUpper(c); // Karakteri büyük harfe dönüştürür.
+                return char.ToUpper(c); // Beyaz taşlar büyük harf (P, N, R, B, Q, K)
             }
 
-            return c; // Karakteri küçük harf olarak döndürür.
+            return c; // Siyah taşlar küçük harf (p, n, r, b, q, k)
         }
         #endregion
 
-        #region Mevcut oyuncuyu dizeye ekler
-        private void MevcutOyuncuyuEkle(Oyuncu mevcutOyuncu) // Mevcut oyuncuyu dizeye ekler.
+        #region Mevcut oyuncuyu FEN formatına uygun ekler
+        private void MevcutOyuncuyuEkle(Oyuncu mevcutOyuncu)
         {
-            if (mevcutOyuncu == Oyuncu.Beyaz) // Mevcut oyuncu beyaz ise...
+            if (mevcutOyuncu == Oyuncu.Beyaz)
             {
-                sb.Append('b'); // "b" karakterini ekler.
+                sb.Append('w'); // Uluslararası FEN: w (White)
             }
-            else // Mevcut oyuncu siyah ise...
+            else
             {
-                sb.Append('s'); // "s" karakterini ekler.
+                sb.Append('b'); // Uluslararası FEN: b (Black)
             }
         }
         #endregion
 
-        #region Rok haklarını dizeye ekler
-        private void RokHaklariEkle(Tahta tahta) // Rok haklarını dizeye ekler.
+        #region Rok haklarını FEN formatına uygun ekler
+        private void RokHaklariEkle(Tahta tahta)
         {
-            bool rokBeyazSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Beyaz); // Beyazın şah kanadı rok hakkı.
-            bool rokBeyazVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Beyaz); // Beyazın vezir kanadı rok hakkı.
-            bool rokSiyahSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Siyah); // Siyahın şah kanadı rok hakkı.
-            bool rokSiyahVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Siyah); // Siyahın vezir kanadı rok hakkı.
+            bool rokBeyazSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Beyaz);
+            bool rokBeyazVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Beyaz);
+            bool rokSiyahSahKanadi = tahta.RokHakkiSahKanadi(Oyuncu.Siyah);
+            bool rokSiyahVezirKanadi = tahta.RokHakkiVezirKanadi(Oyuncu.Siyah);
 
-            if (!(rokBeyazSahKanadi || rokBeyazVezirKanadi || rokSiyahSahKanadi || rokSiyahVezirKanadi)) // Hiçbir rok hakkı yoksa...
+            if (!(rokBeyazSahKanadi || rokBeyazVezirKanadi || rokSiyahSahKanadi || rokSiyahVezirKanadi))
             {
-                sb.Append('-'); // "-" karakterini ekler.
-                return; // Metodu sonlandırır.
+                sb.Append('-');
+                return;
             }
 
-            if (rokBeyazSahKanadi) // Beyazın şah kanadı rok hakkı varsa...
+            if (rokBeyazSahKanadi)
             {
-                sb.Append('S'); // "S" karakterini ekler.
+                sb.Append('K'); // Beyaz şah kanadı
             }
-            if (rokBeyazVezirKanadi) // Beyazın vezir kanadı rok hakkı varsa...
+            if (rokBeyazVezirKanadi)
             {
-                sb.Append('V'); // "V" karakterini ekler.
+                sb.Append('Q'); // Beyaz vezir kanadı
             }
-            if (rokSiyahSahKanadi) // Siyahın şah kanadı rok hakkı varsa...
+            if (rokSiyahSahKanadi)
             {
-                sb.Append('s'); // "s" karakterini ekler.
+                sb.Append('k'); // Siyah şah kanadı
             }
-            if (rokSiyahVezirKanadi) // Siyahın vezir kanadı rok hakkı varsa...
+            if (rokSiyahVezirKanadi)
             {
-                sb.Append('v'); // "v" karakterini ekler.
+                sb.Append('q'); // Siyah vezir kanadı
             }
         }
         #endregion
 
         #region En passant bilgilerini dizeye ekler
-        private void EnPassantEkle(Tahta tahta, Oyuncu mevcutOyuncu) // En passant bilgilerini dizeye ekler.
+        private void EnPassantEkle(Tahta tahta, Oyuncu mevcutOyuncu)
         {
-            if (!tahta.EnPassantYakalayabilirMi(mevcutOyuncu)) // En passant yakalama mümkün değilse...
+            if (!tahta.EnPassantYakalayabilirMi(mevcutOyuncu))
             {
-                sb.Append('-'); // "-" karakterini ekler.
-                return; // Metodu sonlandırır.
+                sb.Append('-');
+                return;
             }
 
-            Pozisyon poz = tahta.PiyonAtlamaPozisyonunuAl(mevcutOyuncu.Rakip()); // En passant yakalama pozisyonunu alır.
-            char dosya = (char)('a' + poz.Sutun); // Sütun bilgisini karaktere dönüştürür.
-            int siralama = 8 - poz.Satir; // Satır bilgisini sayısal sıraya dönüştürür.
-            sb.Append(dosya); // Sütun karakterini dizeye ekler.
-            sb.Append(siralama); // Satır numarasını dizeye ekler.
+            Pozisyon poz = tahta.PiyonAtlamaPozisyonunuAl(mevcutOyuncu.Rakip());
+            char dosya = (char)('a' + poz.Sutun);
+            int siralama = 8 - poz.Satir;
+            sb.Append(dosya);
+            sb.Append(siralama);
         }
         #endregion
     }

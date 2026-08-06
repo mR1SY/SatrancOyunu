@@ -1,5 +1,6 @@
-Beyaz-Piyon d4
-Siyah-Piyon b6
-Beyaz-Piyon d4
-Siyah-Piyon e5
-Beyaz-Piyon f4
+Beyaz-Piyon e4
+Siyah-Piyon d5
+Beyaz-At f3
+Siyah-Piyon c5
+Beyaz-Piyon g4
+Siyah-At c6
