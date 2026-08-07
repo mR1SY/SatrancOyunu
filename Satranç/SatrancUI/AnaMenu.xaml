@@ -21,57 +21,68 @@
                     <RowDefinition Height="75"/>
                     <RowDefinition Height="75"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="Satranç"
-                               FontSize="52" 
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               Grid.Row="0"
-                               Margin="50"
-                               Style="{StaticResource TextStyle}"/>
 
-                <Button x:Name="OyunaBaslaButon" 
-                            Content="Oyuna Başla" 
-                            HorizontalAlignment="Center"
-                            Width="200"
-                            Height="50"
-                            Margin="10"
-                            Grid.Row="1"
-                            FontSize="25"
-                            Style="{StaticResource ButtonStyle}"
-                            Click="OyunaBaslaButon_Click"/>
+                <TextBlock 
+                    Text="Satranç" 
+                    FontSize="52" 
+                    FontWeight="Bold" 
+                    HorizontalAlignment="Center" 
+                    Grid.Row="0" 
+                    Margin="50" 
+                    Style="{StaticResource TextStyle}"/>
 
-                <Button x:Name="TahtaDuzenleButon" 
-                            Content="Tahtayı Düzenle" 
-                            HorizontalAlignment="Center"
-                            Width="200"
-                            Height="50"
-                            Margin="10"
-                            Grid.Row="2"
-                            FontSize="25"
-                            Style="{StaticResource ButtonStyle}"
-                            Click="TahtaDuzenleButon_Click"/>
+                <Button 
+                    x:Name="OyunaBaslaButon" 
+                    Content="Oyuna Başla" 
+                    HorizontalAlignment="Center" 
+                    Width="200" 
+                    Height="50" 
+                    Margin="10" 
+                    Grid.Row="1" 
+                    FontSize="25" 
+                    Style="{StaticResource ButtonStyle}" 
+                    Click="OyunaBaslaButon_Click"/>
 
-                <Button x:Name="Stockfish" 
-                            Content="StockFish'in Konumu" 
-                            HorizontalAlignment="Center"
-                            Width="200"
-                            Height="50"
-                            Margin="10"
-                            Grid.Row="3"
-                            FontSize="22"
-                            Style="{StaticResource ButtonStyle}"
-                            Click="Stockfish_Click"/>
-                <Button x:Name="CikisButon"
-                            Content="Çıkış"
-                            HorizontalAlignment="Center"
-                            Width="200"
-                            Height="50"
-                            Margin="10"
-                            Grid.Row="4"
-                            FontSize="25"
-                            Style="{StaticResource ButtonStyle}"
-                            Click="CikisButon_Click"/>
-                <Grid Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
+                <Button 
+                    x:Name="TahtaDuzenleButon" 
+                    Content="Tahtayı Düzenle" 
+                    HorizontalAlignment="Center" 
+                    Width="200" 
+                    Height="50" 
+                    Margin="10" 
+                    Grid.Row="2" 
+                    FontSize="25" 
+                    Style="{StaticResource ButtonStyle}" 
+                    Click="TahtaDuzenleButon_Click"/>
+
+                <Button 
+                    x:Name="Stockfish" 
+                    Content="StockFish'in Konumu" 
+                    HorizontalAlignment="Center" 
+                    Width="200" 
+                    Height="50" 
+                    Margin="10" 
+                    Grid.Row="3" 
+                    FontSize="22" 
+                    Style="{StaticResource ButtonStyle}" 
+                    Click="Stockfish_Click"/>
+
+                <Button 
+                    x:Name="CikisButon" 
+                    Content="Çıkış" 
+                    HorizontalAlignment="Center" 
+                    Width="200" 
+                    Height="50" 
+                    Margin="10" 
+                    Grid.Row="4" 
+                    FontSize="25" 
+                    Style="{StaticResource ButtonStyle}" 
+                    Click="CikisButon_Click"/>
+
+                <Grid Grid.Row="5" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    RenderOptions.BitmapScalingMode="HighQuality">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="300"/>
                         <ColumnDefinition Width="50"/>
@@ -97,16 +108,15 @@
                         <Image Source="Assets/SiyahPiyon.png" />
                     </UniformGrid>
                 </Grid>
+
+                <!-- Container tüm satırları kaplayıp tam merkeze oturacak şekilde ayarlandı -->
                 <ContentControl x:Name="MenuContainer"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Width="300"
-                                Height="200"
-                                Grid.Row="2"
-                                Grid.RowSpan="2">
+                                Grid.Row="0"
+                                Grid.RowSpan="6">
                 </ContentControl>
             </Grid>
         </Viewbox>
     </Border>
 </Window>
-    

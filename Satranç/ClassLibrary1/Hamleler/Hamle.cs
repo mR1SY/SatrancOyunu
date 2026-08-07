@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SatrancMantigi
 {
-    
+
     public abstract class Hamle // Tüm somut hamle sınıflarının temel sınıfı.
     {
         #region Özellikler
@@ -35,6 +35,17 @@ namespace SatrancMantigi
 
         #region Txt'ye Aktarılırken Alınan Taşın X'e Aktarılma Ana Kısmı
         public bool TasSilindi { get; protected set; } = false; // Hamle sonucunda bir taşın silinip silinmediğini belirten özellik.
+        #endregion
+
+        #region Hamleyi UCI Formatına (Stockfish formatı) Çeviren Metod
+        public virtual string UciFormatinaCevir()
+        {
+            // Sütunları harfe (0 -> a, 1 -> b), satırları sayıya (0 -> 8, 7 -> 1) çevirir
+            string baslangic = $"{(char)('a' + FromPos.Sutun)}{8 - FromPos.Satir}";
+            string bitis = $"{(char)('a' + ToPos.Sutun)}{8 - ToPos.Satir}";
+
+            return baslangic + bitis; // Örn: "e2e4"
+        }
         #endregion
     }
 }

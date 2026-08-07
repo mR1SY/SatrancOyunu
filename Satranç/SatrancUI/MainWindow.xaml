@@ -11,38 +11,51 @@
         KeyDown="Window_KeyDown"
         Background="#101010">
 
-    <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+    <Viewbox 
+        Stretch="Uniform" 
+        HorizontalAlignment="Center" 
+        VerticalAlignment="Center">
+        <Grid 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="720"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Grid x:Name="TahtaIzgarasi"
-                  MouseDown="TahtaIzgarasi_MouseDown">
+            <Grid 
+                x:Name="TahtaIzgarasi"
+                MouseDown="TahtaIzgarasi_MouseDown">
                 <Grid.Background>
-                    <ImageBrush ImageSource="Assets/Tahta.png"/>
+                    <ImageBrush 
+                        ImageSource="Assets/Tahta.png"/>
                 </Grid.Background>
 
-                <UniformGrid x:Name="VurguIzgarasi"
-                             Rows="8"
-                             Columns="8">
+                <UniformGrid 
+                    x:Name="VurguIzgarasi"
+                    Rows="8"
+                    Columns="8">
                 </UniformGrid>
 
-                <UniformGrid x:Name="TasIzgarasi"
-                             Rows="8"
-                             Columns="8"
-                             RenderOptions.BitmapScalingMode="HighQuality">
+                <UniformGrid 
+                    x:Name="TasIzgarasi"
+                    Rows="8"
+                    Columns="8"
+                    RenderOptions.BitmapScalingMode="HighQuality">
                 </UniformGrid>
-                
             </Grid>
+
             <ContentControl x:Name="MenuContainer"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Width="300"
                 Height="200">
             </ContentControl>
-            <Grid x:Name="KontrolPanel" Grid.Column="1" VerticalAlignment="Top">
+
+            <Grid 
+                x:Name="KontrolPanel" 
+                Grid.Column="1" 
+                VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="142"/>
                     <RowDefinition Height="143"/>
@@ -53,18 +66,66 @@
                     <RowDefinition Height="143"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock x:Name="SiyahOyuncuText" Text="Siyah" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="1"/>
-                <TextBlock x:Name="BeyazOyuncuText" Text="Beyaz" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="5"/>
-
-                <TextBlock x:Name="SiyahSureText" Text="10:00" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="0"/>
-
-                <Button x:Name="DurdurButonu" Content="⏸" FontSize="20" Margin="10" Click="DurdurButonu_Click" Grid.Row="2"/>
-                <Button x:Name="YenidenBaslatButonu" Content="🔄" FontSize="20" Margin="10" Click="YenidenBaslatButonu_Click" Grid.Row="3"/>
-                <Button x:Name="DevamEtButonu" Content="▶" FontSize="20" Margin="10" Click="DevamEtButonu_Click" Grid.Row="4"/>
-
-                <TextBlock x:Name="BeyazSureText" Text="10:00" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="6"/>
-
+                <TextBlock 
+                    x:Name="SiyahOyuncuText" 
+                    Text="Siyah" 
+                    FontSize="16" 
+                    Foreground="White" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Top" 
+                    Grid.Row="1"/>
                 
+                <TextBlock 
+                    x:Name="BeyazOyuncuText" 
+                    Text="Beyaz" 
+                    FontSize="16" 
+                    Foreground="White" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Bottom" 
+                    Grid.Row="5"/>
+
+                <TextBlock 
+                    x:Name="SiyahSureText" 
+                    Text="10:00" 
+                    FontSize="20" 
+                    Foreground="White" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Bottom" 
+                    Grid.Row="0"/>
+
+                <Button 
+                    x:Name="DurdurButonu" 
+                    Content="⏸" 
+                    FontSize="20" 
+                    Margin="10" 
+                    Click="DurdurButonu_Click" 
+                    Grid.Row="2"/>
+
+                <Button 
+                    x:Name="YenidenBaslatButonu" 
+                    Content="🔄" 
+                    FontSize="20" 
+                    Margin="10" 
+                    Click="YenidenBaslatButonu_Click" 
+                    Grid.Row="3"/>
+
+                <Button 
+                    x:Name="DevamEtButonu" 
+                    Content="▶" 
+                    FontSize="20" 
+                    Margin="10" 
+                    Click="DevamEtButonu_Click" 
+                    Grid.Row="4"/>
+
+                <TextBlock 
+                    x:Name="BeyazSureText" 
+                    Text="10:00" 
+                    FontSize="20" 
+                    Foreground="White" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Top" 
+                    Grid.Row="6"/>
+
             </Grid>
         </Grid>
     </Viewbox>

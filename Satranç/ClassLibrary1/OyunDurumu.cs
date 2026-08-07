@@ -265,5 +265,13 @@ namespace SatrancMantigi
             }
         }
         #endregion
+
+        #region Tahta durumunu FEN formatında döndüren metod (Stockfish için)
+        public string TahtaDurumunuFenYap()
+        {
+            // Zaten yazmış olduğun DurumStringi sınıfını kullanarak FEN üretir ve döndürür
+            return new DurumStringi(MevcutOyuncu, Tahta).ToString();
+        }
+        #endregion
     }
 }

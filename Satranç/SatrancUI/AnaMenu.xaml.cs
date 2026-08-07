@@ -12,19 +12,71 @@ namespace SatrancUI
             InitializeComponent(); // Pencere bileşenlerini başlatır.
         }
 
-        private void OyunaBaslaButon_Click(object sender, RoutedEventArgs e) // "Oyuna Başla" butonuna tıklandığında çalışacak metod.
+        private void OyunaBaslaButon_Click(object sender, RoutedEventArgs e)
         {
-            OyunModuMenusu oyunModuMenusu = new OyunModuMenusu(); // Oyun modu seçme menüsünü oluşturur.
-            oyunModuMenusu.ModSecildi += yapayZekaModu => // Oyun modu seçildiğinde çalışacak olay işleyicisi.
+            // Arkadaki butonları gizle
+            OyunaBaslaButon.Visibility = Visibility.Collapsed;
+            TahtaDuzenleButon.Visibility = Visibility.Collapsed;
+            Stockfish.Visibility = Visibility.Collapsed;
+            CikisButon.Visibility = Visibility.Collapsed;
+
+            // MenuContainer ayarlarını sıfırlayalım
+            MenuContainer.Height = double.NaN;
+            MenuContainer.Width = double.NaN;
+            MenuContainer.ClipToBounds = false;
+
+            OyunModuMenusu oyunModuMenusu = new OyunModuMenusu();
+
+            oyunModuMenusu.MenuIptalEdildi += () =>
             {
-                MainWindow oyunPenceresi = new MainWindow(); // Ana oyun penceresini oluşturur.
-                oyunPenceresi.yapayZekaModu = yapayZekaModu; // Oyun modunu ayarlar.
-                oyunPenceresi.Show(); // Ana oyun penceresini gösterir.
-                oyunPenceresi.DevamEtButonu.Visibility = Visibility.Collapsed; // "Devam Et" butonunu gizler.
-                this.Close(); // Ana menü penceresini kapatır.
+                OyunaBaslaButon.Visibility = Visibility.Visible;
+                TahtaDuzenleButon.Visibility = Visibility.Visible;
+                Stockfish.Visibility = Visibility.Visible;
+                CikisButon.Visibility = Visibility.Visible;
+                
+                // Konteyner içeriğini temizle
+                MenuContainer.Content = null; 
             };
 
-            MenuContainer.Content = oyunModuMenusu; // Ana menüdeki içerik alanına oyun modu seçme menüsünü yerleştirir.
+            // 1. Kullanıcı oyun modunu (Normal/Yapay Zeka) seçtiğinde bu olay tetiklenecek
+            oyunModuMenusu.ModSecildi += (yapayZekaModu) =>
+            {
+                SureSecimMenusu sureMenusu = new SureSecimMenusu();
+
+                sureMenusu.MenuIptalEdildi += () =>
+                {
+                    OyunaBaslaButon.Visibility = Visibility.Visible;
+                    TahtaDuzenleButon.Visibility = Visibility.Visible;
+                    Stockfish.Visibility = Visibility.Visible;
+                    CikisButon.Visibility = Visibility.Visible;
+                    
+                    // Konteyner içeriğini temizle
+                    MenuContainer.Content = null;
+                };
+
+                sureMenusu.GeriDonuldu += () =>
+                {
+                    // Container içeriğini bir önceki menü olan oyunModuMenusu ile değiştir
+                    MenuContainer.Content = oyunModuMenusu; 
+                };
+
+                // Mod seçildiği an, ekrandaki Oyun Modu menüsünü Süre Seçim menüsü ile değiştiriyoruz
+                MenuContainer.Content = sureMenusu;
+
+                // 2. Kullanıcı süreyi de seçtiğinde bu olay tetiklenecek ve asıl oyun başlayacak
+                sureMenusu.SureSecildi += (dakika, saniye) =>
+                {
+                    MainWindow oyunPenceresi = new MainWindow(dakika, saniye);
+                    oyunPenceresi.yapayZekaModu = yapayZekaModu;
+                    oyunPenceresi.Show();
+                    oyunPenceresi.DevamEtButonu.Visibility = Visibility.Collapsed;
+                    this.Close();
+                };
+                
+            };
+
+            // İlk aşama olarak ekrana Oyun Modu menüsünü yüklüyoruz
+            MenuContainer.Content = oyunModuMenusu;
         }
 
         private void TahtaDuzenleButon_Click(object sender, RoutedEventArgs e) // "Tahta Düzenle" butonuna tıklandığında çalışacak metod.
