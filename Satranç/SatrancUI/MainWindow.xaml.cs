@@ -279,24 +279,66 @@ namespace SatrancUI
                 return;
             }
 
-            if (oyunDurumu.Tahta.ParcaSayisi().ToplamSayi > 2 && oyunDurumu.MevcutOyuncu == Oyuncu.Siyah)
-            {
-                siyahSureSayaci.IsEnabled = true;
-            }
-
-            if (oyunDurumu.Tahta.ParcaSayisi().ToplamSayi > 2 && oyunDurumu.MevcutOyuncu == Oyuncu.Beyaz)
-            {
-                beyazSureSayaci.IsEnabled = true;
-            }
-
             if (tasDuzenlemeModu)
             {
                 beyazSureSayaci.Stop();
                 siyahSureSayaci.Stop();
             }
 
-            DevamEtButonu.Visibility = Visibility.Collapsed;
-            tasDuzenlemeModu = false;
+            OyunIciMenuOverlay.Visibility = Visibility.Visible;
+            OyunModuMenusu oyunModuMenusu = new OyunModuMenusu();
+
+            oyunModuMenusu.MenuIptalEdildi += () =>
+            {
+                OyunIciMenuOverlay.Visibility = Visibility.Collapsed;
+                OyunIciMenuContainer.Content = null;
+            };
+
+            oyunModuMenusu.ModSecildi += (yapayZekaModu) =>
+            {
+                SureSecimMenusu sureMenusu = new SureSecimMenusu();
+
+                sureMenusu.MenuIptalEdildi += () =>
+                {
+                    OyunIciMenuOverlay.Visibility = Visibility.Collapsed;
+                    OyunIciMenuContainer.Content = null;
+                };
+
+                sureMenusu.GeriDonuldu += () =>
+                {
+                    OyunIciMenuContainer.Content = oyunModuMenusu;
+                };
+
+                OyunIciMenuContainer.Content = sureMenusu;
+
+                sureMenusu.SureSecildi += (dakika, saniye) =>
+                {
+                    // Seçilen değerleri MainWindow özelliklerine ata
+                    this.yapayZekaModu = yapayZekaModu;
+                    
+                    // DİKKAT: Burada MainWindow'daki sayaç atama metodunu veya değişkenlerini dakika ve saniye ile güncellemelisin.
+                    // Örn: this.sayacSuresi = new TimeSpan(0, dakika, saniye); 
+
+                    this.baslangicDakikasi = dakika;
+                    this.ekSureSaniyesi = saniye; 
+                    
+                    // TimeSpan değerlerini oluştur
+                    this.siyahKalanSure = TimeSpan.FromMinutes(dakika);
+                    this.beyazKalanSure = TimeSpan.FromMinutes(dakika);
+
+                    SiyahSureText.Text = this.siyahKalanSure.ToString(@"mm\:ss");
+                    BeyazSureText.Text = this.beyazKalanSure.ToString(@"mm\:ss");
+
+                    OyunIciMenuOverlay.Visibility = Visibility.Collapsed;
+                    OyunIciMenuContainer.Content = null;
+
+                    // Menü seçimleri tamamlandığında oyunun asıl başlama/devam etme rutinleri
+                    DevamEtButonu.Visibility = Visibility.Collapsed;
+                    tasDuzenlemeModu = false;
+                };
+            };
+
+            OyunIciMenuContainer.Content = oyunModuMenusu;
         }
         #endregion
 

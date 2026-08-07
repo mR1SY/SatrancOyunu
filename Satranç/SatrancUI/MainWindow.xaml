@@ -127,6 +127,16 @@
                     Grid.Row="6"/>
 
             </Grid>
+            <Grid
+                x:Name="OyunIciMenuOverlay" 
+                Visibility="Collapsed"
+                Panel.ZIndex="100">
+
+                <ContentControl
+                    x:Name="OyunIciMenuContainer"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+            </Grid>
         </Grid>
     </Viewbox>
 </Window>
