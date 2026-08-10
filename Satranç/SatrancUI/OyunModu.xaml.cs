@@ -56,7 +56,7 @@ namespace SatrancUI
 
             if (mevcutPencere != null && mevcutPencere.tasDuzenlemeModu)
             {
-                MessageBox.Show("Orijinal Stockfish bu modda stabil çalışmayabilir.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Seçilen satranç motoru bu modda stabil çalışmayabilir.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             // Yapay zeka modunu seçtik (true)
