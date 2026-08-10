@@ -51,6 +51,13 @@ namespace SatrancUI
                 MessageBox.Show("Lütfen Stockfish motoru seçiniz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+                        
+            MainWindow mevcutPencere = System.Windows.Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+
+            if (mevcutPencere != null && mevcutPencere.tasDuzenlemeModu)
+            {
+                MessageBox.Show("Orijinal Stockfish bu modda stabil çalışmayabilir.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
 
             // Yapay zeka modunu seçtik (true)
             ModSecildi?.Invoke(true);

@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\SatrancMantigi.csproj" />
+    <ProjectReference Include="..\SatrancMantigi\SatrancMantigi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
