@@ -46,17 +46,40 @@ namespace SatrancUI
 
         private void YapayZekaButon_Click(object sender, RoutedEventArgs e)
         {
+            Window aktifPencere = Window.GetWindow(this);
+            //MainWindow mevcutPencere = System.Windows.Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+
             if (string.IsNullOrEmpty(AnaMenu.AktifStockfishYolu))
             {
-                MessageBox.Show("Lütfen Stockfish motoru seçiniz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                OzelUyariPenceresi uyari = new OzelUyariPenceresi("LÜTFEN BİR SATRANÇ MOTORU (STOCKFISH) SEÇİNİZ.");
+
+                if (aktifPencere is MainWindow mainWindow)
+                {
+                    // İkinci parametreyi göndermiyoruz, sadece uyarı metni veriyoruz.
+                    mainWindow.UyariContainer.Content = uyari;
+                }
+                else if (aktifPencere is AnaMenu anaMenu)
+                {
+                    anaMenu.UyariContainer.Content = uyari;
+                }
+                
+                // Hatalı durumda alt satırlara inilmesini engelle.
                 return;
+
             }
                         
-            MainWindow mevcutPencere = System.Windows.Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-
-            if (mevcutPencere != null && mevcutPencere.tasDuzenlemeModu)
+            if (aktifPencere is MainWindow mWindow && mWindow.tasDuzenlemeModu)
             {
-                MessageBox.Show("Seçilen satranç motoru bu modda stabil çalışmayabilir.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                OzelUyariPenceresi uyari = new OzelUyariPenceresi(
+                    "SEÇİLEN SATRANÇ MOTORU BU MODDA STABİL ÇALIŞMAYABİLİR.",
+                    () => {
+                        ModSecildi?.Invoke(true);
+                    }
+                );
+                        
+                mWindow.UyariContainer.Content = uyari;
+                // return yazılmazsa alt satıra inip oyunu anında başlatır.
+                return;            
             }
 
             // Yapay zeka modunu seçtik (true)

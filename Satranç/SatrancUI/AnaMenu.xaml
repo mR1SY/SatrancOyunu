@@ -114,9 +114,14 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Grid.Row="0"
-                                Grid.RowSpan="6">
-                </ContentControl>
-            </Grid>
+                                Grid.RowSpan="6"/>
+                <ContentControl x:Name="UyariContainer" 
+                Panel.ZIndex="99"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Grid.Row="0"
+                Grid.RowSpan="6"/>
+</Grid>
         </Viewbox>
     </Border>
 </Window>

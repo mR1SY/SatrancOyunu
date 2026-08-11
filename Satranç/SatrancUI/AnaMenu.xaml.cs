@@ -109,7 +109,8 @@ namespace SatrancUI
                 }
                 else
                 {
-                    MessageBox.Show("Lütfen geçerli bir Stockfish.exe dosyasını seçin.", "Hatalı Dosya Seçimi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    OzelUyariPenceresi uyari = new OzelUyariPenceresi("LÜTFEN GEÇERLİ BİR STOCKFISH.EXE DOSYASI SEÇİN.");
+                    UyariContainer.Content = uyari;
                 }
             }
         }

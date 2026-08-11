@@ -176,6 +176,11 @@ namespace SatrancUI
 
             if (e.Key == Key.Escape) // Escape tuşuna basıldıysa...
             {
+                if (OyunIciMenuOverlay.Visibility == Visibility.Visible || UyariContainer.Content != null)
+                {
+                    return;
+                }
+
                 if (MenuEkrandaMi() && MenuContainer.Content is DurdurmaMenusu) // Durdurma menüsü açıksa...
                 {
                     MenuContainer.Content = null; // Durdurma menüsünü kapatır.
@@ -258,9 +263,18 @@ namespace SatrancUI
         private void DevamEtButonu_Click(object sender, RoutedEventArgs e)
         {
             Sayma sayma = oyunDurumu.Tahta.ParcaSayisi();
+
             if (sayma.Beyaz(TasTuru.Sah) != 1 || sayma.Siyah(TasTuru.Sah) != 1)
             {
-                MessageBox.Show("Her iki oyuncunun da bir şahı olmalı.");
+                OyunIciMenuOverlay.Visibility = Visibility.Visible;
+                
+                OzelUyariPenceresi uyari = new OzelUyariPenceresi("HER İKİ OYUNCUNUN DA BİR ŞAHI OLMALI.", () =>
+                {
+                    if (OyunIciMenuContainer.Content == null)
+                    OyunIciMenuOverlay.Visibility = Visibility.Collapsed;
+                });
+
+                UyariContainer.Content = uyari;
                 return;
             }
 
@@ -268,7 +282,15 @@ namespace SatrancUI
 
             if (oyunDurumu.Tahta.TehditAltinda(oyunDurumu.MevcutOyuncu) || oyunDurumu.Tahta.TehditAltinda(oyunDurumu.MevcutOyuncu.Rakip()))
             {
-                MessageBox.Show("Şahınız tehdit altında.");
+                OyunIciMenuOverlay.Visibility = Visibility.Visible;
+
+                OzelUyariPenceresi uyari = new OzelUyariPenceresi("ŞAHINIZ TEHDİT ALTINDA", () =>
+                {
+                    if (OyunIciMenuContainer.Content == null)
+                    OyunIciMenuOverlay.Visibility = Visibility.Collapsed;
+               });
+
+                UyariContainer.Content = uyari;
                 return;
             }
 
@@ -290,8 +312,8 @@ namespace SatrancUI
 
             oyunModuMenusu.MenuIptalEdildi += () =>
             {
-                OyunIciMenuOverlay.Visibility = Visibility.Collapsed;
                 OyunIciMenuContainer.Content = null;
+                OyunIciMenuOverlay.Visibility = Visibility.Collapsed;
             };
 
             oyunModuMenusu.ModSecildi += (yapayZekaModu) =>

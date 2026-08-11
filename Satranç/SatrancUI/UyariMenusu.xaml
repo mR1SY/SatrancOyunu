@@ -1,0 +1,41 @@
+<UserControl 
+        x:Class="SatrancUI.OzelUyariPenceresi"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="250" Width="500"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        Focusable="True"
+        Loaded="UserControl_Loaded">
+    
+    <Border Style="{StaticResource BorderStyle}" Width="350" Height="200">
+        <Grid>
+            <Grid Margin="0,15,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock 
+                    x:Name="MesajMetni" 
+                    Text="Uyarı Mesajı" 
+                    Style="{StaticResource TextStyle}"
+                    FontSize="20"
+                    TextWrapping="Wrap" 
+                    TextAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Margin="10,15,10,0"/>
+                
+                <Button 
+                    Grid.Row="1" 
+                    x:Name="TamamButonu" 
+                    Content="TAMAM" 
+                    Style="{StaticResource ButtonStyle}"
+                    FontSize="17"
+                    Width="150" 
+                    Height="50" 
+                    VerticalAlignment="Center"
+                    Click="TamamButon_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>
