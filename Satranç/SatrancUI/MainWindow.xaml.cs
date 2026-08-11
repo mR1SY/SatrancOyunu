@@ -45,6 +45,9 @@ namespace SatrancUI
 
         private TasSecmeMenusu acikTasSecmeMenusu = null; // Açık olan taş seçme menüsü nesnesine referans (açık menü yoksa null).
 
+        private Pozisyon sonHamleBaslangic = null;
+        private Pozisyon sonHamleBitis = null;
+
         public bool yapayZekaModu = false; // Yapay zeka modunun aktif olup olmadığını belirten bool değişkeni (varsayılan: false).
         #endregion
 
@@ -610,11 +613,19 @@ namespace SatrancUI
 
                 // 1. HAMLEYİ YÜRÜT
                 oyunDurumu.HareketEt(hamle);
+
+                sonHamleBaslangic = null;
+                sonHamleBitis = null;
+
                 VurgulariGizle();
 
                 // 2. YENİ HAMLE VURGULARINI GÖSTER
                 if (!tasDuzenlemeModu)
                 {
+                    // Son hamleyi hafızaya al ki VurgulariGizle() metodu bunları silmesin
+                    sonHamleBaslangic = hamle.FromPos;
+                    sonHamleBitis = hamle.ToPos;
+
                     Vurgular[hamle.FromPos.Satir, hamle.FromPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
                     Vurgular[hamle.ToPos.Satir, hamle.ToPos.Sutun].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
                 }
@@ -1059,6 +1070,17 @@ namespace SatrancUI
             {
                 for (int c = 0; c < 8; c++)
                 {
+                    // Eğer o anki kare, son hamlenin başlangıç veya bitiş karesi ise, rengini SİLME
+                    if (!tasDuzenlemeModu && 
+                        ((sonHamleBaslangic != null && sonHamleBaslangic.Satir == r && sonHamleBaslangic.Sutun == c) || 
+                        (sonHamleBitis != null && sonHamleBitis.Satir == r && sonHamleBitis.Sutun == c)))
+                    {
+                        // Yeşil kalmasını garantile (Eğer farklı bir renk atanmışsa bile yeşile döner)
+                        Vurgular[r, c].Fill = new SolidColorBrush(Color.FromArgb(150, 0, 255, 0));
+                        continue; // Döngünün bu adımını atla, aşağıya (Transparent) inme
+                    }
+
+                    // Geri kalan tüm kareleri şeffaf yap
                     Vurgular[r, c].Fill = Brushes.Transparent;
                 }
             }
