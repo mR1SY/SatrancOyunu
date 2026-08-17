@@ -114,5 +114,15 @@ namespace SatrancUI
         {
             PopupKapat();
         }
+
+        private void SilButon_Click(object sender, RoutedEventArgs e)
+        {
+            if (TıklananPozisyon != null)
+            {
+                // MainWindow'daki silme metodunu çağır
+                mainWindow.SeciliTasiSil(TıklananPozisyon);
+                PopupKapat(); // İşlem sonrası menüyü kapat
+            }
+        }
     }
 }

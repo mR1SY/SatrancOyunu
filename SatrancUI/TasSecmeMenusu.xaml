@@ -15,6 +15,20 @@
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
+            <Grid>
+                <Button
+                    Content="SİL"
+                    Width="25" Height="25" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" 
+                    Background="#3498DB" 
+                    Foreground="White" 
+                    BorderThickness="0" 
+                    FontWeight="Bold" 
+                    Cursor="Hand" 
+                    Margin="5"
+                    Click="SilButon_Click"/>
+            </Grid>
             <TextBlock Text="TAŞ SEÇİN"
                        Style="{StaticResource TextStyle}"
                        FontSize="20"/>

@@ -120,7 +120,7 @@ namespace SatrancUI
                 return; // Metodu sonlandırır (yapay zekanın taşına veya sırasına tıklanmasını engeller).
             }
 
-            if (e.LeftButton == MouseButtonState.Pressed) // Sol fare tuşuna basılırsa...
+            if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed) // Sol fare tuşuna basılırsa...
             {
                 if (tasDuzenlemeModu) // Taş düzenleme modunda ise...
                 {
@@ -162,6 +162,19 @@ namespace SatrancUI
                     KareyeTasEkle(poz, oyuncu, tur); // Seçilen taşı tahtaya ekler.
                     acikTasSecmeMenusu = null; // Açık taş seçme menüsü referansını null olarak ayarlar.
                 };
+            }
+        }
+        #endregion
+
+        #region Taş Seçme Menüsü için SİL fonksiyonu (2026)
+        public void SeciliTasiSil(Pozisyon poz)
+        {
+            if (poz != null)
+            {
+                oyunDurumu.Tahta[poz] = null; // Seçili karedeki taşı mantıksal olarak siler.
+                TaslarinResimleri[poz.Satir, poz.Sutun].Source = null; // Arayüzden taşın görüntüsünü temizler.
+                SecilmisPoz = null; // Seçili kareyi sıfırlar.
+                VurgulariGizle(); // Vurguları gizler.
             }
         }
         #endregion
