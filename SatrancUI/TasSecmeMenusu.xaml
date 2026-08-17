@@ -38,6 +38,20 @@
                 <Image x:Name="BeyazVezirResmi" MouseDown="TasResmi_MouseDown" Tag="Vezir" Source="Assets/BeyazVezir.png"/>
                 <Image x:Name="BeyazSahResmi" MouseDown="TasResmi_MouseDown" Tag="Sah" Source="Assets/BeyazSah.png"/>
             </UniformGrid>
+            <Grid>
+                <Button
+                    Content="✕"
+                    Width="25" Height="25" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    Background="#E74C3C" 
+                    Foreground="White" 
+                    BorderThickness="0" 
+                    FontWeight="Bold" 
+                    Cursor="Hand" 
+                    Margin="5"
+                    Click="KapatButon_Click"/>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

@@ -109,5 +109,10 @@ namespace SatrancUI
         {
             SecilenTas?.Invoke(TasTuru.Sah); // SecilenTas olayını tetikler ve TasTuru.Sah'i parametre olarak gönderir.
         }
+
+        private void KapatButon_Click(object sender, RoutedEventArgs e)
+        {
+            PopupKapat();
+        }
     }
 }
